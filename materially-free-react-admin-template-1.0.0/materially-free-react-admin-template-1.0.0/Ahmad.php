@@ -17,10 +17,13 @@
 
         <ul id="navbarMenu" role="menu">
             <li role="none"><a href="#" role="menuitem" class="active">Home</a></li>
-            <li role="none"><a href="Menu.html" role="menuitem" class="active">Customize</a></li>
-            <li role="none"><a href="project.html" role="menuitem" class="active">Sales</a></li>
+            <li role="none"><a href="Menu.php" role="menuitem" class="active">Customize</a></li>
+            <li role="none"><a href="project.php" role="menuitem" class="active">Sales</a></li>
             <li role="none"><a href="#contact" role="menuitem" class="active">Contact</a></li>
         </ul>
+
+        <a href="login.php" class="login-btn">
+          <i class="fa-solid fa-right-to-bracket"></i> Login</a>
 
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark/Light theme" title="Toggle Dark/Light Theme">
             <i class="fa-solid fa-moon"></i>

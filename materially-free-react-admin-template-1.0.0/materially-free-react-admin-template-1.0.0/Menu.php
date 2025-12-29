@@ -10,17 +10,20 @@
 <body data-theme="light">
 
     <nav>
-        <div class="logo" aria-label="Portfolio Logo">Anak Banjingan</div>
+        <div class="logo" aria-label="Portfolio Logo">YobYong</div>
         <button class="hamburger" id="hamburgerBtn" aria-label="Toggle-Menu" aria-expanded="false" aria-controls="navbarMenu">
             <i class="fa-solid fa-bars"></i>
         </button>
 
         <ul id="navbarMenu" role="menu">
-            <li role="none"><a href="Ahmad.html" role="menuitem" class="active">Home</a></li>
-            <li role="none"><a href="#about.html" role="menuitem" class="active">Customize</a></li>
-            <li role="none"><a href="project.html" role="menuitem" class="active">Sales</a></li>
+            <li role="none"><a href="Ahmad.php" role="menuitem" class="active">Home</a></li>
+            <li role="none"><a href="#about.php" role="menuitem" class="active">Customize</a></li>
+            <li role="none"><a href="project.php" role="menuitem" class="active">Sales</a></li>
             <li role="none"><a href="#contact" role="menuitem" class="active">Contact</a></li>
         </ul>
+
+        <a href="login.php" class="login-btn">
+          <i class="fa-solid fa-right-to-bracket"></i> Login</a>
 
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark/Light theme" title="Toggle Dark/Light Theme">
             <i class="fa-solid fa-moon"></i>
