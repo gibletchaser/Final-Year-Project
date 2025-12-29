@@ -3,10 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anak Anjing Kelaparan</title>
+    <title>YobYong</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+<style>
+        .form-inner form .field{
+          height: 50px;
+          width: 100%;
+          margin-top: 20px;
+        }
+        .form-inner form .field input{
+          height: 100%;
+          width: 100%;
+          outline: none;
+          padding-left: 15px;
+          border-radius: 15px;
+          border: 1px solid lightgrey;
+          border-bottom-width: 2px;
+          font-size: 17px;
+          transition: all 0.3s ease;
+        }
+        .form-inner form .field input:focus{
+          border-color: #1a75ff;
+        }
+        .form-inner form .field input::placeholder{
+          color: #999;
+          transition: all 0.3s ease;
+        }
+        form .field input:focus::placeholder{
+          color: #1a75ff;
+        }
+        </style>
 </head>
+
 <body data-theme="light">
 
     <nav>
@@ -16,45 +45,40 @@
         </button>
 
         <ul id="navbarMenu" role="menu">
-            <li role="none"><a href="Ahmad.html" role="menuitem" class="active">Home</a></li>
-            <li role="none"><a href="Menu.html" role="menuitem" class="active">Customize</a></li>
+            <li role="none"><a href="Ahmad.php" role="menuitem" class="active">Home</a></li>
+            <li role="none"><a href="Menu.php" role="menuitem" class="active">Customize</a></li>
             <li role="none"><a href="#project" role="menuitem" class="active">Sales</a></li>
             <li role="none"><a href="#contact" role="menuitem" class="active">Contact</a></li>
         </ul>
 
+        <a href="login.php" class="login-btn">
+          <i class="fa-solid fa-right-to-bracket"></i> Login</a>
+          
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark/Light theme" title="Toggle Dark/Light Theme">
             <i class="fa-solid fa-moon"></i>
         </button>
     </nav>
 
       <section class="project" id="project">
-        <h2>My Projects</h2>
-        <div class="project-grid">
-
-            <div class="project-card">
-                <i class="fa-solid fa-c project-icon"></i>
-                <h3>C Language Assignment</h3>
-                <p>Expreince in making many simple calculation and algorithm in C language during my studies.</p>
-                <a href="https://drive.google.com/drive/folders/1wgDdeBL31pCvlk6a6R7TTqcizy5gmhjI?usp=sharing" class="project-link">View Assignment <i class="fa-solid fa-arrow-right"></i></a>
+        <h2>login</h2>
+        <div class="form-container">
+                    <div class="slider-tab"></div>
+                      </div>
+                        <div class="form-inner">
+        <!-- Login Form -->
+         <form method="POST" action="login_process.php" class="login">
+            <div class="field">
+            <input type="text" name="username" placeholder="username" required>
+              </div>
+                <div class="field">
+                  <input type="password" name="password" placeholder="Password" required>
+                    </div>
+                        <div class="field btn">
+                    <div class="btn-layer"></div>
+                <input type="submit" name="login" value="Login">
             </div>
-
-            <div class="project-card">
-                <i class="fa-solid fa-diagram-project project-icon"></i>
-                <h3>C++ language Assignment</h3>
-                <p>This C++ coding has been little more advaced than C assignment and I have solved many of this problem.</p>
-                <a href="https://drive.google.com/drive/folders/15-jU6haEvMokSmC7w7eUbUJt0FtxpYiG?usp=sharing" class="project-link">View Assignment <i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-
-            <div class="project-card">
-                <i class="fa-solid fa-arrows-to-dot project-icon"></i>
-                <h3>Assembly Language</h3>
-                <p>Experience of being a group leader to conduct this complicated asssembly language assignment</p>
-                <a href="https://drive.google.com/drive/folders/1oZAVAxzN6FKJhehdEGusY4r5AQwUx8bz?usp=sharing" class="project-link">View Assignment <i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-        </div>
-      </section>
-
-
+      </form>
+    </div>
     <script src="script.js"></script>
 
     <script>
