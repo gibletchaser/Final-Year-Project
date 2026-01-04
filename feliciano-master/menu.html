@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Feliciano - Free Bootstrap 4 Template by Colorlib</title>
+    <title>Yob Yong Ordering System</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
@@ -35,14 +35,14 @@
 		    		<div class="row d-flex">
 		    			<div class="col-md pr-4 d-flex topper align-items-center">
 					    	<div class="icon mr-2 d-flex justify-content-center align-items-center"><span class="icon-phone2"></span></div>
-						    <span class="text">+6012-292898</span>
+						    <span class="text">+6012-26828864</span>
 					    </div>
 					    <div class="col-md pr-4 d-flex topper align-items-center">
 					    	<div class="icon mr-2 d-flex justify-content-center align-items-center"><span class="icon-paper-plane"></span></div>
-						    <span class="text">youremail@email.com</span>
+						    <span class="text">yobyong24@gmail.com</span>
 					    </div>
 					    <div class="col-md-5 pr-4 d-flex topper align-items-center text-lg-right justify-content-end">
-						    <p class="mb-0 register-link"><span>Open hours:</span> <span>Monday - Sunday</span> <span>8:00AM - 9:00PM</span></p>
+						    <p class="mb-0 register-link"><span>Open hours:</span> <span>Monday - Sunday</span> <span>10:00AM - 9:00PM</span></p>
 					    </div>
 				    </div>
 			    </div>
@@ -51,7 +51,7 @@
     </div>
 	  <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
 	    <div class="container">
-	      <a class="navbar-brand" href="index.html">Feliciano</a>
+	      <a class="navbar-brand" href="index.html">Yob Yong</a>
 	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
 	        <span class="oi oi-menu"></span> Menu
 	      </button>
@@ -61,11 +61,17 @@
 	        	<li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
 	        	<li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
 	        	<li class="nav-item active"><a href="menu.html" class="nav-link">Menu</a></li>
-	        	<li class="nav-item"><a href="blog.html" class="nav-link">Stories</a></li>
-	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-	          <li class="nav-item cta"><a href="reservation.html" class="nav-link">Book a table</a></li>
+				<li class="nav-item">
+   				 <a href="#" class="nav-link" data-toggle="modal" data-target="#cartModal">
+        			<i class="fas fa-shopping-cart fa-lg"></i>
+       				 <span class="badge badge-pill badge-warning ml-1" id="cart-count">0</span>
+    			</a>
+				</li>
+				<li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+				<li class="nav-item cta"><a href="sign in.html" class="nav-link">Sign In</a></li>
+			  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 	        </ul>
-	      </div>
+	      </div>	
 	    </div>
 	  </nav>
     <!-- END nav -->
@@ -104,11 +110,6 @@
 	            </div>
 	          </div>
 	          
-<div class="cart-summary">
-            <span class="cart-count">Cart: 0 items</span>
-            <span class="cart-total">Total: $0.00</span>
-            <button id="viewCartBtn">View Cart</button>
-        </div>
     </header>
 
 		<div class="col-md-12 tab-wrap">
@@ -124,10 +125,10 @@
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
@@ -136,842 +137,1015 @@
         								<input type="number" class="qty-input" value="1" min="1" readonly>
         							 <button class="qty-btn plus" type="button">+</button>
       									</div>
-      								<button class="add-to-cart btn btn-primary mt-3" data-name="Grilled Beef with potatoes" data-price="29">
-        							Add to Cart
-      								</button>						              
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
 									</div>
 					              </div>
 					            </div>
 					        	</div>
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/breakfast-2.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-									<div class="quantity-selector d-flex align-items-center mt-3">
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
        								 <button class="qty-btn minus" type="button">-</button>
         								<input type="number" class="qty-input" value="1" min="1" readonly>
         							 <button class="qty-btn plus" type="button">+</button>
       									</div>
-      								<button class="add-to-cart btn btn-primary mt-3" data-name="Grilled Beef with potatoes" data-price="29">
-        							Add to Cart
-      								</button>						              						              </div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
 
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/breakfast-3.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-										  <div class="quantity-selector d-flex align-items-center mt-3">
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
        								 <button class="qty-btn minus" type="button">-</button>
         								<input type="number" class="qty-input" value="1" min="1" readonly>
         							 <button class="qty-btn plus" type="button">+</button>
       									</div>
-      								<button class="add-to-cart btn btn-primary mt-3" data-name="Grilled Beef with potatoes" data-price="29">
-        							Add to Cart
-      								</button>						              
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/breakfast-4.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
 
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/breakfast-5.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/breakfast-6.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
 
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/breakfast-7.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/breakfast-8.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        </div>
-	              </div>
-
-	              <div class="tab-pane fade" id="v-pills-2" role="tabpanel" aria-labelledby="v-pills-day-2-tab">
-	              	<div class="row no-gutters d-flex align-items-stretch">
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/lunch-1.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/lunch-2.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
 
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/lunch-3.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/lunch-4.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
 
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/lunch-5.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/lunch-6.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
 
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/lunch-7.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
+
+	              <div class="col-md-12 col-lg-6 d-flex align-self-stretch">
+					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
+					              <div class="text d-flex align-items-center">
+													<div>
+						              	<div class="d-flex">
+							                <div class="one-half">
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
+							                </div>
+							                <div class="one-forth">
+							                  <span class="price" data-price="29">$29</span>
+							                </div>
+							              </div>
+							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
+					              </div>
+					            </div>
+					        	</div>
+
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/lunch-8.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
-					        </div>
-	              </div>
+
+					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
+					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
+					              <div class="text d-flex align-items-center">
+													<div>
+						              	<div class="d-flex">
+							                <div class="one-half">
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
+							                </div>
+							                <div class="one-forth">
+							                  <span class="price" data-price="29">$29</span>
+							                </div>
+							              </div>
+							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
+					              </div>
+					            </div>
+					        	</div>
+
+					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
+					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
+					              <div class="text d-flex align-items-center">
+													<div>
+						              	<div class="d-flex">
+							                <div class="one-half">
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
+							                </div>
+							                <div class="one-forth">
+							                  <span class="price" data-price="29">$29</span>
+							                </div>
+							              </div>
+							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
+					              </div>
+					            </div>
+					        	</div>
+
+					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
+					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
+					              <div class="text d-flex align-items-center">
+													<div>
+						              	<div class="d-flex">
+							                <div class="one-half">
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
+							                </div>
+							                <div class="one-forth">
+							                  <span class="price" data-price="29">$29</span>
+							                </div>
+							              </div>
+							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
+					              </div>
+					            </div>
+					        	</div>
+
+					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
+					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
+					              <div class="text d-flex align-items-center">
+													<div>
+						              	<div class="d-flex">
+							                <div class="one-half">
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
+							                </div>
+							                <div class="one-forth">
+							                  <span class="price" data-price="29">$29</span>
+							                </div>
+							              </div>
+							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
+					              </div>
+					            </div>
+					        	</div>
+
+					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
+					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
+					              <div class="text d-flex align-items-center">
+													<div>
+						              	<div class="d-flex">
+							                <div class="one-half">
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
+							                </div>
+							                <div class="one-forth">
+							                  <span class="price" data-price="29">$29</span>
+							                </div>
+							              </div>
+							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
+					              </div>
+					            </div>
+					        	</div>
 
 	              <div class="tab-pane fade" id="v-pills-3" role="tabpanel" aria-labelledby="v-pills-day-3-tab">
 	              	<div class="row no-gutters d-flex align-items-stretch">
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/dinner-1.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/dinner-2.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
 
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/dinner-3.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/dinner-4.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
 
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/dinner-5.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
+
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/dinner-6.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
-					        </div>
-	              </div>
+
+					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
+					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
+					              <div class="text d-flex align-items-center">
+													<div>
+						              	<div class="d-flex">
+							                <div class="one-half">
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
+							                </div>
+							                <div class="one-forth">
+							                  <span class="price" data-price="29">$29</span>
+							                </div>
+							              </div>
+							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
+					              </div>
+					            </div>
+					        	</div>
+
+					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
+					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
+					              <div class="text d-flex align-items-center">
+													<div>
+						              	<div class="d-flex">
+							                <div class="one-half">
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
+							                </div>
+							                <div class="one-forth">
+							                  <span class="price" data-price="29">$29</span>
+							                </div>
+							              </div>
+							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
+					              </div>
+					            </div>
+					        	</div>
 
 	              <div class="tab-pane fade" id="v-pills-4" role="tabpanel" aria-labelledby="v-pills-day-4-tab">
 	              	<div class="row no-gutters d-flex align-items-stretch">
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/drink-1.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/drink-2.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
 
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/drink-3.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/drink-4.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
 
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/drink-5.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
+
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/drink-6.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
-					        </div>
-	              </div>
+
+					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
+					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
+					              <div class="text d-flex align-items-center">
+													<div>
+						              	<div class="d-flex">
+							                <div class="one-half">
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
+							                </div>
+							                <div class="one-forth">
+							                  <span class="price" data-price="29">$29</span>
+							                </div>
+							              </div>
+							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
+					              </div>
+					            </div>
+					        	</div>
+
+					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
+					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
+					              <div class="text d-flex align-items-center">
+													<div>
+						              	<div class="d-flex">
+							                <div class="one-half">
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
+							                </div>
+							                <div class="one-forth">
+							                  <span class="price" data-price="29">$29</span>
+							                </div>
+							              </div>
+							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
+					              </div>
+					            </div>
+					        	</div>
 
 	              <div class="tab-pane fade" id="v-pills-5" role="tabpanel" aria-labelledby="v-pills-day-5-tab">
 	              	<div class="row no-gutters d-flex align-items-stretch">
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/dessert-1.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/dessert-2.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
 
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/dessert-3.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/dessert-4.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
 
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/dessert-5.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
+
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/drink-6.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
-					        </div>
-	              </div>
+
+					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
+					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
+					              <div class="text d-flex align-items-center">
+													<div>
+						              	<div class="d-flex">
+							                <div class="one-half">
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
+							                </div>
+							                <div class="one-forth">
+							                  <span class="price" data-price="29">$29</span>
+							                </div>
+							              </div>
+							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
+					              </div>
+					            </div>
+					        	</div>
+
+					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
+					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
+					              <div class="text d-flex align-items-center">
+													<div>
+						              	<div class="d-flex">
+							                <div class="one-half">
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
+							                </div>
+							                <div class="one-forth">
+							                  <span class="price" data-price="29">$29</span>
+							                </div>
+							              </div>
+							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
+					              </div>
+					            </div>
+					        	</div>
 
 	              <div class="tab-pane fade" id="v-pills-6" role="tabpanel" aria-labelledby="v-pills-day-6-tab">
 	              	<div class="row no-gutters d-flex align-items-stretch">
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/wine-1.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/wine-2.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
 
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/wine-3.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/wine-4.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
 
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/wine-5.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
-					              </div>
-					            </div>
-					        	</div>
-					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
-					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img" style="background-image: url(images/wine-6.jpg);"></div>
-					              <div class="text d-flex align-items-center">
-													<div>
-						              	<div class="d-flex">
-							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
-							                </div>
-							                <div class="one-forth">
-							                  <span class="price">$29</span>
-							                </div>
-							              </div>
-							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
 
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/wine-7.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
 													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
+
 					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
 					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
-					              <div class="menu-img img order-md-last" style="background-image: url(images/wine-8.jpg);"></div>
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
 					              <div class="text d-flex align-items-center">
-										<div>
+													<div>
 						              	<div class="d-flex">
 							                <div class="one-half">
-							                  <h3>Grilled Beef with potatoes</h3>
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
 							                </div>
 							                <div class="one-forth">
-							                  <span class="price">$29</span>
+							                  <span class="price" data-price="29">$29</span>
 							                </div>
 							              </div>
 							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
-							              <p><a href="#" class="btn btn-primary">Order now</a></p>
-						              </div>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
+					              </div>
+					            </div>
+					        	</div>
+
+					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
+					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
+					              <div class="text d-flex align-items-center">
+													<div>
+						              	<div class="d-flex">
+							                <div class="one-half">
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
+							                </div>
+							                <div class="one-forth">
+							                  <span class="price" data-price="29">$29</span>
+							                </div>
+							              </div>
+							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
+					              </div>
+					            </div>
+					        	</div>
+
+					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
+					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
+					              <div class="text d-flex align-items-center">
+													<div>
+						              	<div class="d-flex">
+							                <div class="one-half">
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
+							                </div>
+							                <div class="one-forth">
+							                  <span class="price" data-price="29">$29</span>
+							                </div>
+							              </div>
+							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
+					              </div>
+					            </div>
+					        	</div>
+
+					        	<div class="col-md-12 col-lg-6 d-flex align-self-stretch">
+					        		<div class="menus d-sm-flex ftco-animate align-items-stretch">
+					              <div class="menu-img img" style="background-image: url(images/breakfast-1.jpg);"></div>
+					              <div class="text d-flex align-items-center">
+													<div>
+						              	<div class="d-flex">
+							                <div class="one-half">
+							                  <h3 data-name="Grilled Beef with potatoes">Grilled Beef with potatoes</h3>
+							                </div>
+							                <div class="one-forth">
+							                  <span class="price" data-price="29">$29</span>
+							                </div>
+							              </div>
+							              <p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>
+ 								<div class="quantity-selector d-flex align-items-center mt-3">
+       								 <button class="qty-btn minus" type="button">-</button>
+        								<input type="number" class="qty-input" value="1" min="1" readonly>
+        							 <button class="qty-btn plus" type="button">+</button>
+      									</div>
+      								<button class="btn btn-primary add-to-cart">Add to Cart </button>	
+									</div>
 					              </div>
 					            </div>
 					        	</div>
@@ -984,30 +1158,47 @@
     	</div>
     </section>
 
-    <!-- Cart Modal -->
-    <div id="cartModal" class="modal">
+		<!-- Cart Modal -->
+<div class="modal fade" id="cartModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>🛒 Shopping Cart</h2>
-            <div id="cartItems" class="cart-items"></div>
-            <div class="cart-summary">
-                <h3>Total: $<span id="cartTotal">0.00</span></h3>
-                <button id="checkoutBtn" class="checkout-btn">Checkout</button>
+            <div class="modal-header">
+                <h5 class="modal-title">Shopping Cart</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="cartItems" class="cart-items">
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <h5>Total:</h5>
+                    <h5>$<span id="cartTotal">0.00</span></h5>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Continue Shopping</button>
+                <button type="button" class="btn btn-primary" id="checkoutBtn">Proceed to Checkout</button>
             </div>
         </div>
     </div>
-		
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/your-kit-code.js"></script> <!-- if using fa icons -->
+<script src="script.js"></script>
+
     <footer class="ftco-footer ftco-bg-dark ftco-section">
       <div class="container">
         <div class="row mb-5">
           <div class="col-md-6 col-lg-3">
             <div class="ftco-footer-widget mb-4">
-              <h2 class="ftco-heading-2">Feliciano</h2>
+              <h2 class="ftco-heading-2">Yob Yong</h2>
               <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
               <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-3">
-                <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
-                <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
-                <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+                <li class="ftco-animate"><a href="https://x.com/?lang=en-my"><span class="icon-twitter"></span></a></li>
+                <li class="ftco-animate"><a href="https://www.facebook.com/YobnYongsSemarak/"><span class="icon-facebook"></span></a></li>
+                <li class="ftco-animate"><a href="https://www.instagram.com/yobyongs_utmkl/"><span class="icon-instagram"></span></a></li>
               </ul>
             </div>
           </div>
@@ -1015,13 +1206,12 @@
             <div class="ftco-footer-widget mb-4">
               <h2 class="ftco-heading-2">Open Hours</h2>
               <ul class="list-unstyled open-hours">
-                <li class="d-flex"><span>Monday</span><span>9:00 - 24:00</span></li>
-                <li class="d-flex"><span>Tuesday</span><span>9:00 - 24:00</span></li>
-                <li class="d-flex"><span>Wednesday</span><span>9:00 - 24:00</span></li>
-                <li class="d-flex"><span>Thursday</span><span>9:00 - 24:00</span></li>
-                <li class="d-flex"><span>Friday</span><span>9:00 - 02:00</span></li>
-                <li class="d-flex"><span>Saturday</span><span>9:00 - 02:00</span></li>
-                <li class="d-flex"><span>Sunday</span><span> 9:00 - 02:00</span></li>
+                <li class="d-flex"><span>Monday</span><span>10:00 - 21:00</span></li>
+                <li class="d-flex"><span>Tuesday</span><span>10:00 - 21:00</span></li>
+                <li class="d-flex"><span>Wednesday</span><span>10:00 - 21:00</span></li>
+                <li class="d-flex"><span>Thursday</span><span>10:00 - 21:00</span></li>
+                <li class="d-flex"><span>Friday</span><span>10:00 - 21:00</span></li>
+                <li class="d-flex"><span>Saturday</span><span>10:00 - 21:00</span></li>
               </ul>
             </div>
           </div>
@@ -1059,14 +1249,9 @@
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-12 text-center">
 
-            <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
-          </div>
-        </div>
+          
+        
       </div>
     </footer>
   
