@@ -1,6 +1,13 @@
 <?php
+session_start();
 include 'db.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.html");
+    exit;
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -64,7 +71,7 @@ include 'db.php';
 				</a>
 			</li>
 			<li>
-				<a href="#" class="logout">
+				<a href="logout.php" class="logout">
 					<i class='bx bxs-log-out-circle' ></i>
 					<span class="text">Logout</span>
 				</a>
