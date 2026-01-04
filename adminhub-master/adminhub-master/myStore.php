@@ -1,9 +1,15 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+include 'db.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>My Store</title>
-
   <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -15,18 +21,49 @@
     <i class='bx bxs-smile'></i>
     <span class="text">AdminHub</span>
   </a>
-
   <ul class="side-menu top">
     <li>
-      <a href="index.html">
+      <a href="index.php">
         <i class='bx bxs-dashboard'></i>
         <span class="text">Dashboard</span>
       </a>
     </li>
     <li class="active">
-      <a href="myStore.html">
+      <a href="#">
         <i class='bx bxs-shopping-bag-alt'></i>
         <span class="text">My Store</span>
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <i class='bx bxs-doughnut-chart'></i>
+        <span class="text">Analytics</span>
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <i class='bx bxs-message-dots'></i>
+        <span class="text">Message</span>
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <i class='bx bxs-group'></i>
+        <span class="text">Team</span>
+      </a>
+    </li>
+  </ul>
+  <ul class="side-menu">
+    <li>
+      <a href="#">
+        <i class='bx bxs-cog'></i>
+        <span class="text">Settings</span>
+      </a>
+    </li>
+    <li>
+      <a href="#" class="logout">
+        <i class='bx bxs-log-out-circle'></i>
+        <span class="text">Logout</span>
       </a>
     </li>
   </ul>
@@ -34,7 +71,6 @@
 
 <!-- CONTENT -->
 <section id="content">
-
   <!-- NAVBAR (SAME AS DASHBOARD) -->
   <nav>
     <i class='bx bx-menu'></i>
@@ -49,7 +85,6 @@
 
   <!-- MAIN (THIS IS NEW) -->
   <main>
-
     <div class="head-title">
       <div class="left">
         <h1>My Store</h1>
@@ -59,50 +94,27 @@
           <li><a class="active" href="#">Menu</a></li>
         </ul>
       </div>
-
-      <a href="#" class="btn-download">
+      <a href="#" class="btn-download" onclick="openModal('add')">
         <i class='bx bx-plus'></i>
         <span class="text">Add Menu</span>
       </a>
     </div>
 
     <!-- MENU GRID -->
-    <div class="menu-grid">
-        <div class="menu-card">
-            <img src="img/tempMenu.jpg">
-            <h4>Nasi Lemak</h4>
-            <p>RM 5.00</p>
-
-            <div class="menu-actions">
-                <button class="edit">Edit</button>
-                <button class="delete">Delete</button>
-            </div>
-        </div>
-
-        <div class="menu-card">
-            <img src="img/tempMenu.jpg">
-            <h4>Teh o Beng</h4>
-            <p>RM 2.50</p>
-
-            <div class="menu-actions">
-                <button class="edit">Edit</button>
-                <button class="delete">Delete</button>
-            </div>
-        </div>
-
-        <div class="menu-card">
-            <img src="img/tempMenu.jpg">
-            <h4>Mee Kerang takde Kerang</h4>
-            <p>RM 7.50</p>
-
-            <div class="menu-actions">
-                <button class="edit">Edit</button>
-                <button class="delete">Delete</button>
-            </div>
-        </div>
+    <div id="menuGrid" class="menu-grid">
+      <!-- Menus will be loaded here dynamically by JavaScript -->
     </div>
 
-
+    <!-- Modal for Add/Edit/Delete -->
+    <div id="menuModal" style="display:none">
+      <h3 id="modalTitle">Add Menu</h3>
+      <input type="hidden" id="menuId">
+      <input type="text" id="menuName" placeholder="Menu Name">
+      <input type="number" id="menuPrice" placeholder="Price">
+      <button onclick="saveMenu()">Save</button>
+      <button onclick="closeModal()">Cancel</button>
+      <button id="deleteBtn" onclick="deleteMenu()" style="display:none; background:red; color:white;">Delete</button>
+    </div>
   </main>
 </section>
 
