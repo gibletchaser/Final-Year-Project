@@ -13,6 +13,6 @@ if ($username === 'staff01' && $password === '123') {
     header("Location: index.php");
     exit;
 } else {
-    header("Location: login.html");
+    header("Location: login.php");
     exit;
 }
