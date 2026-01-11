@@ -99,7 +99,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 				<i class='bx bxs-bell' ></i>
 				<span class="num">8</span>
 			</a>
-			<a href="#" class="profile">
+			<a href="profile.php" class="profile">
 				<img src="img/people.png">
 			</a>
 		</nav>
