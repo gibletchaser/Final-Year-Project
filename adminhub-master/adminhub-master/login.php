@@ -1,46 +1,27 @@
 <?php
-session_start();  
+session_start();
+include 'db.php';
 
-include 'db.php';  
-
-$error = '';  
+$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
-    $password = trim($_POST['password']);
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-    // Basic validation
-    if (empty($username) || empty($password)) {
-        $error = 'Please fill in both fields.';
-    } else {
-        $stmt = $conn->prepare("SELECT password, role FROM users WHERE username = ?");
+    $stmt = $conn->prepare("SELECT password FROM users WHERE username=?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-        if (!$stmt) {
-            die("Prepare failed: " . $conn->error);
+    if ($result->num_rows === 1) {
+        $row = $result->fetch_assoc();
+        if ($password === $row['password']) {
+            $_SESSION['admin_logged_in'] = true;
+            header("Location: index.php");
+            exit;
         }
-
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows === 1) {
-            $row = $result->fetch_assoc();
-
-            if ($password === $row['password']) {
-                $_SESSION['admin_logged_in'] = true;
-                $_SESSION['username'] = $username;
-                header('Location: index.php');
-                exit;
-            } else {
-                $error = 'Invalid username or password.';
-            }
-        } else {
-            $error = 'Invalid username or password.';
-        }
-
-        $stmt->close();
-
     }
+    $error = "Invalid login";
 }
 ?>
 
