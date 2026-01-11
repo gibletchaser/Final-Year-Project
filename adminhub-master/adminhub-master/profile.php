@@ -9,11 +9,10 @@ if (!isset($_SESSION['admin_logged_in'])) {
 include 'db.php';
 $username = $_SESSION['username'] ?? 'staff01';
 
-$stmt = $conn->prepare("
-    SELECT username, full_name, email, role, created_at
-    FROM users
-    WHERE username = ?
-");
+$stmt = $conn->prepare("SELECT username, full_name, email, role, created_at FROM users WHERE username = ?");
+if (!$stmt) {
+    die("Prepare failed: " . $conn->error);  // Added error checking to debug prepare() failure
+}
 $stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();

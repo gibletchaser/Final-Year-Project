@@ -1,5 +1,6 @@
 const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
 
+
 allSideMenu.forEach(item=> {
 	const li = item.parentElement;
 
@@ -63,93 +64,95 @@ switchMode.addEventListener('change', function () {
 });
 
 // MENU MANAGEMENT
-document.addEventListener("DOMContentLoaded", loadMenu);
+document.addEventListener("DOMContentLoaded", loadMenus);
 
-function loadMenu() {
-    fetch("fetch_menu.php")
-        .then(res => res.json())
-        .then(data => {
-            let grid = document.getElementById("menuGrid");
-            grid.innerHTML = "";
-
-            if (data.length === 0) {
-                grid.innerHTML = `<p>No menus found. <a href="#" onclick="openModal('add')">Add your first menu</a>.</p>`;
-            } else {
-                data.forEach(menu => {
-                    grid.innerHTML += `
-                    <div class="menu-card">
-                        <img src="${menu.image || 'default.jpg'}">  <!-- Fallback image -->
-                        <h4>${menu.name}</h4>
-                        <p>RM ${menu.price}</p>
-                        <div class="menu-actions">
-                            <button class="edit" onclick="openModal('edit', ${menu.id}, '${menu.name}', ${menu.price})">Edit</button>
+// Function to load and display all menus from the database
+function loadMenus() {
+    $.ajax({
+        url: 'getMenus.php', 
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            $('#menuGrid').empty(); 
+            if (data.length > 0) {
+                data.forEach(function(menu) {
+                    
+                    var menuItem = `
+                        <div class="menu-item" data-id="${menu.id}">
+                            <h4>${menu.name}</h4>
+                            <p>Price: $${menu.price}</p>
+                            <button onclick="openModal('edit', ${menu.id}, '${menu.name}', ${menu.price})">Edit</button>
+                            <button onclick="deleteMenu(${menu.id})" style="background:red; color:white;">Delete</button>
                         </div>
-                    </div>`;
+                    `;
+                    $('#menuGrid').append(menuItem);
                 });
+            } else {
+                $('#menuGrid').append('<p>No menus available. Add one!</p>');
             }
-        })
-        .catch(error => {
-            console.error("Error loading menus:", error);
-            document.getElementById("menuGrid").innerHTML = "<p>Error loading menus. Check console for details.</p>";
-        });
+        },
+        error: function() {
+            alert('Error loading menus. Check your server.');
+        }
+    });
 }
+
 
 function openModal(mode, id = '', name = '', price = '') {
-    document.getElementById("modalTitle").textContent = mode === 'add' ? 'Add Menu' : 'Edit Menu';
-    document.getElementById("menuId").value = id;
-    document.getElementById("menuName").value = name;
-    document.getElementById("menuPrice").value = price;
-    
-    const deleteBtn = document.getElementById("deleteBtn");
-    deleteBtn.style.display = mode === 'edit' ? 'inline-block' : 'none';
-    
-    document.getElementById("menuModal").style.display = "block";
+    $('#modalTitle').text(mode === 'add' ? 'Add Menu' : 'Edit Menu');
+    $('#menuId').val(id);
+    $('#menuName').val(name);
+    $('#menuPrice').val(price);
+    $('#deleteBtn').toggle(mode === 'edit'); 
+    $('#menuModal').show();
 }
+
 
 function closeModal() {
-    document.getElementById("menuModal").style.display = "none";
-    document.getElementById("menuId").value = "";
-    document.getElementById("menuName").value = "";
-    document.getElementById("menuPrice").value = "";
+    $('#menuModal').hide();
+    $('#menuId').val('');
+    $('#menuName').val('');
+    $('#menuPrice').val('');
 }
+
 
 function saveMenu() {
-    let id = document.getElementById("menuId").value;
-    let name = document.getElementById("menuName").value;
-    let price = document.getElementById("menuPrice").value;
-
+    var id = $('#menuId').val();
+    var name = $('#menuName').val();
+    var price = $('#menuPrice').val();
+    
     if (!name || !price) {
-        alert("Please fill in all fields.");
+        alert('Please fill in all fields.');
         return;
     }
-
-    let url = id ? "update_menu.php" : "add_menu.php";
-    let form = new FormData();
-    if (id) form.append("id", id);
-    form.append("name", name);
-    form.append("price", price);
-
-    fetch(url, { method: "POST", body: form })
-        .then(res => res.text())
-        .then(() => {
+    
+    $.ajax({
+        url: 'saveMenu.php',  
+        type: 'POST',
+        data: { id: id, name: name, price: price },
+        success: function(response) {
             closeModal();
-            loadMenu();
-        })
-        .catch(error => console.error("Save error:", error));
+            loadMenus();  
+        },
+        error: function() {
+            alert('Error saving menu.');
+        }
+    });
 }
 
-function deleteMenu() {
-    let id = document.getElementById("menuId").value;
-    if (!id || !confirm("Are you sure you want to delete this menu?")) return;
-
-    let form = new FormData();
-    form.append("id", id);
-
-    fetch("delete_menu.php", { method: "POST", body: form })
-        .then(res => res.text())
-        .then(() => {
-            closeModal();
-            loadMenu();
-        })
-        .catch(error => console.error("Delete error:", error));
+// Function to delete a menu
+function deleteMenu(id) {
+    if (confirm('Are you sure you want to delete this menu?')) {
+        $.ajax({
+            url: 'deleteMenu.php',  
+            type: 'POST',
+            data: { id: id },
+            success: function(response) {
+                loadMenus();  
+            },
+            error: function() {
+                alert('Error deleting menu.');
+            }
+        });
+    }
 }

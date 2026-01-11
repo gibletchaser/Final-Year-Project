@@ -107,17 +107,21 @@ include 'db.php';
 
     <!-- Modal for Add/Edit/Delete -->
     <div id="menuModal" style="display:none">
-      <h3 id="modalTitle">Add Menu</h3>
-      <input type="hidden" id="menuId">
-      <input type="text" id="menuName" placeholder="Menu Name">
-      <input type="number" id="menuPrice" placeholder="Price">
-      <button onclick="saveMenu()">Save</button>
-      <button onclick="closeModal()">Cancel</button>
-      <button id="deleteBtn" onclick="deleteMenu()" style="display:none; background:red; color:white;">Delete</button>
+      <div class="modal-content">  <!-- Added minimal wrapper for better modal structure -->
+        <h3 id="modalTitle">Add Menu</h3>
+        <input type="hidden" id="menuId">
+        <input type="text" id="menuName" placeholder="Menu Name">
+        <input type="number" id="menuPrice" placeholder="Price">
+        <button onclick="saveMenu()">Save</button>
+        <button onclick="closeModal()">Cancel</button>
+        <button id="deleteBtn" onclick="deleteMenu()" style="display:none; background:red; color:white;">Delete</button>
+      </div>
     </div>
   </main>
 </section>
 
+<!-- Added jQuery before script.js to ensure proper loading and AJAX support -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
