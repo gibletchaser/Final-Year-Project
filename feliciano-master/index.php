@@ -1,7 +1,17 @@
+<?php
+session_start();
+if (isset($_SESSION['status'])) {
+    echo '<div style="color: red; text-align: center; margin: 10px 0; font-weight: bold;">
+            ' . htmlspecialchars($_SESSION['status']) . '
+          </div>';
+    unset($_SESSION['status']); // Clear it after showing
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Feliciano - Free Bootstrap 4 Template by Colorlib</title>
+    <title>Yob Yong Ordering System</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
@@ -231,7 +241,53 @@
         </div>
     	</div>
     </section>
-    
+
+		<section class="ftco-section bg-light">
+			<div class="container">
+				<div class="row justify-content-center mb-5 pb-2">
+          <div class="col-md-12 text-center heading-section ftco-animate">
+          	<span class="subheading">Services</span>
+            <h2 class="mb-4">Catering Services</h2>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 d-flex align-self-stretch ftco-animate text-center">
+            <div class="media block-6 services d-block">
+              <div class="icon d-flex justify-content-center align-items-center">
+            		<span class="flaticon-cake"></span>
+              </div>
+              <div class="media-body p-2 mt-3">
+                <h3 class="heading">Birthday Party</h3>
+                <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.</p>
+              </div>
+            </div>      
+          </div>
+          <div class="col-md-4 d-flex align-self-stretch ftco-animate text-center">
+            <div class="media block-6 services d-block">
+              <div class="icon d-flex justify-content-center align-items-center">
+            		<span class="flaticon-meeting"></span>
+              </div>
+              <div class="media-body p-2 mt-3">
+                <h3 class="heading">Business Meetings</h3>
+                <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.</p>
+              </div>
+            </div>    
+          </div>
+          <div class="col-md-4 d-flex align-self-stretch ftco-animate text-center">
+            <div class="media block-6 services d-block">
+              <div class="icon d-flex justify-content-center align-items-center">
+            		<span class="flaticon-tray"></span>
+              </div>
+              <div class="media-body p-2 mt-3">
+                <h3 class="heading">Wedding Party</h3>
+                <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.</p>
+              </div>
+            </div>      
+          </div>
+        </div>
+			</div>
+		</section>
+
     <section class="ftco-section">
     	<div class="container">
     		<div class="row no-gutters justify-content-center mb-5 pb-2">
@@ -450,30 +506,37 @@
 	          	<span class="subheading">Create an Account</span>
 	            <h2 class="mb-4">Register</h2>
 	          </div>
-            <form action="#">
+              <?php
+              if(isset($_SESSION['status'])) {
+                    echo "<h4>" . htmlspecialchars($_SESSION['status']) . "</h4>";
+                    unset($_SESSION['status']);
+                 }
+                ?>
+
+            <form action="code.php" method="POST">
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
                     <label for="">Name</label>
-                    <input type="text" class="form-control" placeholder="Your Name">
+                    <input type="text" name="name" class="form-control" placeholder="Your Name">
+                  </div>
+                </div>
+             <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="">Phone</label>
+                    <input type="text" name="phone" class="form-control" placeholder="Phone">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
                     <label for="">Email</label>
-                    <input type="text" class="form-control" placeholder="Your Email">
+                    <input type="text" name="email" class="form-control" placeholder="Your Email">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label for="">Phone</label>
-                    <input type="text" class="form-control" placeholder="Phone">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="">Address</label>
-                    <input type="text" class="form-control" id="book_date" placeholder="Your Address">
+                    <label for="">Password</label>
+                      <input type="password" name="password" required placeholder="Password (min 6 characters)">
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -522,7 +585,7 @@
                 </div>
                 <div class="col-md-12 mt-3">
                   <div class="form-group text-center">
-                    <input type="submit" value="Register Now" class="btn btn-primary py-3 px-5">
+                    <input type="submit" name="registerbtn" value="Register Now" class="btn btn-primary py-3 px-5">
                   </div>
                 </div>
               </div>
@@ -531,6 +594,7 @@
         </div>
 			</div>
 		</section>
+  </form>
 		
 		<section class="ftco-section testimony-section img">
 			<div class="overlay"></div>
