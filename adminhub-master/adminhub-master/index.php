@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['admin_logged_in'])) {
+    header("Location: login.php");
+    exit;
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,7 +38,7 @@
 				</a>
 			</li>
 			<li>
-				<a href="myStore.html">
+				<a href="myStore.php">
 					<i class='bx bxs-shopping-bag-alt'></i>
 					<span class="text">My Store</span>
 				</a>
@@ -60,7 +70,7 @@
 				</a>
 			</li>
 			<li>
-				<a href="#" class="logout">
+				<a href="logout.php" class="logout">
 					<i class='bx bxs-log-out-circle' ></i>
 					<span class="text">Logout</span>
 				</a>
@@ -89,7 +99,7 @@
 				<i class='bx bxs-bell' ></i>
 				<span class="num">8</span>
 			</a>
-			<a href="#" class="profile">
+			<a href="profile.php" class="profile">
 				<img src="img/people.png">
 			</a>
 		</nav>

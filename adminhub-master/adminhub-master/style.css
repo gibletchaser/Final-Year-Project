@@ -519,13 +519,6 @@ body {
 /* CONTENT */
 
 
-
-
-
-
-
-
-
 @media screen and (max-width: 768px) {
 	#sidebar {
 		width: 200px;
@@ -540,10 +533,6 @@ body {
 		display: none;
 	}
 }
-
-
-
-
 
 
 @media screen and (max-width: 576px) {
@@ -590,68 +579,73 @@ body {
 		min-width: 420px;
 	}
 
-	.menu-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-	gap: 20px;
-	margin-top: 20px;
-	}
-
 }
 
-/* MENU MANAGEMENT */
+/* MENU MANAGEMENT - Updated for compact cards fitting multiple in a single frame */
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));  /* Smaller min-width for more cards per row */
+    gap: 8px;  /* Smaller gap for tighter layout */
+    padding: 20px;
+    justify-items: center;  /* Centers cards in the grid */
 }
 
-.menu-card {
-    background: var(--light);
-    padding: 15px;
-    border-radius: 12px;
+.menu-item {
+    border: 1px solid #ddd;
+    padding: 6px;  /* Further reduced padding for smaller size */
+    background: #f9f9f9;
+    border-radius: 5px;
     text-align: center;
+    width: 100%;  /* Ensures cards fill the grid cell but stay small */
+    max-width: 120px;  /* Further reduced width for compactness */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);  /* Subtle shadow for card effect */
 }
 
-.menu-card img {
-    width: 100%;
-    height: 140px;
-    object-fit: cover;
-    border-radius: 10px;
+.menu-item h4 {
+    font-size: 12px;  /* Smaller title font */
+    margin: 3px 0;
 }
 
-.menu-card h4 {
-    margin: 10px 0 5px;
-    font-size: 16px;
-    color: var(--dark);
+.menu-item p {
+    font-size: 10px;  /* Smaller price text */
+    margin: 3px 0;
 }
 
-.menu-card p {
-    font-size: 14px;
-    color: var(--dark-grey);
-}
-
-.menu-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-}
-
-.menu-actions button {
-    padding: 6px 10px;
-    border: none;
-    border-radius: 6px;
+.menu-item button {
+    margin: 2px;  /* Smaller margins */
+    padding: 3px 6px;  /* Smaller buttons */
+    font-size: 10px;  /* Smaller font */
     cursor: pointer;
-    font-size: 13px;
+    border: none;
+    border-radius: 3px;
 }
 
-.menu-actions .edit {
-    background: var(--blue);
-    color: var(--light);
+#menuModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    z-index: 1000;
+    width: 300px;
 }
-
-.menu-actions .delete {
-    background: var(--red);
-    color: var(--light);
+#menuModal input {
+    display: block;
+    margin: 10px 0;
+    width: 100%;
+}
+#menuModal button {
+    margin: 5px;
+}
+.menu-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+}
+.menu-actions {
+    margin-top: 10px;
 }
