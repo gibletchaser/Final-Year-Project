@@ -630,3 +630,24 @@ body {
   color: #555;
   margin-top: 4px;
 }
+
+.menu-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+}
+
+.menu-actions button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.edit-btn {
+  color: #3c91e6;
+}
+
+.delete-btn {
+  color: #db504a;
+}

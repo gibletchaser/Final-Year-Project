@@ -74,7 +74,7 @@ function loadMenus() {
   $.ajax({
     url: "fetch_menu.php",
     type: "GET",
-    dataType: "json", // 🔴 THIS IS THE FIX
+    dataType: "json",
     success: function (menus) {
       let html = "";
 
@@ -85,11 +85,29 @@ function loadMenus() {
 
       menus.forEach(menu => {
         html += `
-          <div class="menu-card" onclick="editMenu(${menu.id})">
-            <img src="img/default.png">
+          <div class="menu-card">
+            <img src="img/tempMenu.jpg">
+
             <div class="menu-info">
               <h4>${menu.name}</h4>
               <p>RM ${menu.price}</p>
+            </div>
+
+            <div class="menu-actions">
+                <button class="edit-btn"
+                    onclick='openModal("edit", {
+                        id: ${menu.id},
+                        name: "${menu.name}",
+                        price: "${menu.price}"
+                    })'>
+                    <i class='bx bx-edit'></i>
+                </button>
+
+
+              <button class="delete-btn"
+                onclick="deleteMenu(${menu.id})">
+                <i class='bx bx-trash'></i>
+              </button>
             </div>
           </div>
         `;
@@ -103,14 +121,26 @@ function loadMenus() {
   });
 }
 
+function openModal(mode, menu = null) {
+  $("#menuModal").show();
 
-function openModal(mode, id = '', name = '', price = '') {
-    $('#modalTitle').text(mode === 'add' ? 'Add Menu' : 'Edit Menu');
-    $('#menuId').val(id);
-    $('#menuName').val(name);
-    $('#menuPrice').val(price);
-    $('#deleteBtn').toggle(mode === 'edit'); 
-    $('#menuModal').show();
+  if (mode === "add") {
+    $("#modalTitle").text("Add Menu");
+    $("#menuId").val("");
+    $("#menuName").val("");
+    $("#menuPrice").val("");
+    $("#deleteBtn").hide();
+  }
+
+  if (mode === "edit" && menu) {
+    $("#modalTitle").text("Edit Menu");
+    $("#menuId").val(menu.id);
+    $("#menuName").val(menu.name);
+    $("#menuPrice").val(menu.price);
+    $("#deleteBtn").show().off("click").on("click", function () {
+      deleteMenu(menu.id);
+    });
+  }
 }
 
 
@@ -149,20 +179,18 @@ function saveMenu() {
 }
 
 function deleteMenu(id) {
-    if (confirm('Are you sure you want to delete this menu?')) {
-        $.ajax({
-            url: 'deleteMenu.php',  
-            type: 'POST',
-            data: { id: id },
-            success: function(response) {
-                loadMenus();  
-            },
-            error: function() {
-                alert('Error deleting menu.');
-            }
-        });
+  if (!confirm("Are you sure you want to delete this menu?")) return;
+
+  $.post("delete_menu.php", { id: id }, function (res) {
+    if (res.trim() === "success") {
+      closeModal();
+      loadMenus();
+    } else {
+      alert(res);
     }
+  });
 }
+
 
 $(document).ready(function () {
   loadMenus();

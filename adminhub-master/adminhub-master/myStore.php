@@ -114,7 +114,7 @@ include 'db.php';
         <input type="number" id="menuPrice" placeholder="Price">
         <button onclick="saveMenu()">Save</button>
         <button onclick="closeModal()">Cancel</button>
-        <button id="deleteBtn" onclick="deleteMenu()" style="display:none; background:red; color:white;">Delete</button>
+        <button id="deleteBtn" style="display:none; background:red; color:white;">Delete</button>
       </div>
     </div>
   </main>
