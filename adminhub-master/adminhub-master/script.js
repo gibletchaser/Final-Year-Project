@@ -55,46 +55,52 @@ window.addEventListener('resize', function () {
 // DARK MODE TOGGLE
 const switchMode = document.getElementById('switch-mode');
 
-switchMode.addEventListener('change', function () {
-	if(this.checked) {
-		document.body.classList.add('dark');
-	} else {
-		document.body.classList.remove('dark');
-	}
-});
+if (switchMode) {
+	switchMode.addEventListener('change', function () {
+		if (this.checked) {
+			document.body.classList.add('dark');
+		} else {
+			document.body.classList.remove('dark');
+		}
+	});
+}
+
 
 // MENU MANAGEMENT
 document.addEventListener("DOMContentLoaded", loadMenus);
 
 // Function to load and display all menus from the database
 function loadMenus() {
-    $.ajax({
-        url: 'getMenus.php', 
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            $('#menuGrid').empty(); 
-            if (data.length > 0) {
-                data.forEach(function(menu) {
-                    
-                    var menuItem = `
-                        <div class="menu-item" data-id="${menu.id}">
-                            <h4>${menu.name}</h4>
-                            <p>Price: $${menu.price}</p>
-                            <button onclick="openModal('edit', ${menu.id}, '${menu.name}', ${menu.price})">Edit</button>
-                            <button onclick="deleteMenu(${menu.id})" style="background:red; color:white;">Delete</button>
-                        </div>
-                    `;
-                    $('#menuGrid').append(menuItem);
-                });
-            } else {
-                $('#menuGrid').append('<p>No menus available. Add one!</p>');
-            }
-        },
-        error: function() {
-            alert('Error loading menus. Check your server.');
-        }
-    });
+  $.ajax({
+    url: "fetch_menu.php",
+    type: "GET",
+    dataType: "json", // 🔴 THIS IS THE FIX
+    success: function (menus) {
+      let html = "";
+
+      if (!menus || menus.length === 0) {
+        $("#menuGrid").html("<p>No menu found</p>");
+        return;
+      }
+
+      menus.forEach(menu => {
+        html += `
+          <div class="menu-card" onclick="editMenu(${menu.id})">
+            <img src="img/default.png">
+            <div class="menu-info">
+              <h4>${menu.name}</h4>
+              <p>RM ${menu.price}</p>
+            </div>
+          </div>
+        `;
+      });
+
+      $("#menuGrid").html(html);
+    },
+    error: function (xhr) {
+      console.error(xhr.responseText);
+    }
+  });
 }
 
 
@@ -117,30 +123,31 @@ function closeModal() {
 
 
 function saveMenu() {
-    var id = $('#menuId').val();
-    var name = $('#menuName').val();
-    var price = $('#menuPrice').val();
-    
-    if (!name || !price) {
-        alert('Please fill in all fields.');
-        return;
+  let id = $("#menuId").val();
+  let url = id ? "update_menu.php" : "add_menu.php";
+
+  $.ajax({
+    url: url,
+    type: "POST",
+    data: {
+      id: id,
+      name: $("#menuName").val(),
+      price: $("#menuPrice").val()
+    },
+    success: function (res) {
+      if (res.trim() === "success") {
+        closeModal();
+        loadMenus();
+      } else {
+        alert(res);
+      }
+    },
+    error: function (xhr) {
+      alert(xhr.responseText);
     }
-    
-    $.ajax({
-        url: 'saveMenu.php',  
-        type: 'POST',
-        data: { id: id, name: name, price: price },
-        success: function(response) {
-            closeModal();
-            loadMenus();  
-        },
-        error: function() {
-            alert('Error saving menu.');
-        }
-    });
+  });
 }
 
-// Function to delete a menu
 function deleteMenu(id) {
     if (confirm('Are you sure you want to delete this menu?')) {
         $.ajax({
@@ -156,3 +163,7 @@ function deleteMenu(id) {
         });
     }
 }
+
+$(document).ready(function () {
+  loadMenus();
+});

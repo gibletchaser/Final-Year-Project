@@ -122,6 +122,7 @@ include 'db.php';
 
 <!-- Added jQuery before script.js to ensure proper loading and AJAX support -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="script.js"></script>
+<script src="./script.js"></script>
+
 </body>
 </html>
