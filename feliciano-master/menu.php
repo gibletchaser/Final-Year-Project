@@ -67,8 +67,8 @@
        				 <span class="badge badge-pill badge-warning ml-1" id="cart-count">0</span>
     			</a>
 				</li>
-				<li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-				<li class="nav-item cta"><a href="sign in.html" class="nav-link">Sign In</a></li>
+				<li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
+				<li class="nav-item cta"><a href="sign in.php" class="nav-link">Sign In</a></li>
 			  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 	        </ul>
 	      </div>	
