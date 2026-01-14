@@ -165,59 +165,41 @@
 
 
 <script>
-// THIS FUNCTION SAVES THE DATA WHEN YOU CLICK REGISTER
 function saveUserData() {
-    const name = document.getElementById('userName').value;
-    const email = document.getElementById('userEmail').value;
-    const phone = document.getElementById('userPhone').value;
-    const pass = document.getElementById('userPassword').value;
+    const name = userName.value.trim();
+    const email = userEmail.value.trim();
+    const phone = userPhone.value.trim();
+    const password = userPassword.value;
 
-    if (name && pass) {
-        const user = { name: name, email: email, phone: phone, password: pass };
-        localStorage.setItem('yobYongSession', JSON.stringify(user));
-        alert("Registration successful! Welcome " + name);
-        window.location.href = "sign in.php";
-    } else {
+    if (!name || !password) {
         alert("Please fill in Name and Password");
+        return;
     }
+
+    const data = new FormData();
+    data.append("name", name);
+    data.append("email", email);
+    data.append("phone", phone);
+    data.append("password", password);
+
+    fetch("register.php", {
+        method: "POST",
+        body: data
+    })
+    .then(res => res.text())
+    .then(res => {
+        if (res === "success") {
+            alert("Registration successful!");
+            window.location.href = "sign in.php";
+        } else if (res === "missing") {
+            alert("Missing required fields");
+        } else {
+            alert("Email already exists or error occurred");
+        }
+    });
 }
-
-// THIS FUNCTION DRAWS THE ICON OR THE BUTTON
-function renderNavigation() {
-    const sessionData = localStorage.getItem('yobYongSession');
-    const authArea = document.getElementById('auth-area');
-    if (!authArea) return;
-
-    if (sessionData) {
-        const user = JSON.parse(sessionData);
-        authArea.classList.remove('cta'); 
-        authArea.innerHTML = `
-            <div class="dropdown">
-                <a href="#" class="nav-link dropdown-toggle d-flex align-items-center" data-toggle="dropdown">
-                    <div style="width: 40px; height: 40px; background: #c4a47c; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white;">
-                        <span class="icon-user" style="color: white; font-size: 20px;"></span>
-                    </div>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" style="background: #1a1a1a; border: 1px solid #c4a47c;">
-                    <h6 class="dropdown-header" style="color: #c4a47c;">Hi, ${user.name}</h6>
-                    <a class="dropdown-item" href="profile.php" style="color: white;">View Profile</a>
-                    <div class="dropdown-divider" style="border-top: 1px solid #333;"></div>
-                    <a class="dropdown-item" href="#" onclick="handleLogout()" style="color: #dc3545;">Logout</a>
-                </div>
-            </div>`;
-    } else {
-        authArea.classList.add('cta');
-        authArea.innerHTML = `<a href="sign in.php" class="nav-link">Sign In</a>`;
-    }
-}
-
-function handleLogout() {
-    localStorage.removeItem('yobYongSession');
-    window.location.reload();
-}
-
-document.addEventListener('DOMContentLoaded', renderNavigation);
 </script>
+
 
 </body>
 </html>
