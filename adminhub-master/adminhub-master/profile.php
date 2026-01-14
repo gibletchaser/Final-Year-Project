@@ -7,7 +7,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 include 'db.php';
-$username = $_SESSION['username'] ?? 'staff01';
+$username = $_SESSION['username'] ?? '';
 
 $stmt = $conn->prepare("SELECT username, full_name, email, role, created_at FROM users WHERE username = ?");
 if (!$stmt) {
@@ -51,18 +51,18 @@ if (!$user) {
 					<span class="text">Dashboard</span>
 				</a>
 			</li>
-            <li class="active">
-                <a href="profile.php">
-                    <i class='bx bxs-user'></i>
-                    <span class="text">Profile</span>
-                </a>
-            </li>
 			<li>
 				<a href="myStore.php">
 					<i class='bx bxs-shopping-bag-alt'></i>
 					<span class="text">My Store</span>
 				</a>
 			</li>
+                    <li class="active">
+                <a href="profile.php">
+                    <i class='bx bxs-user'></i>
+                    <span class="text">Profile</span>
+                </a>
+            </li>
             <li>
 				<a href="#">
 					<i class='bx bxs-doughnut-chart' ></i>
@@ -99,7 +99,8 @@ if (!$user) {
 </section>
 <!-- SIDEBAR -->
 
-		<section id="content">
+		<!-- CONTENT -->
+	<section id="content">
 		<!-- NAVBAR -->
 		<nav>
 			<i class='bx bx-menu' ></i>
@@ -121,6 +122,7 @@ if (!$user) {
 			</a>
 		</nav>
 		<!-- NAVBAR -->
+
 
 <!-- CONTENT -->
 <section id="content">

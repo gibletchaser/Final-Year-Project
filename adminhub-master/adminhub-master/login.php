@@ -5,22 +5,31 @@ include 'db.php';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $username = $_POST['username'];
     $password = $_POST['password'];
-
-    $stmt = $conn->prepare("SELECT password FROM users WHERE username=?");
+    
+    $stmt = $conn->prepare(
+        "SELECT username, password FROM users WHERE username = ?"
+    );
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows === 1) {
         $row = $result->fetch_assoc();
+
+        // ⚠️ plain-text comparison (your current setup)
         if ($password === $row['password']) {
+
             $_SESSION['admin_logged_in'] = true;
+            $_SESSION['username'] = $row['username']; // ✅ NOW IT EXISTS
+
             header("Location: index.php");
             exit;
         }
     }
+
     $error = "Invalid login";
 }
 ?>
