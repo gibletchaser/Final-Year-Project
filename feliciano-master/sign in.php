@@ -65,6 +65,7 @@
 	        	<li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
 	        	<li class="nav-item"><a href="menu.php" class="nav-link">Menu</a></li>
 	          	<li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
+              <li class="nav-item cta"><a href="log_in.php" class="nav-link">Log In</a></li>
                 
                 <li class="nav-item cta" id="auth-area"></li>
 	        </ul>
@@ -195,6 +196,37 @@ function saveUserData() {
             alert("Missing required fields");
         } else {
             alert("Email already exists or error occurred");
+        }
+    });
+}
+</script>
+
+<script>
+function loginUser() {
+    const email = loginEmail.value.trim();
+    const password = loginPassword.value;
+
+    if (!email || !password) {
+        alert("Please fill in email and password");
+        return;
+    }
+
+    const data = new FormData();
+    data.append("email", email);
+    data.append("password", password);
+
+    fetch("login.php", {
+        method: "POST",
+        body: data
+    })
+    .then(res => res.text())
+    .then(res => {
+        if (res === "success") {
+            window.location.href = "index.php"; // redirect after login
+        } else if (res === "missing") {
+            alert("Please fill all fields");
+        } else {
+            alert("Invalid email or password");
         }
     });
 }
