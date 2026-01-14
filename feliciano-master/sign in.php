@@ -22,7 +22,6 @@
     <link rel="stylesheet" href="css/bootstrap-datepicker.css">
     <link rel="stylesheet" href="css/jquery.timepicker.css">
 
-    
     <link rel="stylesheet" href="css/flaticon.css">
     <link rel="stylesheet" href="css/icomoon.css">
     <link rel="stylesheet" href="css/style.css">
@@ -55,24 +54,23 @@
     </div>
 	  <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
 	    <div class="container">
-	      <a class="navbar-brand" href="index.html">Yob Yong</a>
+	      <a class="navbar-brand" href="index.php">Yob Yong</a>
 	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="oi oi-menu"></span> Sign In
+	        <span class="oi oi-menu"></span> Menu
 	      </button>
 
 	      <div class="collapse navbar-collapse" id="ftco-nav">
 	        <ul class="navbar-nav ml-auto">
 	        	<li class="nav-item"><a href="index.php" class="nav-link">Home</a></li>
-	        	<li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-	        	<li class="nav-item"><a href="menu.html" class="nav-link">Menu</a></li>
-	          	<li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-	          	<li class="nav-item cta"><a href="sign up.html" class="nav-link">Sign In</a></li>
+	        	<li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
+	        	<li class="nav-item"><a href="menu.php" class="nav-link">Menu</a></li>
+	          	<li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
+                
+                <li class="nav-item cta" id="auth-area"></li>
 	        </ul>
 	      </div>
 	    </div>
 	  </nav>
-    <!-- END nav -->
-    
     <section class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_3.jpg');" data-stellar-background-ratio="0.5">
       <div class="overlay"></div>
       <div class="container">
@@ -99,33 +97,31 @@
 	                <div class="col-md-6">
 	                  <div class="form-group">
 	                    <label for="">Name</label>
-	                    <input type="text" class="form-control" placeholder="Your Name">
+                        <input type="text" id="userName" class="form-control" placeholder="Your Name">
 	                  </div>
 	                </div>
 	                <div class="col-md-6">
 	                  <div class="form-group">
 	                    <label for="">Email</label>
-	                    <input type="text" class="form-control" placeholder="Your Email">
+                        <input type="text" id="userEmail" class="form-control" placeholder="Your Email">
 	                  </div>
 	                </div>
 	                <div class="col-md-6">
 	                  <div class="form-group">
 	                    <label for="">Phone</label>
-	                    <input type="text" class="form-control" placeholder="Phone">
+                        <input type="text" id="userPhone" class="form-control" placeholder="Phone">
 	                  </div>
 	                </div>
                   <div class="col-md-6">
 	                  <div class="form-group">
-	                    <label for="">Address</label>
-	                    <input type="text" class="form-control" placeholder="Your Address">
+	                    <label for="">Password</label>
+                        <input type="password" id="userPassword" class="form-control" placeholder="Password">
 	                  </div>
 	                </div>
 
-                  <input type="hidden" name="latitude" id="latitude">
-        <input type="hidden" name="longitude" id="longitude">
 	                <div class="col-md-12 mt-3">
 	                  <div class="form-group">
-	                    <input type="submit" value="Register" class="btn btn-primary py-3 px-5">
+	                    <input type="button" onclick="saveUserData()" value="Register" class="btn btn-primary py-3 px-5">
 	                  </div>
 	                </div>
 	              </div>
@@ -134,76 +130,15 @@
           </div>
         <div class="col-md-6 d-flex align-items-stretch">
           <div class="menus d-sm-flex ftco-animate align-items-stretch">
-					   <img src= "C:/Users/shyna/OneDrive/Pictures/6772060.png" alt="Logo" style="display: block; margin: 200px auto; width: 400px;">
+					   <img src="images/logo.png" alt="Logo" style="display: block; margin: auto; width: 400px;">
 		</section>
     		
     <footer class="ftco-footer ftco-bg-dark ftco-section">
-      <div class="container">
-        <div class="row mb-5">
-          <div class="col-md-6 col-lg-3">
-            <div class="ftco-footer-widget mb-4">
-              <h2 class="ftco-heading-2">Yob Yong</h2>
-              <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-              <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-3">
-                <li class="ftco-animate"><a href="https://x.com/?lang=en-my"><span class="icon-twitter"></span></a></li>
-                <li class="ftco-animate"><a href="https://www.facebook.com/YobnYongsSemarak/"><span class="icon-facebook"></span></a></li>
-                <li class="ftco-animate"><a href="https://www.instagram.com/yobyongs_utmkl/"><span class="icon-instagram"></span></a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-6 col-lg-3">
-            <div class="ftco-footer-widget mb-4">
-              <h2 class="ftco-heading-2">Open Hours</h2>
-              <ul class="list-unstyled open-hours">
-                <li class="d-flex"><span>Monday</span><span>10:00 - 21:00</span></li>
-                <li class="d-flex"><span>Tuesday</span><span>10:00 - 21:00</span></li>
-                <li class="d-flex"><span>Wednesday</span><span>10:00 - 21:00</span></li>
-                <li class="d-flex"><span>Thursday</span><span>10:00 - 21:00</span></li>
-                <li class="d-flex"><span>Friday</span><span>10:00 - 21:00</span></li>
-                <li class="d-flex"><span>Saturday</span><span>10:00 - 21:00</span></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-6 col-lg-3">
-             <div class="ftco-footer-widget mb-4">
-              <h2 class="ftco-heading-2">Instagram</h2>
-              <div class="thumb d-sm-flex">
-	            	<a href="#" class="thumb-menu img" style="background-image: url(images/insta-1.jpg);">
-	            	</a>
-	            	<a href="#" class="thumb-menu img" style="background-image: url(images/insta-2.jpg);">
-	            	</a>
-	            	<a href="#" class="thumb-menu img" style="background-image: url(images/insta-3.jpg);">
-	            	</a>
-	            </div>
-	            <div class="thumb d-flex">
-	            	<a href="#" class="thumb-menu img" style="background-image: url(images/insta-4.jpg);">
-	            	</a>
-	            	<a href="#" class="thumb-menu img" style="background-image: url(images/insta-5.jpg);">
-	            	</a>
-	            	<a href="#" class="thumb-menu img" style="background-image: url(images/insta-6.jpg);">
-	            	</a>
-	            </div>
-            </div>
-          </div>
-          <div class="col-md-6 col-lg-3">
-            <div class="ftco-footer-widget mb-4">
-            	<h2 class="ftco-heading-2">Newsletter</h2>
-            	<p>Far far away, behind the word mountains, far from the countries.</p>
-              <form action="#" class="subscribe-form">
-                <div class="form-group">
-                  <input type="text" class="form-control mb-2 text-center" placeholder="Enter email address">
-                  <input type="submit" value="Subscribe" class="form-control submit px-3">
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
+      </footer>
 
-  <!-- loader -->
   <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
 
-
-  <script src="js/jquery.min.js"></script>
+   <script src="js/jquery.min.js"></script>
   <script src="js/jquery-migrate-3.0.1.min.js"></script>
   <script src="js/popper.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
@@ -224,6 +159,61 @@
         integrity="sha512-n7o7r2iW6z4qA6lC+4sR7b3l9rH9fJ+gI7r9s5p5f5uW4z5T9f5t8f5f5uW4z5T9f5t8f5uW4z5T9f5t8f5u=="
         crossorigin=""></script>
 
+
+<script>
+// THIS FUNCTION SAVES THE DATA WHEN YOU CLICK REGISTER
+function saveUserData() {
+    const name = document.getElementById('userName').value;
+    const email = document.getElementById('userEmail').value;
+    const phone = document.getElementById('userPhone').value;
+    const pass = document.getElementById('userPassword').value;
+
+    if (name && pass) {
+        const user = { name: name, email: email, phone: phone, password: pass };
+        localStorage.setItem('yobYongSession', JSON.stringify(user));
+        alert("Registration successful! Welcome " + name);
+        window.location.href = "sign in.php";
+    } else {
+        alert("Please fill in Name and Password");
+    }
+}
+
+// THIS FUNCTION DRAWS THE ICON OR THE BUTTON
+function renderNavigation() {
+    const sessionData = localStorage.getItem('yobYongSession');
+    const authArea = document.getElementById('auth-area');
+    if (!authArea) return;
+
+    if (sessionData) {
+        const user = JSON.parse(sessionData);
+        authArea.classList.remove('cta'); 
+        authArea.innerHTML = `
+            <div class="dropdown">
+                <a href="#" class="nav-link dropdown-toggle d-flex align-items-center" data-toggle="dropdown">
+                    <div style="width: 40px; height: 40px; background: #c4a47c; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white;">
+                        <span class="icon-user" style="color: white; font-size: 20px;"></span>
+                    </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" style="background: #1a1a1a; border: 1px solid #c4a47c;">
+                    <h6 class="dropdown-header" style="color: #c4a47c;">Hi, ${user.name}</h6>
+                    <a class="dropdown-item" href="profile.php" style="color: white;">View Profile</a>
+                    <div class="dropdown-divider" style="border-top: 1px solid #333;"></div>
+                    <a class="dropdown-item" href="#" onclick="handleLogout()" style="color: #dc3545;">Logout</a>
+                </div>
+            </div>`;
+    } else {
+        authArea.classList.add('cta');
+        authArea.innerHTML = `<a href="sign in.php" class="nav-link">Sign In</a>`;
+    }
+}
+
+function handleLogout() {
+    localStorage.removeItem('yobYongSession');
+    window.location.reload();
+}
+
+document.addEventListener('DOMContentLoaded', renderNavigation);
+</script>
 
 </body>
 </html>
