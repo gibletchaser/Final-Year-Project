@@ -66,9 +66,6 @@ if (switchMode) {
 }
 
 
-// MENU MANAGEMENT
-document.addEventListener("DOMContentLoaded", loadMenus);
-
 // Function to load and display all menus from the database
 function loadMenus() {
   $.ajax({
@@ -91,22 +88,12 @@ function loadMenus() {
             <div class="menu-info">
               <h4>${menu.name}</h4>
               <p>RM ${menu.price}</p>
-            </div>
 
-            <div class="menu-actions">
-                <button class="edit-btn"
-                    onclick='openModal("edit", {
-                        id: ${menu.id},
-                        name: "${menu.name}",
-                        price: "${menu.price}"
-                    })'>
-                    <i class='bx bx-edit'></i>
-                </button>
-
-
-              <button class="delete-btn"
-                onclick="deleteMenu(${menu.id})">
-                <i class='bx bx-trash'></i>
+              <button class="edit-btn"
+                data-id="${menu.id}"
+                data-name="${menu.name}"
+                data-price="${menu.price}">
+                Edit
               </button>
             </div>
           </div>
@@ -114,15 +101,12 @@ function loadMenus() {
       });
 
       $("#menuGrid").html(html);
-    },
-    error: function (xhr) {
-      console.error(xhr.responseText);
     }
   });
 }
 
 function openModal(mode, menu = null) {
-  $("#menuModal").show();
+  $("#menuModal").css("display", "flex");
 
   if (mode === "add") {
     $("#modalTitle").text("Add Menu");
@@ -137,51 +121,24 @@ function openModal(mode, menu = null) {
     $("#menuId").val(menu.id);
     $("#menuName").val(menu.name);
     $("#menuPrice").val(menu.price);
-    $("#deleteBtn").show().off("click").on("click", function () {
-      deleteMenu(menu.id);
-    });
+    $("#deleteBtn").show();
   }
 }
 
 
 function closeModal() {
-    $('#menuModal').hide();
-    $('#menuId').val('');
-    $('#menuName').val('');
-    $('#menuPrice').val('');
+  $("#menuModal").hide();
 }
-
 
 function saveMenu() {
-  let id = $("#menuId").val();
-  let url = id ? "update_menu.php" : "add_menu.php";
+  const id = $("#menuId").val();
+  const url = id ? "update_menu.php" : "add_menu.php";
 
-  $.ajax({
-    url: url,
-    type: "POST",
-    data: {
-      id: id,
-      name: $("#menuName").val(),
-      price: $("#menuPrice").val()
-    },
-    success: function (res) {
-      if (res.trim() === "success") {
-        closeModal();
-        loadMenus();
-      } else {
-        alert(res);
-      }
-    },
-    error: function (xhr) {
-      alert(xhr.responseText);
-    }
-  });
-}
-
-function deleteMenu(id) {
-  if (!confirm("Are you sure you want to delete this menu?")) return;
-
-  $.post("delete_menu.php", { id: id }, function (res) {
+  $.post(url, {
+    id,
+    name: $("#menuName").val(),
+    price: $("#menuPrice").val()
+  }, function (res) {
     if (res.trim() === "success") {
       closeModal();
       loadMenus();
@@ -191,7 +148,34 @@ function deleteMenu(id) {
   });
 }
 
+function deleteMenu(id) {
+  if (!confirm("Delete this menu?")) return;
+
+  $.post("delete_menu.php", { id }, function (res) {
+    if (res.trim() === "success") {
+      closeModal();
+      loadMenus();
+    } else {
+      alert(res);
+    }
+  });
+}
 
 $(document).ready(function () {
+  $("#menuModal").hide();   // 🔥 FORCE CLOSED
   loadMenus();
+});
+
+$(document).on("click", ".edit-btn", function () {
+  openModal("edit", {
+    id: $(this).data("id"),
+    name: $(this).data("name"),
+    price: $(this).data("price")
+  });
+});
+
+$("#menuModal").on("click", function (e) {
+  if (e.target.id === "menuModal") {
+    closeModal();
+  }
 });

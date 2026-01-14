@@ -106,15 +106,24 @@ include 'db.php';
     </div>
 
     <!-- Modal for Add/Edit/Delete -->
-    <div id="menuModal" style="display:none">
-      <div class="modal-content">  <!-- Added minimal wrapper for better modal structure -->
-        <h3 id="modalTitle">Add Menu</h3>
+    <!-- EDIT / ADD MENU MODAL -->
+    <div id="menuModal" class="modal-overlay">
+      <div class="modal-box">
+        <h3 id="modalTitle">Edit Menu</h3>
+
         <input type="hidden" id="menuId">
-        <input type="text" id="menuName" placeholder="Menu Name">
-        <input type="number" id="menuPrice" placeholder="Price">
-        <button onclick="saveMenu()">Save</button>
-        <button onclick="closeModal()">Cancel</button>
-        <button id="deleteBtn" style="display:none; background:red; color:white;">Delete</button>
+
+        <label>Menu Name</label>
+        <input type="text" id="menuName">
+
+        <label>Price (RM)</label>
+        <input type="number" id="menuPrice" step="0.01">
+
+        <div class="modal-actions">
+          <button class="btn-save" onclick="saveMenu()">Save</button>
+          <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+          <button id="deleteBtn" class="btn-delete">Delete</button>
+        </div>
       </div>
     </div>
   </main>
