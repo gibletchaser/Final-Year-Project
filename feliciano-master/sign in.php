@@ -131,6 +131,10 @@
         <div class="col-md-6 d-flex align-items-stretch">
           <div class="menus d-sm-flex ftco-animate align-items-stretch">
 					   <img src="images/logo.png" alt="Logo" style="display: block; margin: auto; width: 400px;">
+             </div>
+          </div>
+        </div>
+      </div>
 		</section>
     		
     <footer class="ftco-footer ftco-bg-dark ftco-section">
