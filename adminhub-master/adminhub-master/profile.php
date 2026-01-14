@@ -46,23 +46,23 @@ if (!$user) {
     </a>
     <ul class="side-menu top">
         			<li class="active">
-				<a href="#">
+				<a href="index.php">
 					<i class='bx bxs-dashboard' ></i>
 					<span class="text">Dashboard</span>
 				</a>
 			</li>
+            <li class="active">
+                <a href="profile.php">
+                    <i class='bx bxs-user'></i>
+                    <span class="text">Profile</span>
+                </a>
+            </li>
 			<li>
 				<a href="myStore.php">
 					<i class='bx bxs-shopping-bag-alt'></i>
 					<span class="text">My Store</span>
 				</a>
 			</li>
-                    <li class="active">
-                <a href="profile.php">
-                    <i class='bx bxs-user'></i>
-                    <span class="text">Profile</span>
-                </a>
-            </li>
             <li>
 				<a href="#">
 					<i class='bx bxs-doughnut-chart' ></i>
@@ -99,6 +99,7 @@ if (!$user) {
 </section>
 <!-- SIDEBAR -->
 
+		<section id="content">
 		<!-- NAVBAR -->
 		<nav>
 			<i class='bx bx-menu' ></i>

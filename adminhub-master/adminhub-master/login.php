@@ -138,6 +138,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-align: center;
             margin-bottom: 15px;
         }
+        .forgot {
+        text-align: center;
+        margin-top: 12px;
+        }
+
+        .forgot a {
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 14px;
+        transition: 0.3s;
+        }
+
+        .neon .forgot a {
+        color: #00f7ff;
+        text-shadow: 0 0 8px #00f7ff;
+        }
+
+        .forgot a:hover {
+        text-decoration: underline;
+        }
+
     </style>
     
 </head>
@@ -154,8 +175,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="text" name="username" placeholder="Username" required value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>">
         <input type="password" name="password" placeholder="Password" required>
 
+        <p class="forgot">
+        <a href="forgot_password.php">Forgot Password?</a>
+        </p>
+
+
         <button>Login</button>
     </form>
+
+    
 
     <div class="toggle" id="toggle">
         <span></span>

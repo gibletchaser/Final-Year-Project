@@ -651,3 +651,20 @@ body {
 .delete-btn {
   color: #db504a;
 }
+
+    .alert {
+        padding: 12px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    .alert-success {
+        background-color: #e6fffa;
+        color: #065f46;
+        border: 1px solid #34d399;
+    }
+    .alert-error {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #f87171;
+    }
