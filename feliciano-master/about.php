@@ -162,7 +162,7 @@
 				<div class="row">
 					<div class="col-md-6 col-lg-3 ftco-animate">
 						<div class="staff">
-							<div class="img" style="background-image: url('C:/Users/shyna/OneDrive/Pictures/Screenshots 1/Screenshot 2025-12-15 165358.png');"></div>
+							<div class="img" style="background-image: url(images/1634696384594512.jpg);"></div>
 							<div class="text pt-4">
 								<h3>Ahmad Faizal</h3>
 								<span class="position mb-2">Restaurant Owner</span>
@@ -181,7 +181,7 @@
 					</div>
 					<div class="col-md-6 col-lg-3 ftco-animate">
 						<div class="staff">
-							<div class="img" style="background-image: url('C:/Users/shyna/OneDrive/Pictures/Screenshots 1/Screenshot 2025-12-15 165514.png');"></div>
+							<div class="img" style="background-image: url(images/OIP.webp);"></div>
 							<div class="text pt-4">
 								<h3>Smith Welson</h3>
 								<span class="position mb-2">Head Chef</span>
@@ -200,7 +200,7 @@
 					</div>
 					<div class="col-md-6 col-lg-3 ftco-animate">
 						<div class="staff">
-							<div class="img" style="background-image: url('C:/Users/shyna/OneDrive/Pictures/Screenshots 1/Screenshot 2025-12-15 171630.png');"></div>
+							<div class="img" style="background-image: url('images/chef-9.jpg');"></div>
 							<div class="text pt-4">
 								<h3>Kharl Branyt</h3>
 								<span class="position mb-2">Chef</span>
@@ -219,7 +219,7 @@
 					</div>
 					<div class="col-md-6 col-lg-3 ftco-animate">
 						<div class="staff">
-							<div class="img" style="background-image: url('C:/Users/shyna/OneDrive/Pictures/Screenshots 1/Screenshot 2025-12-15 165446.png');"></div>
+							<div class="img" style="background-image: url(images/Eric-Neo-top-malaysian-chef.jpg);"></div>
 							<div class="text pt-4">
 								<h3>Luke Simon</h3>
 								<span class="position mb-2">Chef</span>
