@@ -81,9 +81,11 @@ function loadMenus() {
       }
 
       menus.forEach(menu => {
+        const imageSrc = menu.image ? menu.image : '';
+        
         html += `
           <div class="menu-card">
-            <img src="img/tempMenu.jpg">
+            <img src="${imageSrc}" alt="${menu.name} image">
 
             <div class="menu-info">
               <h4>${menu.name}</h4>
@@ -101,6 +103,9 @@ function loadMenus() {
       });
 
       $("#menuGrid").html(html);
+    },
+    error: function() {
+      $("#menuGrid").html("<p>Error loading menus</p>");
     }
   });
 }
