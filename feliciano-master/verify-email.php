@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verifybtn'])) {
 
         $_SESSION['success'] = "Email verified successfully! Welcome, {$name}!";
 
-        header("Location: sign in.html");   // ← or dashboard.php, home.php, etc.
+        header("Location: sign in.php");   // ← or dashboard.php, home.php, etc.
         exit();
     } else {
         $_SESSION['status'] = "Invalid code. Please try again.";

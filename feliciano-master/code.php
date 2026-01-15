@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'dbcon.php'; // only if you need DB connection here
+include 'db.php'; // only if you need DB connection here
 
 // PHPMailer
 require __DIR__ . '/src/Exception.php';
