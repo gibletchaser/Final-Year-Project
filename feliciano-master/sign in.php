@@ -1,3 +1,14 @@
+<?php
+session_start();
+
+// 🚫 If user already logged in, kick them out
+if (isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -64,10 +75,10 @@
 	        	<li class="nav-item"><a href="index.php" class="nav-link">Home</a></li>
 	        	<li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
 	        	<li class="nav-item"><a href="menu.php" class="nav-link">Menu</a></li>
-	          	<li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-              <li class="nav-item cta"><a href="log_in.php" class="nav-link">Log In</a></li>
-                
-                <li class="nav-item cta" id="auth-area"></li>
+	          	<li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>                
+               <li class="nav-item d-flex align-items-center" id="auth-area">
+        <a href="sign in.php" class="nav-link btn btn-primary px-4 py-2" style="border-radius: 5px;">Sign In</a>
+    </li>
 	        </ul>
 	      </div>
 	    </div>
@@ -78,7 +89,7 @@
         <div class="row no-gutters slider-text align-items-end justify-content-center">
           <div class="col-md-9 ftco-animate text-center mb-4">
             <h1 class="mb-2 bread">Login To Account</h1>
-            <p class="breadcrumbs"><span class="mr-2"><a href="index.php">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>Sign In <i class="ion-ios-arrow-forward"></i></span></p>
+            <p class="breadcrumbs"><span class="mr-2"><a href="index.php">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>Sign Up <i class="ion-ios-arrow-forward"></i></span></p>
           </div>
         </div>
       </div>
@@ -91,7 +102,7 @@
           	<div class="py-md-5">
 	          	<div class="heading-section ftco-animate mb-5">
 		          	<span class="subheading">Login Account</span>
-		            <h2 class="mb-4">Sign In</h2>
+		            <h2 class="mb-4">Sign Up</h2>
 		          </div>
 	            <form action="#">
 	              <div class="row">
@@ -164,18 +175,27 @@
         integrity="sha512-n7o7r2iW6z4qA6lC+4sR7b3l9rH9fJ+gI7r9s5p5f5uW4z5T9f5t8f5f5uW4z5T9f5t8f5uW4z5T9f5t8f5u=="
         crossorigin=""></script>
 
-
 <script>
 function saveUserData() {
-    const name = userName.value.trim();
-    const email = userEmail.value.trim();
-    const phone = userPhone.value.trim();
-    const password = userPassword.value;
+    const name = document.getElementById('userName').value.trim();
+    const email = document.getElementById('userEmail').value.trim();
+    const phone = document.getElementById('userPhone').value.trim();
+    const password = document.getElementById('userPassword').value;
 
-    if (!name || !password) {
-        alert("Please fill in Name and Password");
+    if (!name || !password || !email) {
+        alert("Please fill in Name, Email, and Password");
         return;
     }
+
+    // --- NEW LOGIC: Save to LocalStorage so Profile can read it ---
+    const user = { 
+        name: name, 
+        email: email, 
+        phone: phone, 
+        password: password 
+    };
+    localStorage.setItem('yobYongSession', JSON.stringify(user));
+    // -----------------------------------------------------------
 
     const data = new FormData();
     data.append("name", name);
@@ -191,15 +211,15 @@ function saveUserData() {
     .then(res => {
         if (res === "success") {
             alert("Registration successful!");
-            window.location.href = "sign in.php";
-        } else if (res === "missing") {
-            alert("Missing required fields");
+            // Jump straight to profile to view details
+            window.location.href = "profile.php"; 
         } else {
-            alert("Email already exists or error occurred");
+            // Even if DB fails, for now, we let them proceed locally
+            alert("Welcome! (Local Session Started)");
+            window.location.href = "profile.php";
         }
     });
-}
-</script>
+}</script>
 
 <script>
 function loginUser() {
@@ -222,7 +242,7 @@ function loginUser() {
     .then(res => res.text())
     .then(res => {
         if (res === "success") {
-            window.location.href = "index.php"; // redirect after login
+            window.location.href = "about.php"; // redirect after login
         } else if (res === "missing") {
             alert("Please fill all fields");
         } else {
@@ -231,7 +251,6 @@ function loginUser() {
     });
 }
 </script>
-
 
 </body>
 </html>

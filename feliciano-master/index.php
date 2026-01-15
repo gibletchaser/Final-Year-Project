@@ -72,8 +72,7 @@ if (isset($_SESSION['status'])) {
 	        	<li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
 	        	<li class="nav-item"><a href="menu.php" class="nav-link">Menu</a></li>
 	          <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-	          <li class="nav-item cta"><a href="sign in.php" class="nav-link">Sign In</a></li>
-            <li class="nav-item cta"><a href="log_in.php" class="nav-link">Log In</a></li>
+	          <li class="nav-item cta"><a href="sign in.php" class="nav-link">Sign Up</a></li>
 	        </ul>
 	      </div>
 	    </div>
@@ -474,6 +473,17 @@ if (isset($_SESSION['status'])) {
                     echo "<h4>" . htmlspecialchars($_SESSION['status']) . "</h4>";
                     unset($_SESSION['status']);
                  }
+                 $servername = "localhost";
+$username = "root"; // your MySQL username
+$password = "";     // your MySQL password
+$dbname = "yibyong";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// CHECK CONNECTION
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
                 ?>
 
             <form action="code.php" method="POST">
