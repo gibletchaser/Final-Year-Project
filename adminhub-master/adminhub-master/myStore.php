@@ -89,7 +89,7 @@ include 'db.php';
       <div class="left">
         <h1>My Store</h1>
         <ul class="breadcrumb">
-          <li><a href="#">My Store</a></li>
+          <li><a href="#">My Stores</a></li>
           <li><i class='bx bx-chevron-right'></i></li>
           <li><a class="active" href="#">Menu</a></li>
         </ul>
