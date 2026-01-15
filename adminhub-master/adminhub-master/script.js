@@ -153,7 +153,14 @@ function saveMenu() {
   });
 }
 
-function deleteMenu(id) {
+function deleteMenu() {
+  const id = $("#menuId").val();
+
+  if (!id) {
+    alert("Invalid menu ID");
+    return;
+  }
+
   if (!confirm("Delete this menu?")) return;
 
   $.post("delete_menu.php", { id }, function (res) {
@@ -165,6 +172,7 @@ function deleteMenu(id) {
     }
   });
 }
+
 
 $(document).ready(function () {
   $("#menuModal").hide();   // 🔥 FORCE CLOSED

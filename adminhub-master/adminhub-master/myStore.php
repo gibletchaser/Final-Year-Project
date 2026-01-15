@@ -89,6 +89,7 @@ include 'db.php';
       <div class="left">
         <h1>My Store</h1>
         <ul class="breadcrumb">
+          <li><a href="#">My Store</a></li>
           <li><a href="#">My Stores</a></li>
           <li><i class='bx bx-chevron-right'></i></li>
           <li><a class="active" href="#">Menu</a></li>
@@ -122,7 +123,11 @@ include 'db.php';
         <div class="modal-actions">
           <button class="btn-save" onclick="saveMenu()">Save</button>
           <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-          <button id="deleteBtn" class="btn-delete">Delete</button>
+          <button id="deleteBtn"
+                  onclick="deleteMenu()"
+                  style="display:none; background:red; color:white;">
+            Delete
+          </button>
         </div>
       </div>
     </div>
