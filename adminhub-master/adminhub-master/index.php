@@ -19,7 +19,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 	<!-- My CSS -->
 	<link rel="stylesheet" href="style.css">
 
-	<title>AdminHub</title>
+	<title>AdminHubs</title>
 </head>
 <body>
 
