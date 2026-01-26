@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $role = "customer";
 
     $stmt = $conn->prepare(
-        "INSERT INTO userss (name, email, phone, password, role)
+        "INSERT INTO users (name, email, phone, password, role)
          VALUES (?, ?, ?, ?, ?)"
     );
     $stmt->bind_param("sssss", $name, $email, $phone, $hashedPassword, $role);
