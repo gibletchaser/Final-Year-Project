@@ -134,114 +134,110 @@
         </div>
     </section>
 
-    <script>
-        // On page load, fetch data from localStorage
-        document.addEventListener('DOMContentLoaded', function() {
-            loadUserData();
-        });
+<script>
+    // 1. Run this as soon as the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        loadUserData();
+    });
 
-        function loadUserData() {
-            const sessionData = localStorage.getItem('yobYongSession');
-            if (!sessionData) {
-                alert("Session expired. Please sign in again.");
-                window.location.href = "sign in.php";
+    function loadUserData() {
+        const sessionData = localStorage.getItem('yobYongSession');
+        if (!sessionData) {
+            alert("Session expired. Please sign in again.");
+            window.location.href = "sign in.php";
+            return;
+        }
+
+        const user = JSON.parse(sessionData);
+        
+        // --- DISPLAY DATA (View Mode) ---
+        document.getElementById('profile-name-display').innerText = user.name || 'Guest';
+        document.getElementById('display-email').innerText = user.email || '-';
+        document.getElementById('display-phone').innerText = user.phone || 'Not provided';
+        
+        // Store password globally for the 'Show' button
+        window.userPass = user.password || '********'; 
+
+        // Set Profile Picture if it exists
+        if (user.profilePic) {
+            document.getElementById('profile-img').src = user.profilePic;
+        }
+
+        // --- PRE-FILL EDIT FORM ---
+        document.getElementById('edit-name').value = user.name || '';
+        document.getElementById('edit-email').value = user.email || '';
+        document.getElementById('edit-phone').value = user.phone || '';
+        document.getElementById('edit-password').value = ""; 
+        document.getElementById('confirm-password').value = "";
+    }
+
+    function toggleEditMode(isEditing) {
+        document.getElementById('view-mode').style.display = isEditing ? 'none' : 'block';
+        document.getElementById('edit-mode').style.display = isEditing ? 'block' : 'none';
+        document.getElementById('edit-pic-btn').style.display = isEditing ? 'block' : 'none';
+    }
+
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            document.getElementById('profile-img').src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function saveProfile() {
+        const sessionData = JSON.parse(localStorage.getItem('yobYongSession'));
+        
+        const newName = document.getElementById('edit-name').value.trim();
+        const newEmail = document.getElementById('edit-email').value.trim();
+        const newPhone = document.getElementById('edit-phone').value.trim();
+        const newPass = document.getElementById('edit-password').value;
+        const confirmPass = document.getElementById('confirm-password').value;
+
+        if (!newName || !newEmail) {
+            alert("Name and Email are required!");
+            return;
+        }
+
+        if (newPass !== "") {
+            if (newPass !== confirmPass) {
+                alert("New passwords do not match!");
                 return;
             }
-
-            const user = JSON.parse(sessionData);
-            
-            // Fill UI (View Mode)
-            document.getElementById('profile-name-display').innerText = user.name;
-            document.getElementById('display-email').innerText = user.email;
-            document.getElementById('display-phone').innerText = user.phone || 'Not provided';
-            window.userPass = user.password; // Store for the 'Show' password button
-
-            // Set Profile Picture
-            if (user.profilePic) {
-                document.getElementById('profile-img').src = user.profilePic;
-            }
-
-            // Pre-fill Edit Inputs
-            document.getElementById('edit-name').value = user.name;
-            document.getElementById('edit-email').value = user.email;
-            document.getElementById('edit-phone').value = user.phone || '';
-            document.getElementById('edit-password').value = ""; // Always clear pass inputs
-            document.getElementById('confirm-password').value = "";
+            sessionData.password = newPass;
         }
 
-        function toggleEditMode(isEditing) {
-            document.getElementById('view-mode').style.display = isEditing ? 'none' : 'block';
-            document.getElementById('edit-mode').style.display = isEditing ? 'block' : 'none';
-            document.getElementById('edit-pic-btn').style.display = isEditing ? 'block' : 'none';
+        // Update local session object
+        sessionData.name = newName;
+        sessionData.email = newEmail;
+        sessionData.phone = newPhone;
+        sessionData.profilePic = document.getElementById('profile-img').src; 
+
+        localStorage.setItem('yobYongSession', JSON.stringify(sessionData));
+        
+        alert("Profile updated successfully!");
+        toggleEditMode(false);
+        loadUserData();
+    }
+
+    function togglePasswordDisplay() {
+        const passSpan = document.getElementById('profile-password');
+        const btn = event.target;
+        if (passSpan.innerText === "********") {
+            passSpan.innerText = window.userPass;
+            btn.innerText = "Hide";
+        } else {
+            passSpan.innerText = "********";
+            btn.innerText = "Show";
         }
+    }
 
-        function previewImage(event) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                document.getElementById('profile-img').src = reader.result;
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        }
-
-        function saveProfile() {
-            const sessionData = JSON.parse(localStorage.getItem('yobYongSession'));
-            
-            const newName = document.getElementById('edit-name').value.trim();
-            const newEmail = document.getElementById('edit-email').value.trim();
-            const newPhone = document.getElementById('edit-phone').value.trim();
-            const newPass = document.getElementById('edit-password').value;
-            const confirmPass = document.getElementById('confirm-password').value;
-
-            // Basic Validation
-            if (!newName || !newEmail) {
-                alert("Name and Email are required!");
-                return;
-            }
-
-            // Password Change Logic
-            if (newPass !== "") {
-                if (newPass !== confirmPass) {
-                    alert("New passwords do not match!");
-                    return;
-                }
-                if (newPass.length < 6) {
-                    alert("Password must be at least 6 characters.");
-                    return;
-                }
-                sessionData.password = newPass;
-            }
-
-            // Update user object
-            sessionData.name = newName;
-            sessionData.email = newEmail;
-            sessionData.phone = newPhone;
-            sessionData.profilePic = document.getElementById('profile-img').src; 
-
-            // Save to LocalStorage
-            localStorage.setItem('yobYongSession', JSON.stringify(sessionData));
-            
-            alert("Profile updated successfully!");
-            toggleEditMode(false);
-            loadUserData();
-        }
-
-        function togglePasswordDisplay() {
-            const passSpan = document.getElementById('profile-password');
-            const btn = event.target;
-            if (passSpan.innerText === "********") {
-                passSpan.innerText = window.userPass;
-                btn.innerText = "Hide";
-            } else {
-                passSpan.innerText = "********";
-                btn.innerText = "Show";
-            }
-        }
-
-        function handleLogout() {
+    function handleLogout() {
+        if(confirm("Are you sure you want to sign out?")) {
             localStorage.removeItem('yobYongSession');
             window.location.href = "index.php";
         }
-    </script>
-
+    }
+</script>
 </body>
 </html>

@@ -72,7 +72,7 @@ if (isset($_SESSION['status'])) {
 	        	<li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
 	        	<li class="nav-item"><a href="menu.php" class="nav-link">Menu</a></li>
 	          <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-	          <li class="nav-item cta"><a href="sign in.php" class="nav-link">Sign Up</a></li>
+	          <li class="nav-item cta"><a href="sign in.php" class="nav-link">Sign In</a></li>
 	        </ul>
 	      </div>
 	    </div>

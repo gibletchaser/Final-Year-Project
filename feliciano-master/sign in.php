@@ -1,12 +1,4 @@
-<?php
-session_start();
 
-// 🚫 If user already logged in, kick them out
-if (isset($_SESSION['user_id'])) {
-    header("Location: index.php");
-    exit();
-}
-?>
 
 
 <!DOCTYPE html>
@@ -108,29 +100,16 @@ if (isset($_SESSION['user_id'])) {
 	              <div class="row">
 	                <div class="col-md-6">
 	                  <div class="form-group">
-	                    <label for="">Name</label>
-                        <input type="text" id="userName" class="form-control" placeholder="Your Name">
-	                  </div>
-	                </div>
-	                <div class="col-md-6">
-	                  <div class="form-group">
 	                    <label for="">Email</label>
                         <input type="text" id="userEmail" class="form-control" placeholder="Your Email">
 	                  </div>
 	                </div>
-	                <div class="col-md-6">
-	                  <div class="form-group">
-	                    <label for="">Phone</label>
-                        <input type="text" id="userPhone" class="form-control" placeholder="Phone">
-	                  </div>
-	                </div>
-                  <div class="col-md-6">
+                  <div class="col-md-6 ">
 	                  <div class="form-group">
 	                    <label for="">Password</label>
                         <input type="password" id="userPassword" class="form-control" placeholder="Password">
 	                  </div>
 	                </div>
-
 	                <div class="col-md-12 mt-3">
 	                  <div class="form-group">
 	                    <input type="button" onclick="saveUserData()" value="Register" class="btn btn-primary py-3 px-5">
@@ -176,31 +155,22 @@ if (isset($_SESSION['user_id'])) {
         crossorigin=""></script>
 
 <script>
+<script>
 function saveUserData() {
     const name = document.getElementById('userName').value.trim();
-    const email = document.getElementById('userEmail').value.trim();
     const phone = document.getElementById('userPhone').value.trim();
+    const email = document.getElementById('userEmail').value.trim();
     const password = document.getElementById('userPassword').value;
 
-    if (!name || !password || !email) {
-        alert("Please fill in Name, Email, and Password");
+    if (!name || !phone || !email || !password) {
+        alert("Please fill in all fields to register.");
         return;
     }
 
-    // --- NEW LOGIC: Save to LocalStorage so Profile can read it ---
-    const user = { 
-        name: name, 
-        email: email, 
-        phone: phone, 
-        password: password 
-    };
-    localStorage.setItem('yobYongSession', JSON.stringify(user));
-    // -----------------------------------------------------------
-
     const data = new FormData();
     data.append("name", name);
-    data.append("email", email);
     data.append("phone", phone);
+    data.append("email", email);
     data.append("password", password);
 
     fetch("register.php", {
@@ -209,25 +179,29 @@ function saveUserData() {
     })
     .then(res => res.text())
     .then(res => {
-        if (res === "success") {
+        if (res.trim() === "success") {
+            // Save ALL info to browser memory
+            const userData = { name, email, phone, password };
+            localStorage.setItem('yobYongSession', JSON.stringify(userData));
+            
             alert("Registration successful!");
-            // Jump straight to profile to view details
             window.location.href = "profile.php"; 
         } else {
-            // Even if DB fails, for now, we let them proceed locally
-            alert("Welcome! (Local Session Started)");
-            window.location.href = "profile.php";
+            alert(res); 
         }
-    });
-}</script>
+    })
+    .catch(err => console.error("Error:", err));
+}
+</script>
+
 
 <script>
 function loginUser() {
-    const email = loginEmail.value.trim();
-    const password = loginPassword.value;
+    const email = document.getElementById('userEmail').value.trim();
+    const password = document.getElementById('userPassword').value;
 
     if (!email || !password) {
-        alert("Please fill in email and password");
+        alert("Please enter your Email and Password to sign in.");
         return;
     }
 
@@ -239,18 +213,22 @@ function loginUser() {
         method: "POST",
         body: data
     })
-    .then(res => res.text())
-    .then(res => {
-        if (res === "success") {
-            window.location.href = "about.php"; // redirect after login
-        } else if (res === "missing") {
-            alert("Please fill all fields");
+    .then(res => res.json()) // We expect the server to send a JSON 'package'
+    .then(data => {
+        if (data.status === "success") {
+            // This 'package' contains the Name and Phone from the database
+            localStorage.setItem('yobYongSession', JSON.stringify(data.user));
+            
+            alert("Welcome back!");
+            window.location.href = "profile.php"; 
         } else {
-            alert("Invalid email or password");
+            alert(data.message || "Invalid Email or Password");
         }
-    });
+    })
+    .catch(err => alert("Sign In failed. Ensure your login.php is set up correctly."));
 }
 </script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const userSession = localStorage.getItem('yobYongSession');
