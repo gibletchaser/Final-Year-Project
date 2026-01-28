@@ -90,16 +90,14 @@
 						<h2 class="h4 mb-2 mb-md-5 font-weight-bold">Contact Us</h2>
 						<form action="#">
               <div class="form-group">
-	            <p><span><bold>Address:</bold></span> Kampung Datuk Keramat, 54000 Kuala Lumpur, Federal Territory of Kuala Lumpur</p>   
-          </div>
+	            <p><span><bold>Address:</bold></span> UTM Hotel & Residence
+                      NO 8 JALAN MAKTAB KAMPUNG DATUK KERAMAT, 54100 Kuala Lumpur, Malaysia</p>   
+                  </div>
               <div class="form-group">
 	            <p><span><bold>Phone:</bold></span> <a href="tel://1234567920">+6012-26828864</a></p>
               </div>
               <div class="form-group">
               <p><span><bold>Email:</bold></span> <a href="mailto:info@yoursite.com">yobyong24@gmail.com</a></p>
-              </div>
-              <div class="form-group">
-	            <p><span><bold>Website:</bold></span> <a href="#">yoursite.com</a></p>
               </div>
             </form>
 					</div>
