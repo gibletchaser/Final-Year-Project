@@ -1,3 +1,7 @@
+<?php
+include 'db.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -233,94 +237,95 @@
 				</div>
 			</div>
 		</section>
+
+    	<style>
+    .review-container {
+        background: #fff;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        max-width: 700px;
+        margin: 50px auto;
+    }
+    .review-input {
+        border: 2px solid #f1f1f1;
+        border-radius: 10px;
+        padding: 15px;
+        transition: 0.3s;
+    }
+    .review-input:focus {
+        border-color: #c4a47c;
+        box-shadow: none;
+    }
+    .btn-gold {
+        background: #c4a47c;
+        color: white;
+        border-radius: 30px;
+        padding: 12px 40px;
+        font-weight: bold;
+        border: none;
+        transition: 0.3s;
+    }
+    .btn-gold:hover {
+        background: #a38965;
+        transform: translateY(-2px);
+    }
+</style>
 		
-		<section class="ftco-section testimony-section img">
-			<div class="overlay"></div>
-      <div class="container">
+    <div class="review-container text-center">
+    <h2 class="mb-4" style="font-family: 'Playfair Display', serif;">Share Your Experience</h2>
+    <p class="text-muted mb-4">We'd love to hear from you!</p>
+    
+        <div class="form-group text-left">
+        <label class="small font-weight-bold">Name</label>
+        <input type="text" id="revName" class="form-control review-input mb-3" placeholder="Enter your name">
+        
+        <label class="small font-weight-bold">Message</label>
+        <textarea id="revComment" class="form-control review-input" rows="4" placeholder="How was the food?"></textarea>
+        </div>
+    
+          <button onclick="submitReview()" class="btn btn-gold mt-3">Post Review</button>
+              </div>
+                </div>
+                  </div>
+                    </div>
+                      </div>
+            </section>
+
+		<section class="ftco-section bg-light">
+    <div class="container">
         <div class="row justify-content-center mb-5">
-          <div class="col-md-12 text-center heading-section ftco-animate">
-          	<span class="subheading">Testimony</span>
-            <h2 class="mb-4">Happy Customer</h2>
+          <div class="col-md-7 text-center heading-section ftco-animate">
+            <span class="subheading">Reviews</span>
+            <h2 class="mb-4">What Our Guests Say</h2>
           </div>
         </div>
-        <div class="row ftco-animate justify-content-center">
-          <div class="col-md-12">
-            <div class="carousel-testimony owl-carousel ftco-owl">
-              <div class="item">
-                <div class="testimony-wrap text-center pb-5">
-                  <div class="user-img mb-4" style="background-image: url(images/person_1.jpg)">
-                    <span class="quote d-flex align-items-center justify-content-center">
-                      <i class="icon-quote-left"></i>
-                    </span>
-                  </div>
-                  <div class="text p-3">
-                    <p class="mb-4">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                    <p class="name">Jason McClean</p>
-                    <span class="position">Customer</span>
-                  </div>
-                </div>
-              </div>
-              <div class="item">
-                <div class="testimony-wrap text-center pb-5">
-                  <div class="user-img mb-4" style="background-image: url(images/person_2.jpg)">
-                    <span class="quote d-flex align-items-center justify-content-center">
-                      <i class="icon-quote-left"></i>
-                    </span>
-                  </div>
-                  <div class="text p-3">
-                    <p class="mb-4">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                    <p class="name">Mark Stevenson</p>
-                    <span class="position">Customer</span>
-                  </div>
-                </div>
-              </div>
-              <div class="item">
-                <div class="testimony-wrap text-center pb-5">
-                  <div class="user-img mb-4" style="background-image: url(images/person_3.jpg)">
-                    <span class="quote d-flex align-items-center justify-content-center">
-                      <i class="icon-quote-left"></i>
-                    </span>
-                  </div>
-                  <div class="text p-3">
-                    <p class="mb-4">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                    <p class="name">Art Leonard</p>
-                    <span class="position">Customer</span>
-                  </div>
-                </div>
-              </div>
-              <div class="item">
-                <div class="testimony-wrap text-center pb-5">
-                  <div class="user-img mb-4" style="background-image: url(images/person_4.jpg)">
-                    <span class="quote d-flex align-items-center justify-content-center">
-                      <i class="icon-quote-left"></i>
-                    </span>
-                  </div>
-                  <div class="text p-3">
-                    <p class="mb-4">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                    <p class="name">Rose Henderson</p>
-                    <span class="position">Customer</span>
-                  </div>
-                </div>
-              </div>
-              <div class="item">
-                <div class="testimony-wrap text-center pb-5">
-                  <div class="user-img mb-4" style="background-image: url(images/person_3.jpg)">
-                    <span class="quote d-flex align-items-center justify-content-center">
-                      <i class="icon-quote-left"></i>
-                    </span>
-                  </div>
-                  <div class="text p-3">
-                    <p class="mb-4">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                    <p class="name">Ian Boner</p>
-                    <span class="position">Customer</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="row">
+            <?php
+            // Get current user email from localStorage session via PHP if possible, 
+            // or just fetch all for now
+            $result = $conn->query("SELECT * FROM reviews ORDER BY created_at DESC");
+            if ($result->num_rows > 0) {
+                while($row = $result->fetch_assoc()) {
+                    echo "
+                    <div class='col-md-4 mb-4 ftco-animate'>
+                        <div class='card border-0 shadow-sm p-4' style='border-radius: 15px;'>
+                            <div class='d-flex justify-content-between'>
+                                <h6 class='font-weight-bold' style='color: #c4a47c;'>".htmlspecialchars($row['reviewer_name'])."</h6>
+                                <small class='text-muted'>".date('M d', strtotime($row['created_at']))."</small>
+                            </div>
+                            <p class='text-secondary mt-2' style='font-style: italic;'>\"".htmlspecialchars($row['comment'])."\"</p>
+                        </div>
+                    </div>";
+                }
+            } else {
+                echo "<div class='col-12 text-center'><p>No reviews yet. Be the first to share!</p></div>";
+            }
+            ?>
         </div>
-      </div>
-    </section>
+    </div>
+</section>
+
 		
     <footer class="ftco-footer ftco-bg-dark ftco-section">
       <div class="container">
@@ -449,6 +454,44 @@ function handleLogout() {
         localStorage.removeItem('yobYongSession');
         window.location.href = 'index.php'; 
     }
+}
+</script>
+<script>
+  function submitReview() {
+    const nameInput = document.getElementById('revName');
+    const commentInput = document.getElementById('revComment');
+    
+    const name = nameInput.value.trim();
+    const comment = commentInput.value.trim();
+
+    if (!name || !comment) {
+        alert("Please enter both your name and your review!");
+        return;
+    }
+
+    // Prepare data to send to save_review.php
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('comment', comment);
+
+    // Send to your PHP saving file
+    fetch('save-review.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (data.includes("success")) {
+            alert("Thank you! Your review has been posted.");
+            location.reload(); // Refresh to show the new review
+        } else {
+            alert("Error saving review. Make sure 'save_review.php' exists.");
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("System error. Check console.");
+    });
 }
 </script>
   </body>
