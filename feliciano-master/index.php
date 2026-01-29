@@ -138,7 +138,7 @@ if (isset($_SESSION['status'])) {
 	          </div>
 	          <p>A small river like the Duden flows nearby, bringing life and flavour to the place. It feels like a little Malaysian paradise, where the aroma of sambal and spices fills the air, and freshly grilled satay, nasi lemak, and roasted delights seem to come straight to your table. Every corner invites you to taste, relax, and enjoy the rich, comforting flavours of Malaysia.</p>
 						<pc class="time">
-							<span>Mon - Fri <strong>10 AM - 9 PM</strong></span>
+							<span>Mon - Sat <strong>10 AM - 9 PM</strong></span>
 							<span><a href="#">+6012-26828864</a></span>
 						</p>
 					</div>
@@ -420,26 +420,43 @@ if ($conn->connect_error) {
         transform: translateY(-2px);
     }
 </style>
-
-<div class="review-container text-center">
-    <h2 class="mb-4" style="font-family: 'Playfair Display', serif;">Share Your Experience</h2>
-    <p class="text-muted mb-4">We'd love to hear from you!</p>
-    
-    <div class="form-group text-left">
-        <label class="small font-weight-bold">Name</label>
-        <input type="text" id="revName" class="form-control review-input mb-3" placeholder="Enter your name">
-        
-        <label class="small font-weight-bold">Message</label>
-        <textarea id="revComment" class="form-control review-input" rows="4" placeholder="How was the food?"></textarea>
-    </div>
-    
-    <button onclick="submitReview()" class="btn btn-gold mt-3">Post Review</button>
-</div>
-                </div>
-              </div>
+  <section class="ftco-section img" style="background-image: url(images/bg_4.jpg); background-size: cover; background-attachment: fixed;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-7 makereservation p-4 px-md-5 pb-md-5" style="background: rgba(255,255,255,0.95); border-radius: 15px; box-shadow: 0px 10px 30px rgba(0,0,0,0.1);">
+                <div class="heading-section text-center mb-5">
+                   <div class="heading-section text-center mb-5">
+                      <h2 class="mb-4" style="font-family: 'Great Vibes', cursive; color: #c4a47c; font-size: 50px; text-transform: none;">Share Your Experience</h2>
+                        <p style="color: #666;">We'd love to hear from you!</p>
+                                </div>
+                                    </div>
+                
+                <form action="#">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="" style="color: #000; font-weight: bold;">Name</label>
+                                <input type="text" id="revName" class="form-control" placeholder="Enter your name" 
+                                       value="<?php echo isset($_SESSION['name']) ? htmlspecialchars($_SESSION['name']) : ''; ?>">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="" style="color: #000; font-weight: bold;">Message</label>
+                                <textarea id="revComment" class="form-control" rows="4" placeholder="How was the food?"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <div class="form-group text-center">
+                                <button type="button" onclick="submitReview()" class="btn btn-primary py-3 px-5" style="background: #c4a47c !important; border: none;">Post Review</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
-</div>
-    </section>
+        </div>
+    </div>
+</section>
 
 		<section class="ftco-section bg-light">
     <div class="container">
