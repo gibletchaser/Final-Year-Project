@@ -112,9 +112,12 @@
 	                </div>
 	                <div class="col-md-12 mt-3">
 	                  <div class="form-group">
-	                    <input type="button" onclick="saveUserData()" value="Register" class="btn btn-primary py-3 px-5">
+	                    <input type="button" onclick="loginUser()" value="Sign In" class="btn btn-primary py-3 px-5">
 	                  </div>
 	                </div>
+                  <p class="mt-3">
+        <a href="forgot-password.php" style="color: #c4a47c; text-decoration: underline;">Forgot Password?</a>
+                   </p>
 	              </div>
 	            </form>
 	          </div>
@@ -154,7 +157,7 @@
         integrity="sha512-n7o7r2iW6z4qA6lC+4sR7b3l9rH9fJ+gI7r9s5p5f5uW4z5T9f5t8f5f5uW4z5T9f5t8f5uW4z5T9f5t8f5u=="
         crossorigin=""></script>
 
-<script>
+
 <script>
 function saveUserData() {
     const name = document.getElementById('userName').value.trim();

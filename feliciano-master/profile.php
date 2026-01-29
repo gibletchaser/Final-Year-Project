@@ -22,24 +22,31 @@
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.5);
         }
-        #profile-img {
-            width: 130px;
-            height: 130px;
+    #profile-img {
+            /* Increased size from 130px to 200px */
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid #c4a47c;
+            border: 5px solid #c4a47c;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
+            background-color: #fff;
         }
+        
         .btn-edit-pic {
             position: absolute;
-            bottom: 0;
-            right: 0;
+            bottom: 10px; /* Adjusted position for the larger circle */
+            right: 15px;
             background: #c4a47c;
             color: white;
             border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            border: none;
+            width: 45px; /* Made the edit button a bit larger too */
+            height: 45px;
+            border: 3px solid #fff;
             display: none;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0px 2px 10px rgba(0,0,0,0.3);
         }
     </style>
 </head>
