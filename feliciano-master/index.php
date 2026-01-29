@@ -226,7 +226,7 @@ if (isset($_SESSION['status'])) {
 						<div class="staff">
 							<div class="img" style="background-image: url(images/OIP.webp);"></div>
 							<div class="text pt-4">
-								<h3>Smith Welson</h3>
+								<h3>Muhammad Haris bin Abdullah</h3>
 								<span class="position mb-2">Head Chef</span>
 								<!-- <p>A small river named Duden flows by their place and supplies</p> -->
 								<div class="faded">
@@ -243,7 +243,7 @@ if (isset($_SESSION['status'])) {
 						<div class="staff">
 							<div class="img" style="background-image: url('images/chef-9.jpg');"></div>
 							<div class="text pt-4">
-								<h3>Kharl Branyt</h3>
+								<h3>Khairul Azman bin Ismail</h3>
 								<span class="position mb-2">Chef</span>
 								<!-- <p>A small river named Duden flows by their place and supplies</p> -->
 								<div class="faded">
@@ -260,7 +260,7 @@ if (isset($_SESSION['status'])) {
 						<div class="staff">
 							<div class="img" style="background-image: url(images/Eric-Neo-top-malaysian-chef.jpg);"></div>
 							<div class="text pt-4">
-								<h3>Luke Simon</h3>
+								<h3>Ahmad Faiz bin Zulkifli</h3>
 								<span class="position mb-2">Chef</span>
 								<!-- <p>A small river named Duden flows by their place and supplies</p> -->
 								<div class="faded">

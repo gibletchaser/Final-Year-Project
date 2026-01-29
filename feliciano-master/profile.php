@@ -68,7 +68,12 @@
             <div class="row justify-content-center">
                 <div class="col-md-8 col-lg-6">
                     <div class="card profile-card p-4 p-md-5 shadow">
-                        
+                        <div class="mb-4">
+        <a href="about.php" class="d-flex align-items-center" style="text-decoration: none; color: #c4a47c; font-weight: bold;">
+            <span style="font-size: 22px; margin-right: 8px;">&#8592;</span> 
+            <small>Back</small>
+        </a>
+    </div>
                         <div class="text-center mb-4">
                             <div style="position: relative; display: inline-block;">
                                 <img id="profile-img" src="images/default-user.png" alt="Profile">
