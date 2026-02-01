@@ -65,7 +65,7 @@ if (isset($_POST['verifybtn'])) {
     <form method="POST">
         <input type="text" name="code" placeholder="123456" required>
         <br>
-        <button type="submit" name="verifybtn">Verify & Register</button>
+        <button type="submit" name="verifybtn">Verify Email</button>
     </form>
 </div>
 </body>
