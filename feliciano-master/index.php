@@ -309,25 +309,25 @@ if ($conn->connect_error) {
                 <div class="col-md-6">
                   <div class="form-group">
                     <label for="">Name</label>
-                    <input type="text" name="name" class="form-control" placeholder="Your Name">
+                    <input type="text" name="name" class="form-control" placeholder="Your Name"required>
                   </div>
                 </div>
              <div class="col-md-6">
                   <div class="form-group">
                     <label for="">Phone</label>
-                    <input type="text" name="phone" class="form-control" placeholder="Phone">
+                    <input type="text" name="phone" class="form-control" placeholder="Phone Number"required>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
                     <label for="">Email</label>
-                    <input type="text" name="email" class="form-control" placeholder="Your Email">
+                    <input type="text" name="email" class="form-control" placeholder="Your Email"required>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
                     <label for="">Password</label>
-                      <input type="password" name="password" required placeholder="Password (min 6 characters)">
+                      <input type="password" name="password" required placeholder="Password (min 6 characters)"required>
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -581,6 +581,47 @@ if ($conn->connect_error) {
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
   <script src="js/google-map.js"></script>
   <script src="js/main.js"></script>
+
+  <script>
+  function validateRegisterForm() {
+    // Get all the field values
+    let name = document.querySelector('input[name="name"]');
+    let phone = document.querySelector('input[name="phone"]');
+    let email = document.querySelector('input[name="email"]');
+    let password = document.querySelector('input[name="password"]');
+
+    // 1. Check Name
+    if (name.value.trim() === "") {
+        alert("Please fill out the Name field.");
+        name.focus();
+        return false;
+    }
+
+    // 2. Check Phone
+    if (phone.value.trim() === "") {
+        alert("Please fill out the Phone field.");
+        phone.focus();
+        return false;
+    }
+
+    // 3. Check Email
+    if (email.value.trim() === "") {
+        alert("Please fill out the Email field.");
+        email.focus();
+        return false;
+    }
+
+    // 4. Check Password
+    if (password.value.trim() === "") {
+        alert("Please fill out the Password field.");
+        password.focus();
+        return false;
+    }
+
+    return true; // All fields are filled, form can submit
+}
+</script>
+
   <script>
 function submitReview() {
     const nameInput = document.getElementById('revName');

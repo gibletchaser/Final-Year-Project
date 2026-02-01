@@ -20,27 +20,26 @@ if (isset($_POST['verifybtn'])) {
     $stored  = (string)$_SESSION['verify_code'];
 
     if ($entered === $stored) {
-        // GET DATA FROM SESSION
-        $name     = $_SESSION['verify_name'];
-        $email    = $_SESSION['verify_email'];
-        $phone    = $_SESSION['verify_phone'];
-        $password = $_SESSION['verify_password'];
+    $name     = mysqli_real_escape_string($conn, $_SESSION['verify_name']);
+    $email    = mysqli_real_escape_string($conn, $_SESSION['verify_email']);
+    $phone    = mysqli_real_escape_string($conn, $_SESSION['verify_phone']);
+    $password = mysqli_real_escape_string($conn, $_SESSION['verify_password']);
 
-        // INSERT INTO DATABASE
-        $query = "INSERT INTO user (name, email, phone, password) VALUES ('$name', '$email', '$phone', '$password')";
-        $query_run = mysqli_query($conn, $query);
+    $query = "INSERT INTO user (name, email, phone, password) VALUES ('$name', '$email', '$phone', '$password')";
+    $query_run = mysqli_query($conn, $query);
 
-        if ($query_run) {
-            unset($_SESSION['verify_name'], $_SESSION['verify_email'], $_SESSION['verify_phone'], $_SESSION['verify_password'], $_SESSION['verify_code']);
-            $_SESSION['status'] = "Registration Successful! Please Sign In.";
-            header("Location: sign in.php");
-            exit();
-        } else {
-            $_SESSION['status'] = "Database Error: " . mysqli_error($conn);
-        }
+    if ($query_run) {
+        // Clean up session
+        session_unset(); 
+        $_SESSION['status'] = "Registration Successful! Please Sign In.";
+        header("Location: sign in.php");
+        exit();
     } else {
-        $_SESSION['status'] = "Invalid code. Please try again.";
+        $_SESSION['status'] = "Registration failed. Please try again.";
+        header("Location: index.php");
+        exit();
     }
+}
 }
 ?>
 
