@@ -618,7 +618,7 @@ if ($conn->connect_error) {
         return false;
     }
 
-    return true; // All fields are filled, form can submit
+    return true; 
 }
 </script>
 

@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registerbtn'])) {
 
     // 2. Validate basic requirements
     if (empty($name) || empty($phone) || empty($email) || strlen($password) < 6) {
-        $_SESSION['status'] = "All fields required. Password must be 6+ chars.";
+        $_SESSION['status'] = "All fields required. Password minimum needed 6 characters.";
         header("Location: index.php");
         exit();
     }
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registerbtn'])) {
     if (mysqli_num_rows($check_run) > 0) {
         $row = mysqli_fetch_assoc($check_run);
         if($row['email'] == $email) $_SESSION['status'] = "Error: Email already registered.";
-        elseif($row['phone'] == $phone) $_SESSION['status'] = "Error: Phone number already in use.";
+        elseif($row['phone'] == $phone) $_SESSION['status'] = "Error: Phone number already in used.";
         else $_SESSION['status'] = "Error: Username already taken.";
         
         header("Location: index.php"); // Send back to index.php
