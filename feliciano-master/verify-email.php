@@ -67,12 +67,6 @@ if (isset($_POST['verifybtn'])) {
 <div class="box">
     <h2>Verify Your Email</h2>
     <p>Code sent to: <b><?= htmlspecialchars($_SESSION['verify_email']) ?></b></p>
-    
-    <?php if ($fail): ?>
-    <div style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 12px; border-radius: 5px; margin-bottom: 20px; font-size: 14px;">
-        <strong>Verification failed!</strong> The code you entered does not match. Please try again.
-    </div>
-    <?php endif; ?>
 
     <?php if(isset($_SESSION['status'])): ?>
         <p style="color:red; font-size: 14px; margin-bottom: 15px;"><?= $_SESSION['status'] ?></p>
