@@ -122,7 +122,7 @@
           <div class="w-100"></div>
           <div class="col-md-3 d-flex">
           	<div class="dbox">
-	            <p><span>Address:</span> Kampung Datuk Keramat, 54000 Kuala Lumpur, Federal Territory of Kuala Lumpur</p>
+	            <p><span>Address:</span> UTM Residence & Hotel, Kampung Datuk Keramat, 54000 Kuala Lumpur, Federal Territory of Kuala Lumpur</p>
             </div>
           </div>
           <div class="col-md-3 d-flex">
@@ -133,11 +133,6 @@
           <div class="col-md-3 d-flex">
           	<div class="dbox">
 	            <p><span>Email:</span> <a href="mailto:info@yoursite.com">yobyong24@gmail.com</a></p>
-            </div>
-          </div>
-          <div class="col-md-3 d-flex">
-          	<div class="dbox">
-	            <p><span>Website</span> <a href="#">yoursite.com</a></p>
             </div>
           </div>
         </div>

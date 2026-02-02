@@ -147,13 +147,11 @@
 
 
 <script>
-// CHANGE 2: UPDATED loginUser to use the error box instead of alert()
 function loginUser() {
     const email = document.getElementById('userEmail').value.trim();
     const password = document.getElementById('userPassword').value;
     const errorBox = document.getElementById('login-error-msg');
 
-    // Hide error box at start
     errorBox.style.display = "none";
 
     if (!email || !password) {
@@ -170,17 +168,22 @@ function loginUser() {
         method: "POST",
         body: data
     })
-    .then(res => res.json())
+    .then(res => {
+        // If the server returns a 404 or 500, it will throw an error here
+        if (!res.ok) throw new Error("Server error");
+        return res.json();
+    })
     .then(data => {
         if (data.status === "success") {
             localStorage.setItem('yobYongSession', JSON.stringify(data.user));
             window.location.href = "profile.php"; 
         } else {
-            // SHOW ERROR IN THE RED BOX
-            errorBox.innerText = data.message || "Invalid Email or Password";
+            // This displays the EXACT message sent from login.php 
+            // (e.g., "Invalid Email or Password")
+            errorBox.innerText = data.message;
             errorBox.style.display = "block";
 
-            // If it's a verification error, wait 3 seconds then go to verify page
+            // ONLY redirect to verify if the message specifically mentions verification
             if (data.message && data.message.toLowerCase().includes("verify")) {
                 setTimeout(() => {
                     window.location.href = "verify-email.php";
@@ -189,11 +192,15 @@ function loginUser() {
         }
     })
     .catch(err => {
-        errorBox.innerText = "Please verify your email before login in. Check your email for verification code to verify.";
+        // This only runs if the internet dies or the PHP file crashes
+        console.error(err);
+        errorBox.innerText = "Connection failed. Please ensure login.php exists and try again.";
         errorBox.style.display = "block";
     });
 }
+</script>
 
+<script>
 function handleLogout() {
     if(confirm("Are you sure you want to sign out?")) {
         localStorage.removeItem('yobYongSession');

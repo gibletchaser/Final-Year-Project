@@ -899,6 +899,15 @@ width: 100% !important;
     display: block;
     box-sizing: border-box;
 }
+.contact-info {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.contact-info > .col-md-6 {
+  width: 50% !important;
+}
+
   .col-md-7 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 58.33333%;
@@ -5936,6 +5945,11 @@ button.bg-dark:focus {
     display: -webkit-inline-box !important;
     display: -ms-inline-flexbox !important;
     display: inline-flex !important; } }
+
+    .dbox i {
+  margin-right: 8px;
+  color: #c49b63;
+}
 
 @media print {
   .d-print-none {
