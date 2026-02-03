@@ -238,7 +238,7 @@ include 'db.php';
 			</div>
 		</section>
 
-    	<style>
+			<style>
     .review-container {
         background: #fff;
         border-radius: 20px;
@@ -270,21 +270,36 @@ include 'db.php';
         background: #a38965;
         transform: translateY(-2px);
     }
+
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+}
+.star-rating input { display: none; }
+.star-rating label {
+    font-size: 35px;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s;
+    margin: 0 2px;
+}
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #c4a47c;
+}
 </style>
-		
-   <section class="ftco-section img" style="background-image: url(images/insta-3.jpg); background-size: cover; background-attachment: fixed;">
+
+<section class="ftco-section img" style="background-image: url(images/bg_4.jpg); background-size: cover; background-attachment: fixed;">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-7 makereservation p-4 px-md-5 pb-md-5" style="background: rgba(255,255,255,0.95); border-radius: 15px; box-shadow: 0px 10px 30px rgba(0,0,0,0.1);">
                 <div class="heading-section text-center mb-5">
-                   <div class="heading-section text-center mb-5">
-                      <h2 class="mb-4" style="font-family: 'Great Vibes', cursive; color: #c4a47c; font-size: 50px; text-transform: none;">Share Your Experience</h2>
-                        <p style="color: #666;">We'd love to hear from you!</p>
-                                </div>
-                                    </div>
-                
-                <form action="#">
-                    <div class="row">
+                    <h2 class="mb-4" style="font-family: 'Great Vibes', cursive; color: #c4a47c; font-size: 50px; text-transform: none;">Share Your Experience</h2>
+                    <p style="color: #666;">We'd love to hear from you!</p>
+                      </div>
+
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="" style="color: #000; font-weight: bold;">Name</label>
@@ -296,6 +311,20 @@ include 'db.php';
                             <div class="form-group">
                                 <label for="" style="color: #000; font-weight: bold;">Message</label>
                                 <textarea id="revComment" class="form-control" rows="4" placeholder="How was the food?"></textarea>
+                            </div>
+                        </div>
+                         <form action="#">
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="form-group text-center">
+                                <label style="color: #000; font-weight: bold; display: block; margin-bottom: 10px;">Your Rating</label>
+                                <div class="star-rating">
+                                    <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+                                    <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                                    <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                                    <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                                    <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-12 mt-3">
@@ -310,7 +339,7 @@ include 'db.php';
     </div>
 </section>
 
-		<section class="ftco-section bg-light">
+<section class="ftco-section bg-light">
     <div class="container">
         <div class="row justify-content-center mb-5">
           <div class="col-md-7 text-center heading-section ftco-animate">
@@ -318,21 +347,63 @@ include 'db.php';
             <h2 class="mb-4">What Our Guests Say</h2>
           </div>
         </div>
+
+        <!-- Success / Error messages from delete -->
+        <?php
+        if (isset($_GET['status']) && $_GET['status'] === 'deleted') {
+            echo '<div class="alert alert-success text-center">Your review has been deleted.</div>';
+        }
+        if (isset($_GET['error'])) {
+            if ($_GET['error'] === 'login_required') {
+                echo '<div class="alert alert-warning text-center">Please sign in to delete reviews.</div>';
+            } elseif ($_GET['error'] === 'not_authorized_or_not_found' || $_GET['error'] === 'cannot_delete') {
+                echo '<div class="alert alert-danger text-center">You cannot delete this review.</div>';
+            }
+        }
+        ?>
+
         <div class="row">
             <?php
-            // Get current user email from localStorage session via PHP if possible, 
-            // or just fetch all for now
+            // Fetch reviews
             $result = $conn->query("SELECT * FROM reviews ORDER BY created_at DESC");
             if ($result->num_rows > 0) {
-                while($row = $result->fetch_assoc()) {
+                while ($row = $result->fetch_assoc()) {
+                    $ratingCount = (int)$row['rating'];
+                    $starsHtml = str_repeat("<span style='color: #c4a47c;'>★</span>", $ratingCount) .
+                                 str_repeat("<span style='color: #ccc;'>★</span>", 5 - $ratingCount);
+
                     echo "
                     <div class='col-md-4 mb-4 ftco-animate'>
                         <div class='card border-0 shadow-sm p-4' style='border-radius: 15px;'>
-                            <div class='d-flex justify-content-between'>
-                                <h6 class='font-weight-bold' style='color: #c4a47c;'>".htmlspecialchars($row['reviewer_name'])."</h6>
-                                <small class='text-muted'>".date('M d', strtotime($row['created_at']))."</small>
+                            <div class='d-flex justify-content-between mb-2'>
+                                <h6 class='font-weight-bold' style='color: #c4a47c; margin-bottom: 0;'>" . 
+                                    htmlspecialchars($row['reviewer_name'] ?: 'Anonymous') . 
+                                "</h6>
+                                <small class='text-muted'>" . date('M d', strtotime($row['created_at'])) . "</small>
                             </div>
-                            <p class='text-secondary mt-2' style='font-style: italic;'>\"".htmlspecialchars($row['comment'])."\"</p>
+                            
+                            <div class='mb-2' style='font-size: 18px;'>" . $starsHtml . "</div>
+                            
+                            <p class='text-secondary mt-2' style='font-style: italic;'>" . 
+                                htmlspecialchars($row['comment']) . 
+                            "</p>";
+
+                    // Delete link — only shown to logged-in users who own this review
+                    if (isset($_SESSION['email']) && 
+                        !empty($row['reviewer_email']) && 
+                        $_SESSION['email'] === $row['reviewer_email']) {
+                        
+                        echo "
+                        <div class='text-right mt-3'>
+                            <a href='delete-review.php?id=" . $row['id'] . "'
+                               onclick='return confirm(\"Are you sure you want to delete this review?\")'
+                               style='color: #dc3545; font-size: 13px; text-decoration: none;'>
+                                <i class='fas fa-trash-alt'></i> Delete
+                            </a>
+                        </div>";
+                    }
+
+                    echo "
                         </div>
                     </div>";
                 }
@@ -473,41 +544,41 @@ function handleLogout() {
     }
 }
 </script>
-<script>
-  function submitReview() {
-    const nameInput = document.getElementById('revName');
-    const commentInput = document.getElementById('revComment');
-    
-    const name = nameInput.value.trim();
-    const comment = commentInput.value.trim();
 
-    if (!name || !comment) {
-        alert("Please enter both your name and your review!");
+<script>
+function submitReview() {
+    const name = document.getElementById('revName').value.trim();
+    const comment = document.getElementById('revComment').value.trim();
+    const ratingInput = document.querySelector('input[name="rating"]:checked');
+    const rating = ratingInput ? ratingInput.value : 5;
+
+    if (!comment) {
+        alert("Please write your review before posting.");
         return;
     }
 
-    // Prepare data to send to save_review.php
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('comment', comment);
+    const data = new FormData();
+    data.append('name', name || 'Anonymous Guest');
+    data.append('comment', comment);
+    data.append('rating', rating);
+    // Honeypot is sent automatically as empty → good
 
-    // Send to your PHP saving file
     fetch('save-review.php', {
         method: 'POST',
-        body: formData
+        body: data
     })
-    .then(response => response.text())
-    .then(data => {
-        if (data.includes("success")) {
-            alert("Thank you! Your review has been posted.");
-            location.reload(); // Refresh to show the new review
+    .then(res => res.text())
+    .then(response => {
+        if (response.trim() === "success") {
+            alert("Thank you for your review! It has been posted.");
+            location.reload();
         } else {
-            alert("Error saving review. Make sure 'save_review.php' exists.");
+            alert("Oops: " + (response.startsWith("error:") ? response.substring(6).trim() : "Something went wrong"));
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
-        alert("System error. Check console.");
+    .catch(err => {
+        console.error(err);
+        alert("Connection issue — please try again.");
     });
 }
 </script>

@@ -1,15 +1,25 @@
 <?php
-include 'db.php';
 session_start();
+include 'db.php';
 
-if (isset($_GET['id'])) {
-    $id = $_GET['id'];
-    // In a real app, you would verify the user owns this review here
-    $stmt = $conn->prepare("DELETE FROM reviews WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    
-    if ($stmt->execute()) {
-        header("Location: about.php"); // Send them back to the page
-    }
+if (!isset($_SESSION['email']) || !isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    header("Location: about.php?error=invalid");
+    exit();
 }
+
+$review_id  = (int)$_GET['id'];
+$user_email = $_SESSION['email'];
+
+$stmt = $conn->prepare("DELETE FROM reviews WHERE id = ? AND reviewer_email = ?");
+$stmt->bind_param("is", $review_id, $user_email);
+
+$stmt->execute();
+
+if ($stmt->affected_rows > 0) {
+    header("Location: about.php?status=deleted");
+} else {
+    header("Location: about.php?error=cannot_delete");
+}
+
+$stmt->close();
 ?>

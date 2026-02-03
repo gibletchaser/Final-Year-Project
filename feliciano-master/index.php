@@ -15,7 +15,8 @@ if (isset($_SESSION['status'])) {
     <title>Yob Yong Ordering System</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Great+Vibes&display=swap" rel="stylesheet">
@@ -420,20 +421,36 @@ if ($conn->connect_error) {
         background: #a38965;
         transform: translateY(-2px);
     }
+
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+}
+.star-rating input { display: none; }
+.star-rating label {
+    font-size: 35px;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s;
+    margin: 0 2px;
+}
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #c4a47c;
+}
 </style>
-  <section class="ftco-section img" style="background-image: url(images/bg_4.jpg); background-size: cover; background-attachment: fixed;">
+
+<section class="ftco-section img" style="background-image: url(images/bg_4.jpg); background-size: cover; background-attachment: fixed;">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-7 makereservation p-4 px-md-5 pb-md-5" style="background: rgba(255,255,255,0.95); border-radius: 15px; box-shadow: 0px 10px 30px rgba(0,0,0,0.1);">
                 <div class="heading-section text-center mb-5">
-                   <div class="heading-section text-center mb-5">
-                      <h2 class="mb-4" style="font-family: 'Great Vibes', cursive; color: #c4a47c; font-size: 50px; text-transform: none;">Share Your Experience</h2>
-                        <p style="color: #666;">We'd love to hear from you!</p>
-                                </div>
-                                    </div>
-                
-                <form action="#">
-                    <div class="row">
+                    <h2 class="mb-4" style="font-family: 'Great Vibes', cursive; color: #c4a47c; font-size: 50px; text-transform: none;">Share Your Experience</h2>
+                    <p style="color: #666;">We'd love to hear from you!</p>
+                      </div>
+
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="" style="color: #000; font-weight: bold;">Name</label>
@@ -445,6 +462,20 @@ if ($conn->connect_error) {
                             <div class="form-group">
                                 <label for="" style="color: #000; font-weight: bold;">Message</label>
                                 <textarea id="revComment" class="form-control" rows="4" placeholder="How was the food?"></textarea>
+                            </div>
+                        </div>
+                         <form action="#">
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="form-group text-center">
+                                <label style="color: #000; font-weight: bold; display: block; margin-bottom: 10px;">Your Rating</label>
+                                <div class="star-rating">
+                                    <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+                                    <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                                    <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                                    <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                                    <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-12 mt-3">
@@ -459,7 +490,7 @@ if ($conn->connect_error) {
     </div>
 </section>
 
-		<section class="ftco-section bg-light">
+<section class="ftco-section bg-light">
     <div class="container">
         <div class="row justify-content-center mb-5">
           <div class="col-md-7 text-center heading-section ftco-animate">
@@ -469,26 +500,48 @@ if ($conn->connect_error) {
         </div>
         <div class="row">
             <?php
-            // Get current user email from localStorage session via PHP if possible, 
-            // or just fetch all for now
-            $result = $conn->query("SELECT * FROM reviews ORDER BY created_at DESC");
-            if ($result->num_rows > 0) {
-                while($row = $result->fetch_assoc()) {
+// Fetch reviews
+$result = $conn->query("SELECT * FROM reviews ORDER BY created_at DESC");
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        $ratingCount = (int)$row['rating'];
+        $starsHtml = "";
+        for($i = 1; $i <= 5; $i++) {
+            $starsHtml .= ($i <= $ratingCount) ? "<span style='color: #c4a47c;'>★</span>" : "<span style='color: #ccc;'>★</span>";
+        }
+
+        echo "
+        <div class='col-md-4 mb-4 ftco-animate'>
+            <div class='card border-0 shadow-sm p-4' style='border-radius: 15px;'>
+                <div class='d-flex justify-content-between mb-2'>
+                    <h6 class='font-weight-bold' style='color: #c4a47c; margin-bottom: 0;'>".htmlspecialchars($row['reviewer_name'])."</h6>
+                    <small class='text-muted'>".date('M d', strtotime($row['created_at']))."</small>
+                </div>
+                
+                <div class='mb-2' style='font-size: 18px;'>$starsHtml</div>
+                
+                <p class='text-secondary mt-2' style='font-style: italic;'>\"".htmlspecialchars($row['comment'])."\"</p>";
+
+                // Check if the current logged-in user is the owner of this review
+                if (isset($_SESSION['email']) && $_SESSION['email'] === $row['reviewer_email']) {
                     echo "
-                    <div class='col-md-4 mb-4 ftco-animate'>
-                        <div class='card border-0 shadow-sm p-4' style='border-radius: 15px;'>
-                            <div class='d-flex justify-content-between'>
-                                <h6 class='font-weight-bold' style='color: #c4a47c;'>".htmlspecialchars($row['reviewer_name'])."</h6>
-                                <small class='text-muted'>".date('M d', strtotime($row['created_at']))."</small>
-                            </div>
-                            <p class='text-secondary mt-2' style='font-style: italic;'>\"".htmlspecialchars($row['comment'])."\"</p>
-                        </div>
+                    <div class='text-right mt-3'>
+                        <a href='delete_review.php?id=".$row['id']."' 
+                           onclick='return confirm(\"Are you sure you want to delete this review?\")' 
+                           style='color: #dc3545; font-size: 12px; text-decoration: none;'>
+                           <i class='fa fa-trash'></i> Delete My Review
+                        </a>
                     </div>";
                 }
-            } else {
-                echo "<div class='col-12 text-center'><p>No reviews yet. Be the first to share!</p></div>";
-            }
-            ?>
+
+        echo "
+            </div>
+        </div>";
+    }
+} else {
+    echo "<div class='col-12 text-center'><p>No reviews yet. Be the first to share!</p></div>";
+}
+?>
         </div>
     </div>
 </section>
@@ -691,45 +744,32 @@ if ($conn->connect_error) {
     return true; 
 }
 </script>
-
-  <script>
+<script>
 function submitReview() {
-    const nameInput = document.getElementById('revName');
-    const commentInput = document.getElementById('revComment');
-    
-    const name = nameInput.value.trim();
-    const comment = commentInput.value.trim();
+    const name = document.getElementById('revName').value;
+    const comment = document.getElementById('revComment').value;
+    // This finds the checked star radio button
+    const ratingInput = document.querySelector('input[name="rating"]:checked');
+    const rating = ratingInput ? ratingInput.value : 5;
 
-    if (!name || !comment) {
-        alert("Please enter both your name and your review!");
-        return;
-    }
+    const data = new FormData();
+    data.append('name', name);
+    data.append('comment', comment);
+    data.append('rating', rating); // Send the stars!
 
-    // Prepare data to send to save_review.php
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('comment', comment);
-
-    // Send to your PHP saving file
     fetch('save-review.php', {
         method: 'POST',
-        body: formData
+        body: data
     })
-    .then(response => response.text())
-    .then(data => {
-        if (data.includes("success")) {
-            alert("Thank you! Your review has been posted.");
-            location.reload(); // Refresh to show the new review
+    .then(res => res.text())
+    .then(response => {
+        if (response.trim() === "success") {
+            location.reload(); // Refresh to see the delete button
         } else {
-            alert("Error saving review. Make sure 'save_review.php' exists.");
+            alert(response);
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert("System error. Check console.");
     });
 }
 </script>
-    
   </body>
 </html>

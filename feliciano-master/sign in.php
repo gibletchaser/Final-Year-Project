@@ -84,7 +84,7 @@
             <div class="py-md-5">
               <div class="heading-section ftco-animate mb-5">
                 <span class="subheading">Login Account</span>
-                <h2 class="mb-4">Sign Up</h2>
+                <h2 class="mb-4">Sign In</h2>
               </div>
 
               <div id="login-error-msg" class="alert alert-danger" style="display: none; margin-bottom: 20px;"></div>
@@ -103,14 +103,14 @@
                         <input type="password" id="userPassword" class="form-control" placeholder="Password">
                     </div>
                   </div>
-                  <div class="col-md-12 mt-3">
+                   <div class="col-md-12 mt-3">
+                  <p class="mt-3">
+        <a href="forgot-password.php" style="color: #c4a47c; text-decoration: underline;">Forgot Password?</a>
+                   </p>
                     <div class="form-group">
                       <input type="button" onclick="loginUser()" value="Sign In" class="btn btn-primary py-3 px-5">
                     </div>
                   </div>
-                  <p class="mt-3">
-        <a href="forgot-password.php" style="color: #c4a47c; text-decoration: underline;">Forgot Password?</a>
-                   </p>
                 </div>
               </form>
             </div>
