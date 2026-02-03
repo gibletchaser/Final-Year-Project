@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Great+Vibes&display=swap" rel="stylesheet">
 
@@ -83,61 +84,75 @@
       </div>
     </section>
       
-<section class="ftco-section ftco-no-pt ftco-no-pb contact-section">
-			<div class="container">
-				<div class="row d-flex align-items-stretch no-gutters">
-					<div class="col-md-6 pt-5 px-2 pb-2 p-md-5 order-md-last">
-						<h2 class="h4 mb-2 mb-md-5 font-weight-bold">Contact Us</h2>
-						<form action="#">
-              <div class="form-group">
-                <input type="text" class="form-control" placeholder="Your Name">
-              </div>
-              <div class="form-group">
-                <input type="text" class="form-control" placeholder="Your Email">
-              </div>
-              <div class="form-group">
-                <input type="text" class="form-control" placeholder="Subject">
-              </div>
-              <div class="form-group">
-                <textarea name="" id="" cols="30" rows="7" class="form-control" placeholder="Message"></textarea>
-              </div>
-              <div class="form-group">
-                <input type="submit" value="Send Message" class="btn btn-primary py-3 px-5">
-              </div>
-            </form>
-					</div>
-					<div class="col-md-6 d-flex align-items-stretch">
-						<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3814.8097229468613!2d101.71961794135335!3d3.171958160257706!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc37e9cb7cea5b%3A0xf6dd729a3188226e!2sJln%20Maktab%2C%20Kampung%20Datuk%20Keramat%2C%2054000%20Kuala%20Lumpur%2C%20Wilayah%20Persekutuan%20Kuala%20Lumpur!5e0!3m2!1sen!2smy!4v1767505878596!5m2!1sen!2smy" 
-              width="100%" height="100%" style="border:0; min-height:500px; border-radius:10px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-					</div>
-				</div>
-			</div>
-		</section>
-		<section class="ftco-section contact-section">
-      <div class="container">
-        <div class="row d-flex contact-info">
-          <div class="col-md-12 mb-4">
-            <h2 class="h4 font-weight-bold">Contact Information</h2>
-          </div>
-          <div class="w-100"></div>
-          <div class="col-md-3 d-flex">
-          	<div class="dbox">
-	            <p><span>Address:</span> UTM Residence & Hotel, Kampung Datuk Keramat, 54000 Kuala Lumpur, Federal Territory of Kuala Lumpur</p>
-            </div>
-          </div>
-          <div class="col-md-3 d-flex">
-          	<div class="dbox">
-	            <p><span>Phone:</span> <a href="tel://1234567920">+6012-26828864</a></p>
-            </div>
-          </div>
-          <div class="col-md-3 d-flex">
-          	<div class="dbox">
-	            <p><span>Email:</span> <a href="mailto:info@yoursite.com">yobyong24@gmail.com</a></p>
-            </div>
+
+						<section class="ftco-section contact-section">
+  <div class="container">
+
+    <div class="row d-flex mb-5">
+
+      <!-- LEFT : MAP -->
+      <div class="contact-info d-flex align-items-stretch">
+        <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3814.8097229468613!2d101.71961794135335!3d3.171958160257706!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc37e9cb7cea5b%3A0xf6dd729a3188226e!2sJln%20Maktab%2C%20Kampung%20Datuk%20Keramat!5e0!3m2!1sen!2smy"
+          width="650px" 
+          height="100%"
+          style="border:0; min-height:500px; border-radius:10px;"
+          allowfullscreen 
+          loading="lazy">
+        </iframe>
+      </div>
+
+      <!-- RIGHT : CONTACT INFO -->
+      <div class="ccol-md-6">
+
+        <h2 class="h4 font-weight-bold mb-4 mb-5">Contact Information</h2>
+
+        <!-- ADDRESS -->
+        <div class="dbox w-100 mb-5">
+          <div class="dbox">
+            <p>
+              <span style="font-weight: 600; color: #000; display: block; margin-bottom: 5px;">
+                <i class="fas fa-map-marker-alt"></i>
+                Address:
+              </span>
+              UTM Residence & Hotel, Kampung Datuk Keramat,<br>
+              54000 Kuala Lumpur,<br>
+              Federal Territory of Kuala Lumpur
+            </p>
           </div>
         </div>
+
+        <!-- PHONE -->
+        <div class="dbox w-100 mb-5">
+          <div class="dbox">
+            <p>
+              <span style="font-weight: 600; color: #000; display: block; margin-bottom: 5px;">
+                <i class="fas fa-phone-alt"></i>
+                Phone:
+              </span>
+              <a href="tel:+601226828864">+6012-26828864</a>
+            </p>
+          </div>
+        </div>
+
+        <!-- EMAIL -->
+        <div class="dbox w-100 mb-5">
+          <div class="dbox">
+            <p>
+              <span style="font-weight: 600; color: #000; display: block; margin-bottom: 5px;">
+                <i class="fas fa-envelope"></i>
+                Email:
+              </span>
+              <a href="mailto:yobyong24@gmail.com">yobyong24@gmail.com</a>
+            </p>
+          </div>
+        </div>
+
       </div>
-    </section>
+    </div>
+  </div>
+</section>
+
 		
     <footer class="ftco-footer ftco-bg-dark ftco-section">
       <div class="container">
