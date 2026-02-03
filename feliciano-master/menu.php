@@ -189,25 +189,48 @@
     </section>
 
 		<!-- Cart Modal -->
+<!-- Cart Modal -->
 <div class="modal fade" id="cartModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Shopping Cart</h5>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h5 class="modal-title">Your Cart</h5>
+                <button type="button" class="close" data-dismiss="modal">×</button>
             </div>
             <div class="modal-body">
-                <div id="cartItems" class="cart-items">
-                </div>
+                <div id="cartItems" class="cart-items"></div>
                 <hr>
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between mb-3">
                     <h5>Total:</h5>
                     <h5>$<span id="cartTotal">0.00</span></h5>
                 </div>
+
+                <!-- Place Order Form -->
+                <form id="placeOrderForm">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" class="form-control" id="orderName" required placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" class="form-control" id="orderPhone" required placeholder="012-3456789">
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <select class="form-control" id="paymentMethod" required>
+                            <option value="cash_on_delivery">Cash on Delivery</option>
+                            <option value="online">Online Payment (Coming Soon)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Additional Notes</label>
+                        <textarea class="form-control" id="orderNotes" rows="2" placeholder="e.g. Less spicy, No onion..."></textarea>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Continue Shopping</button>
-                <button type="button" class="btn btn-primary" id="checkoutBtn">Proceed to Checkout</button>
+                <button type="button" class="btn btn-success" id="placeOrderBtn">Place Order</button>
             </div>
         </div>
     </div>

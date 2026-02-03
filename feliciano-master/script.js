@@ -190,8 +190,70 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Re-render cart when modal opens
 $('#cartModal').on('show.bs.modal', renderCart);
 
-// Initial render (for cart count on page load)
 renderCart();
+
+ddocument.getElementById('placeOrderBtn')?.addEventListener('click', function () {
+    console.log("Place Order button clicked!");
+
+    const name   = document.getElementById('orderName').value.trim();
+    const phone  = document.getElementById('orderPhone').value.trim();
+    const method = document.getElementById('paymentMethod').value;
+    const notes  = document.getElementById('orderNotes').value.trim();
+
+    console.log("Form data:", { name, phone, method, notes });
+
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    console.log("Cart contents:", cart);
+
+    if (!name || !phone) {
+        alert("Please fill in name and phone.");
+        return;
+    }
+    if (cart.length === 0) {
+        alert("Cart is empty!");
+        return;
+    }
+
+    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    console.log("Calculated total:", total);
+
+    const orderData = {
+        customer_name: name,
+        phone: phone,
+        payment_method: method,
+        notes: notes,
+        items: cart,
+        total_amount: total
+    };
+
+    console.log("Sending to server:", orderData);
+
+    fetch('place_order.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+    })
+    .then(res => {
+        console.log("Server responded with status:", res.status);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    })
+    .then(data => {
+        console.log("Response JSON:", data);
+        if (data.success) {
+            alert("Order placed! Order ID: " + data.order_id);
+            localStorage.removeItem('cart');
+            updateCartDisplay();
+            $('#cartModal').modal('hide');
+            window.location.href = `receipt.php?order_id=${data.order_id}`;
+        } else {
+            alert("Order failed: " + (data.message || "Unknown error"));
+        }
+    })
+    .catch(err => {
+        console.error("Fetch error:", err);
+        alert("Something went wrong: " + err.message);
+    });
+});
