@@ -29,7 +29,7 @@ if ($rating < 1 || $rating > 5) $rating = 5;
 // Get email if logged in – otherwise NULL
 $email = null;
 if (isset($_SESSION['email']) && !empty($_SESSION['email'])) {
-    $email = $_SESSION['email'];   // ← this line was probably missing or commented out
+    $email = $_SESSION['email'];   
 }
 
 $stmt = $conn->prepare("
