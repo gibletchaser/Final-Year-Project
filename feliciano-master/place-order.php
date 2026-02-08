@@ -20,7 +20,7 @@ if (!$data || empty($data['items'])) {
 }
 
 // Get logged in user email (from your current login system)
-$customer_email = $_SESSION['email'] ?? 'guest@example.com'; // ← change to your real session key
+$customer_email = $_SESSION['email'] ?? 'guest@example.com'; // ← change if needed
 
 $name           = $conn->real_escape_string($data['customer_name']);
 $phone          = $conn->real_escape_string($data['phone']);
@@ -28,18 +28,39 @@ $notes          = $conn->real_escape_string($data['notes'] ?? '');
 $total          = floatval($data['total_amount']);
 $payment_method = $data['payment_method'];
 
-// 1. Create order
+// ────────────────────────────────────────────────
+// NEW: Get PayPal transaction ID (only sent when PayPal was used)
+$paypal_id = $data['paypal_transaction_id'] ?? null;
+// ────────────────────────────────────────────────
+
+// 1. Create order - ADD paypal_transaction_id to the query
 $stmt = $conn->prepare("
-    INSERT INTO orders (customer_email, customer_name, phone, total_amount, payment_method, notes)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO orders (
+        customer_email, customer_name, phone, total_amount, 
+        payment_method, notes, paypal_transaction_id
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)
 ");
-$stmt->bind_param("sssds s", $customer_email, $name, $phone, $total, $payment_method, $notes);
+
+// ────────────────────────────────────────────────
+// IMPORTANT: Add 's' for the new string field in bind_param
+$stmt->bind_param(
+    "sssds s",  // ← added one more 's' for paypal_transaction_id
+    $customer_email,
+    $name,
+    $phone,
+    $total,
+    $payment_method,
+    $notes,
+    $paypal_id      // ← new parameter
+);
+// ────────────────────────────────────────────────
+
 $stmt->execute();
 
 $order_id = $conn->insert_id;
 $stmt->close();
 
-// 2. Insert items
+// 2. Insert items (this part stays the same)
 $stmt = $conn->prepare("
     INSERT INTO order_items (order_id, menu_id, name, price, quantity)
     VALUES (?, ?, ?, ?, ?)

@@ -194,7 +194,9 @@ $('#cartModal').on('show.bs.modal', renderCart);
 
 renderCart();
 
-ddocument.getElementById('placeOrderBtn')?.addEventListener('click', function () {
+document.getElementById('placeOrderBtn')?.addEventListener('click', function (e) {
+    e.preventDefault(); // prevent default if needed
+
     console.log("Place Order button clicked!");
 
     const name   = document.getElementById('orderName').value.trim();
@@ -202,10 +204,7 @@ ddocument.getElementById('placeOrderBtn')?.addEventListener('click', function ()
     const method = document.getElementById('paymentMethod').value;
     const notes  = document.getElementById('orderNotes').value.trim();
 
-    console.log("Form data:", { name, phone, method, notes });
-
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    console.log("Cart contents:", cart);
 
     if (!name || !phone) {
         alert("Please fill in name and phone.");
@@ -217,35 +216,47 @@ ddocument.getElementById('placeOrderBtn')?.addEventListener('click', function ()
     }
 
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    console.log("Calculated total:", total);
 
+    // ────────────────────────────────────────────────
+    // PayPal special handling
+    // ────────────────────────────────────────────────
+    if (method === 'paypal') {
+        // If PayPal buttons are rendered, user should have clicked them already
+        // We'll rely on onApprove to trigger the final submission
+        alert("Please complete the PayPal payment first.");
+        return; // stop here – onApprove will handle success
+    }
+
+    // For COD → proceed normally
+    submitOrder(name, phone, method, notes, cart, total);
+});
+
+// Helper function to submit order (used by both COD and PayPal success)
+function submitOrder(name, phone, method, notes, cart, total, paypalTransactionId = null) {
     const orderData = {
         customer_name: name,
         phone: phone,
         payment_method: method,
         notes: notes,
         items: cart,
-        total_amount: total
+        total_amount: total,
+        paypal_transaction_id: paypalTransactionId || null  // optional
     };
 
-    console.log("Sending to server:", orderData);
-
-    fetch('place_order.php', {
+    fetch('place-order.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
     })
     .then(res => {
-        console.log("Server responded with status:", res.status);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
         return res.json();
     })
     .then(data => {
-        console.log("Response JSON:", data);
         if (data.success) {
-            alert("Order placed! Order ID: " + data.order_id);
+            alert("Order placed successfully! Order ID: " + data.order_id);
             localStorage.removeItem('cart');
-            updateCartDisplay();
+            updateCartDisplay(); // your existing function
             $('#cartModal').modal('hide');
             window.location.href = `receipt.php?order_id=${data.order_id}`;
         } else {
@@ -253,7 +264,90 @@ ddocument.getElementById('placeOrderBtn')?.addEventListener('click', function ()
         }
     })
     .catch(err => {
-        console.error("Fetch error:", err);
+        console.error("Order submission error:", err);
         alert("Something went wrong: " + err.message);
     });
+}
+
+// ────────────────────────────────────────────────
+// PayPal Button Rendering & Handling
+// ────────────────────────────────────────────────
+document.getElementById('paymentMethod').addEventListener('change', function () {
+    const container = document.getElementById('paypal-button-container');
+    container.style.display = (this.value === 'paypal') ? 'block' : 'none';
+
+    if (this.value === 'paypal') {
+        // Clear previous buttons if any
+        container.innerHTML = '';
+
+        paypal.Buttons({
+            style: {
+                layout: 'vertical',
+                color: 'gold',
+                shape: 'rect',
+                label: 'paypal'
+            },
+
+            createOrder: function(data, actions) {
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+                if (total <= 0) {
+                    alert("Cart is empty!");
+                    return;
+                }
+
+                return fetch('create-paypal-order.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        total: total.toFixed(2),
+                        currency: 'MYR',
+                        description: 'Yob Yong Food Order'
+                    })
+                })
+                .then(res => res.json())
+                .then(order => {
+                    if (order.error) throw new Error(order.error);
+                    return order.id; // PayPal order ID
+                })
+                .catch(err => {
+                    alert("Failed to create PayPal order: " + err.message);
+                });
+            },
+
+            onApprove: function(data, actions) {
+                return fetch('capture-paypal-order.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderID: data.orderID })
+                })
+                .then(res => res.json())
+                .then(result => {
+                    if (result.status === 'COMPLETED') {
+                        // Payment success → get form data and submit order
+                        const name  = document.getElementById('orderName').value.trim();
+                        const phone = document.getElementById('orderPhone').value.trim();
+                        const notes = document.getElementById('orderNotes').value.trim();
+                        const cart  = JSON.parse(localStorage.getItem('cart') || '[]');
+                        const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+                        submitOrder(name, phone, 'paypal', notes, cart, total, result.id);
+                    } else {
+                        alert("Payment capture failed.");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Error capturing payment.");
+                });
+            },
+
+            onCancel: () => alert("Payment cancelled."),
+            onError: (err) => {
+                console.error(err);
+                alert("PayPal error occurred.");
+            }
+        }).render('#paypal-button-container');
+    }
 });
