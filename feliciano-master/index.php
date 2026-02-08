@@ -519,17 +519,21 @@ if ($result->num_rows > 0) {
                 
                 <p class='text-secondary mt-2' style='font-style: italic;'>\"".htmlspecialchars($row['comment'])."\"</p>";
 
-                // Check if the current logged-in user is the owner of this review
-                if (isset($_SESSION['email']) && $_SESSION['email'] === $row['reviewer_email']) {
-                    echo "
-                    <div class='text-right mt-3'>
-                        <a href='delete_review.php?id=".$row['id']."' 
-                           onclick='return confirm(\"Are you sure you want to delete this review?\")' 
-                           style='color: #dc3545; font-size: 12px; text-decoration: none;'>
-                           <i class='fa fa-trash'></i> Delete My Review
-                        </a>
-                    </div>";
-                }
+              
+                // Inside the while loop, after the existing if (logged in && email match) block
+
+// Always show delete-by-code link if code exists (for guests or if they lost session)
+if (!empty($row['delete_code'])) {
+    echo "
+    <div class='text-right mt-3'>
+        
+        <a href='delete-review.php?code=" . htmlspecialchars($row['delete_code']) . "'
+           onclick='return confirm(\"Delete this review?\");'
+           style='color:#dc3545; font-size:13px;'>
+           <i class='fas fa-trash-alt'></i> Delete
+        </a>
+    </div>";
+}
 
         echo "
             </div>
@@ -760,12 +764,20 @@ function submitReview() {
     })
     .then(res => res.text())
     .then(response => {
-        if (response.trim() === "success") {
-            location.reload(); // Refresh to see the delete button
+        if (response.startsWith("success")) {
+            let msg = "Thank you for your review! It has been posted.";
+            
+            if (response.includes("|")) {
+                const code = response.split("|")[1];
+                msg += `\n\nYour delete code is: ${code}\nSave this code! You can use it later to delete your review.`;
+            }
+            
+            alert(msg);
+            location.reload();
         } else {
-            alert(response);
+            alert("Oops: " + (response.startsWith("error:") ? response.substring(6).trim() : "Something went wrong"));
         }
-    });
+    })
 }
 </script>
   </body>

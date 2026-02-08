@@ -1,24 +1,30 @@
 <?php
-session_start();
 include 'db.php';
 
-if (!isset($_SESSION['email']) || !isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    header("Location: about.php?error=invalid");
+// Get the page the user came from (fallback to index.php)
+$redirect_page = $_SERVER['HTTP_REFERER'] ?? 'index.php';
+
+// Make sure it's one of our allowed pages
+$allowed_pages = ['index.php', 'about.php'];
+$redirect_page = in_array(basename($redirect_page), $allowed_pages) 
+    ? $redirect_page 
+    : 'index.php';
+
+if (!isset($_GET['code']) || strlen($_GET['code']) !== 10) {
+    header("Location: $redirect_page?error=invalid_code");
     exit();
 }
 
-$review_id  = (int)$_GET['id'];
-$user_email = $_SESSION['email'];
+$code = $_GET['code'];
 
-$stmt = $conn->prepare("DELETE FROM reviews WHERE id = ? AND reviewer_email = ?");
-$stmt->bind_param("is", $review_id, $user_email);
-
+$stmt = $conn->prepare("DELETE FROM reviews WHERE delete_code = ?");
+$stmt->bind_param("s", $code);
 $stmt->execute();
 
 if ($stmt->affected_rows > 0) {
-    header("Location: about.php?status=deleted");
+    header("Location: $redirect_page?status=deleted");
 } else {
-    header("Location: about.php?error=cannot_delete");
+    header("Location: $redirect_page?error=code_not_found");
 }
 
 $stmt->close();

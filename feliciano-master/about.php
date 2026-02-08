@@ -346,70 +346,54 @@ include 'db.php';
             <h2 class="mb-4">What Our Guests Say</h2>
           </div>
         </div>
-
-        <!-- Success / Error messages from delete -->
-        <?php
-        if (isset($_GET['status']) && $_GET['status'] === 'deleted') {
-            echo '<div class="alert alert-success text-center">Your review has been deleted.</div>';
-        }
-        if (isset($_GET['error'])) {
-            if ($_GET['error'] === 'login_required') {
-                echo '<div class="alert alert-warning text-center">Please sign in to delete reviews.</div>';
-            } elseif ($_GET['error'] === 'not_authorized_or_not_found' || $_GET['error'] === 'cannot_delete') {
-                echo '<div class="alert alert-danger text-center">You cannot delete this review.</div>';
-            }
-        }
-        ?>
-
         <div class="row">
             <?php
-            // Fetch reviews
-            $result = $conn->query("SELECT * FROM reviews ORDER BY created_at DESC");
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    $ratingCount = (int)$row['rating'];
-                    $starsHtml = str_repeat("<span style='color: #c4a47c;'>★</span>", $ratingCount) .
-                                 str_repeat("<span style='color: #ccc;'>★</span>", 5 - $ratingCount);
+// Fetch reviews
+$result = $conn->query("SELECT * FROM reviews ORDER BY created_at DESC");
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        $ratingCount = (int)$row['rating'];
+        $starsHtml = "";
+        for($i = 1; $i <= 5; $i++) {
+            $starsHtml .= ($i <= $ratingCount) ? "<span style='color: #c4a47c;'>★</span>" : "<span style='color: #ccc;'>★</span>";
+        }
 
-                    echo "
-                    <div class='col-md-4 mb-4 ftco-animate'>
-                        <div class='card border-0 shadow-sm p-4' style='border-radius: 15px;'>
-                            <div class='d-flex justify-content-between mb-2'>
-                                <h6 class='font-weight-bold' style='color: #c4a47c; margin-bottom: 0;'>" . 
-                                    htmlspecialchars($row['reviewer_name'] ?: 'Anonymous') . 
-                                "</h6>
-                                <small class='text-muted'>" . date('M d', strtotime($row['created_at'])) . "</small>
-                            </div>
-                            
-                            <div class='mb-2' style='font-size: 18px;'>" . $starsHtml . "</div>
-                            
-                            <p class='text-secondary mt-2' style='font-style: italic;'>" . 
-                                htmlspecialchars($row['comment']) . 
-                            "</p>";
+        echo "
+        <div class='col-md-4 mb-4 ftco-animate'>
+            <div class='card border-0 shadow-sm p-4' style='border-radius: 15px;'>
+                <div class='d-flex justify-content-between mb-2'>
+                    <h6 class='font-weight-bold' style='color: #c4a47c; margin-bottom: 0;'>".htmlspecialchars($row['reviewer_name'])."</h6>
+                    <small class='text-muted'>".date('M d', strtotime($row['created_at']))."</small>
+                </div>
+                
+                <div class='mb-2' style='font-size: 18px;'>$starsHtml</div>
+                
+                <p class='text-secondary mt-2' style='font-style: italic;'>\"".htmlspecialchars($row['comment'])."\"</p>";
 
-                    // Delete link — only shown to logged-in users who own this review
-                    if (isset($_SESSION['email']) && 
-                        !empty($row['reviewer_email']) && 
-                        $_SESSION['email'] === $row['reviewer_email']) {
-                        
-                        echo "
-                        <div class='text-right mt-3'>
-                            <a href='delete-review.php?id=" . $row['id'] . "'
-                               onclick='return confirm(\"Are you sure you want to delete this review?\")'
-                               style='color: #dc3545; font-size: 13px; text-decoration: none;'>
-                                <i class='fas fa-trash-alt'></i> Delete
-                            </a>
-                        </div>";
-                    }
+              
+                // Inside the while loop, after the existing if (logged in && email match) block
 
-                    echo "
-                        </div>
-                    </div>";
-                }
-            } else {
-                echo "<div class='col-12 text-center'><p>No reviews yet. Be the first to share!</p></div>";
-            }
-            ?>
+// Always show delete-by-code link if code exists (for guests or if they lost session)
+if (!empty($row['delete_code'])) {
+    echo "
+    <div class='text-right mt-3'>
+        
+        <a href='delete-review.php?code=" . htmlspecialchars($row['delete_code']) . "'
+           onclick='return confirm(\"Delete this review?\");'
+           style='color:#dc3545; font-size:13px;'>
+           <i class='fas fa-trash-alt'></i> Delete
+        </a>
+    </div>";
+}
+
+        echo "
+            </div>
+        </div>";
+    }
+} else {
+    echo "<div class='col-12 text-center'><p>No reviews yet. Be the first to share!</p></div>";
+}
+?>
         </div>
     </div>
 </section>
@@ -546,21 +530,16 @@ function handleLogout() {
 
 <script>
 function submitReview() {
-    const name = document.getElementById('revName').value.trim();
-    const comment = document.getElementById('revComment').value.trim();
+    const name = document.getElementById('revName').value;
+    const comment = document.getElementById('revComment').value;
+    // This finds the checked star radio button
     const ratingInput = document.querySelector('input[name="rating"]:checked');
     const rating = ratingInput ? ratingInput.value : 5;
 
-    if (!comment) {
-        alert("Please write your review before posting.");
-        return;
-    }
-
     const data = new FormData();
-    data.append('name', name || 'Anonymous Guest');
+    data.append('name', name);
     data.append('comment', comment);
-    data.append('rating', rating);
-    // Honeypot is sent automatically as empty → good
+    data.append('rating', rating); // Send the stars!
 
     fetch('save-review.php', {
         method: 'POST',
@@ -568,17 +547,20 @@ function submitReview() {
     })
     .then(res => res.text())
     .then(response => {
-        if (response.trim() === "success") {
-            alert("Thank you for your review! It has been posted.");
+        if (response.startsWith("success")) {
+            let msg = "Thank you for your review! It has been posted.";
+            
+            if (response.includes("|")) {
+                const code = response.split("|")[1];
+                msg += `\n\nYour delete code is: ${code}\nSave this code! You can use it later to delete your review.`;
+            }
+            
+            alert(msg);
             location.reload();
         } else {
             alert("Oops: " + (response.startsWith("error:") ? response.substring(6).trim() : "Something went wrong"));
         }
     })
-    .catch(err => {
-        console.error(err);
-        alert("Connection issue — please try again.");
-    });
 }
 </script>
   </body>

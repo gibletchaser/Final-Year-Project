@@ -5,43 +5,40 @@ include 'db.php';
 header('Content-Type: text/plain');
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    echo "error: Invalid request";
-    exit();
+    echo "error: Invalid request"; exit();
 }
 
-// Honeypot anti-spam
-if (!empty($_POST['website'])) {
-    echo "error: Spam detected";
-    exit();
-}
+// ... honeypot, trim, validation ... (keep your existing code)
 
 $name    = trim($_POST['name'] ?? 'Anonymous Guest');
 $comment = trim($_POST['comment'] ?? '');
 $rating  = isset($_POST['rating']) ? (int)$_POST['rating'] : 5;
 
-if (empty($comment)) {
-    echo "error: Please write a review message";
-    exit();
+// Generate random delete code (only if comment is not empty)
+$delete_code = null;
+if (!empty($comment)) {
+    $delete_code = bin2hex(random_bytes(5));   // e.g. "a1b2c3d4e5" (10 chars)
 }
 
-if ($rating < 1 || $rating > 5) $rating = 5;
-
-// Get email if logged in – otherwise NULL
 $email = null;
-if (isset($_SESSION['email']) && !empty($_SESSION['email'])) {
-    $email = $_SESSION['email'];   
+if (isset($_SESSION['email']) && filter_var($_SESSION['email'], FILTER_VALIDATE_EMAIL)) {
+    $email = $_SESSION['email'];
 }
 
 $stmt = $conn->prepare("
     INSERT INTO reviews 
-    (reviewer_name, reviewer_email, rating, comment, created_at) 
-    VALUES (?, ?, ?, ?, NOW())
+    (reviewer_name, reviewer_email, rating, comment, delete_code, created_at) 
+    VALUES (?, ?, ?, ?, ?, NOW())
 ");
 
-$stmt->bind_param("ssis", $name, $email, $rating, $comment);
+$stmt->bind_param("ssiss", $name, $email, $rating, $comment, $delete_code);
 
 if ($stmt->execute()) {
-    echo "success";
+    if ($delete_code) {
+        echo "success|{$delete_code}";
+    } else {
+        echo "success";
+    }
 } else {
     echo "error: " . $stmt->error;
 }
