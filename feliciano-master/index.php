@@ -1,19 +1,11 @@
 <?php
-session_start();
 include 'db.php';
-
-// ─── If user is already logged in → redirect to profile / dashboard ───
-if (isset($_SESSION['email'])) {           // ← use your actual login session key
-    header("Location: about.php");       // or menu.php, dashboard.php, etc.
-    exit();                                // very important – stops script execution
-}
-
-// Show any status message (registration success, etc.)
+session_start();
 if (isset($_SESSION['status'])) {
     echo '<div style="color: red; text-align: center; margin: 10px 0; font-weight: bold;">
             ' . htmlspecialchars($_SESSION['status']) . '
           </div>';
-    unset($_SESSION['status']);
+    unset($_SESSION['status']); // Clear it after showing
 }
 ?>
 
