@@ -1,11 +1,19 @@
 <?php
-include 'db.php';
 session_start();
+include 'db.php';
+
+// ─── If user is already logged in → redirect to profile / dashboard ───
+if (isset($_SESSION['email'])) {           // ← use your actual login session key
+    header("Location: about.php");       // or menu.php, dashboard.php, etc.
+    exit();                                // very important – stops script execution
+}
+
+// Show any status message (registration success, etc.)
 if (isset($_SESSION['status'])) {
     echo '<div style="color: red; text-align: center; margin: 10px 0; font-weight: bold;">
             ' . htmlspecialchars($_SESSION['status']) . '
           </div>';
-    unset($_SESSION['status']); // Clear it after showing
+    unset($_SESSION['status']);
 }
 ?>
 
@@ -71,10 +79,7 @@ if (isset($_SESSION['status'])) {
 
 	      <div class="collapse navbar-collapse" id="ftco-nav">
 	        <ul class="navbar-nav ml-auto">
-	        	<li class="nav-item active"><a href="index.php" class="nav-link">Home</a></li>
-	        	<li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
-	        	<li class="nav-item"><a href="menu.php" class="nav-link">Menu</a></li>
-	          <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
+	        	<li class="nav-item active"><a href="index.php" class="nav-link">Home</a></li>>
 	          <li class="nav-item cta"><a href="sign in.php" class="nav-link">Sign In</a></li>
 	        </ul>
 	      </div>
