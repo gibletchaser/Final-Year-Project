@@ -9,32 +9,59 @@ if (!isset($_SESSION['admin_logged_in'])) {
 include 'db.php';
 $username = $_SESSION['username'] ?? '';
 
-$stmt = $conn->prepare("SELECT username, full_name, email, role, created_at FROM users WHERE username = ?");
-if (!$stmt) {
-    die("Prepare failed: " . $conn->error);  // Added error checking to debug prepare() failure
-}
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
+// HANDLE PROFILE UPDATE
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $newUsername = $_POST['username'];
+    $profilePic = $_FILES['profile_pic'] ?? null;
 
-if (!$user) {
-    echo "User not found.";
+    $profileImageName = null;
+
+    if ($profilePic && $profilePic['error'] === 0) {
+        $ext = strtolower(pathinfo($profilePic['name'], PATHINFO_EXTENSION));
+        $allowed = ['jpg', 'jpeg', 'png'];
+
+        if (in_array($ext, $allowed)) {
+            $profileImageName = uniqid('profile_', true) . '.' . $ext;
+            move_uploaded_file($profilePic['tmp_name'], 'uploads/' . $profileImageName);
+        }
+    }
+
+    if ($profileImageName) {
+        $stmt = $conn->prepare(
+            "UPDATE users SET username = ?, profile_image = ? WHERE username = ?"
+        );
+        $stmt->bind_param("sss", $newUsername, $profileImageName, $username);
+    } else {
+        $stmt = $conn->prepare(
+            "UPDATE users SET username = ? WHERE username = ?"
+        );
+        $stmt->bind_param("ss", $newUsername, $username);
+    }
+
+    $stmt->execute();
+    $_SESSION['username'] = $newUsername;
+
+    header("Location: profile.php");
     exit;
 }
-?>
 
+// FETCH USER DATA
+$stmt = $conn->prepare(
+    "SELECT username, full_name, email, role, created_at, profile_image 
+     FROM users WHERE username = ?"
+);
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$user = $stmt->get_result()->fetch_assoc();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-	<!-- Boxicons -->
-	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
-	<!-- My CSS -->
-	<link rel="stylesheet" href="style.css">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css">
+    <title>Profile | AdminHub</title>
 </head>
 <body>
 
@@ -45,85 +72,58 @@ if (!$user) {
         <span class="text">AdminHub</span>
     </a>
     <ul class="side-menu top">
-        			<li class="active">
-				<a href="index.php">
-					<i class='bx bxs-dashboard' ></i>
-					<span class="text">Dashboard</span>
-				</a>
-			</li>
-			<li>
-				<a href="myStore.php">
-					<i class='bx bxs-shopping-bag-alt'></i>
-					<span class="text">My Store</span>
-				</a>
-			</li>
-                    <li class="active">
-                <a href="profile.php">
-                    <i class='bx bxs-user'></i>
-                    <span class="text">Profile</span>
-                </a>
-            </li>
-            <li>
-				<a href="#">
-					<i class='bx bxs-doughnut-chart' ></i>
-					<span class="text">Analytics</span>
-				</a>
-			</li>
-			<li>
-				<a href="#">
-					<i class='bx bxs-message-dots' ></i>
-					<span class="text">Message</span>
-				</a>
-			</li>
-			<li>
-				<a href="#">
-					<i class='bx bxs-group' ></i>
-					<span class="text">Team</span>
-				</a>
-			</li>
-		</ul>
-	<ul class="side-menu">
-			<li>
-				<a href="#">
-					<i class='bx bxs-cog' ></i>
-					<span class="text">Settings</span>
-				</a>
-			</li>
+        <li>
+            <a href="index.php">
+                <i class='bx bxs-dashboard'></i>
+                <span class="text">Dashboard</span>
+            </a>
+        </li>
+        <li>
+            <a href="myStore.php">
+                <i class='bx bxs-shopping-bag-alt'></i>
+                <span class="text">My Store</span>
+            </a>
+        </li>
+        <li class="active">
+            <a href="profile.php">
+                <i class='bx bxs-user'></i>
+                <span class="text">Profile</span>
+            </a>
+        </li>
+    </ul>
+    <ul class="side-menu">
         <li>
             <a href="logout.php" class="logout">
                 <i class='bx bxs-log-out-circle'></i>
-            <span class="text">Logout</span>
+                <span class="text">Logout</span>
             </a>
         </li>
     </ul>
 </section>
 <!-- SIDEBAR -->
 
-		<!-- CONTENT -->
-	<section id="content">
-		<!-- NAVBAR -->
-		<nav>
-			<i class='bx bx-menu' ></i>
-			<a href="#" class="nav-link">Categories</a>
-			<form action="#">
-				<div class="form-input">
-					<input type="search" placeholder="Search...">
-					<button type="submit" class="search-btn"><i class='bx bx-search' ></i></button>
-				</div>
-			</form>
-			<input type="checkbox" id="switch-mode" hidden>
-			<label for="switch-mode" class="switch-mode"></label>
-			<a href="#" class="notification">
-				<i class='bx bxs-bell' ></i>
-				<span class="num">8</span>
-			</a>
-			<a href="profile.php" class="profile">
-				<img src="img/people.png">
-			</a>
-		</nav>
-		<!-- NAVBAR -->
+<!-- CONTENT -->
+<section id="content">
+    <!-- NAVBAR -->
+    <nav>
+        <i class='bx bx-menu'></i>
+        <form>
+            <div class="form-input">
+                <input type="search" placeholder="Search...">
+                <button class="search-btn"><i class='bx bx-search'></i></button>
+            </div>
+        </form>
+        <a href="#" class="notification">
+            <i class='bx bxs-bell'></i>
+            <span class="num">8</span>
+        </a>
+        <a href="profile.php" class="profile">
+            <img src="uploads/<?= htmlspecialchars($user['profile_image'] ?? 'people.png') ?>">
+        </a>
+    </nav>
+    <!-- NAVBAR -->
 
-
+    <!-- MAIN -->
     <main>
         <div class="head-title">
             <div class="left">
@@ -136,40 +136,64 @@ if (!$user) {
             </div>
         </div>
 
+        <!-- PROFILE CARD CENTERED -->
         <div class="table-data">
             <div class="order">
-                <h3>Account Information</h3>
-                <table>
-                    <tr>
-                        <th>Username</th>
-                        <td><?= htmlspecialchars($user['username']) ?></td>
-                    </tr>
-                    <tr>
-                        <th>Full Name</th>
-                        <td><?= htmlspecialchars($user['full_name']) ?></td>
-                    </tr>
-                    <tr>
-                        <th>Email</th>
-                        <td><?= htmlspecialchars($user['email']) ?></td>
-                    </tr>
-                    <tr>
-                        <th>Role</th>
-                        <td><?= htmlspecialchars($user['role']) ?></td>
-                    </tr>
-                    <tr>
-                        <th>Account Created</th>
-                        <td><?= htmlspecialchars($user['created_at']) ?></td>
-                    </tr>
-                </table>
-				<a href="change_password.php" class="btn-download" style="margin-top: 15px;">
-    			<i class='bx bxs-lock'></i>
-    			<span class="text">Change Password</span>
-				</a>
+
+                <div class="profile-card">
+                    <form method="POST" enctype="multipart/form-data">
+
+                        <div class="profile-header">
+                            <img
+                                src="uploads/<?= htmlspecialchars($user['profile_image'] ?? 'people.png') ?>"
+                                class="profile-avatar"
+                            >
+                            <label class="upload-btn">
+                                Change Photo
+                                <input type="file" name="profile_pic" hidden>
+                            </label>
+                        </div>
+
+                        <div class="profile-field">
+                            <label>Username</label>
+                            <input type="text" name="username"
+                                   value="<?= htmlspecialchars($user['username']) ?>" required>
+                        </div>
+
+                        <div class="profile-field">
+                            <label>Full Name</label>
+                            <input type="text" value="<?= htmlspecialchars($user['full_name']) ?>" disabled>
+                        </div>
+
+                        <div class="profile-field">
+                            <label>Email</label>
+                            <input type="email" value="<?= htmlspecialchars($user['email']) ?>" disabled>
+                        </div>
+
+                        <div class="profile-field">
+                            <label>Role</label>
+                            <input type="text" value="<?= htmlspecialchars($user['role']) ?>" disabled>
+                        </div>
+
+                        <div class="profile-field">
+                            <label>Account Created</label>
+                            <input type="text" value="<?= htmlspecialchars($user['created_at']) ?>" disabled>
+                        </div>
+
+                        <button type="submit" class="btn-save">
+                            <i class='bx bxs-save'></i>
+                            Save Changes
+                        </button>
+
+                    </form>
+                </div>
 
             </div>
         </div>
     </main>
+    <!-- MAIN -->
 </section>
+<!-- CONTENT -->
 
 <script src="script.js"></script>
 </body>
