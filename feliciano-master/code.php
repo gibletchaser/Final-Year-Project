@@ -50,59 +50,52 @@ function send_verification_code($name, $email, $code) {
     }
 }
 
-// ────────────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registerbtn'])) {
     
-    // Sanitize & validate
-    $name  = trim($_POST['name'] ?? '');
-    $phone = trim($_POST['phone'] ?? '');
-    $email = filter_var(trim($_POST['email'] ?? ''), FILTER_VALIDATE_EMAIL);
-    $password = $_POST['password'] ?? ''; // ← add this field in form!
+    // 1. Sanitize input to prevent SQL injection
+    $name     = mysqli_real_escape_string($conn, trim($_POST['name']));
+    $phone    = mysqli_real_escape_string($conn, trim($_POST['phone']));
+    $email    = mysqli_real_escape_string($conn, trim($_POST['email']));
+    $password = mysqli_real_escape_string($conn, $_POST['password']);
 
-    if (!$email) {
-        $_SESSION['status'] = "Please enter a valid email address.";
+    // 2. Validate basic requirements
+    if (empty($name) || empty($phone) || empty($email) || strlen($password) < 6) {
+        $_SESSION['status'] = "All fields required. Password minimum needed 6 characters.";
         header("Location: index.php");
         exit();
     }
 
-    if (empty($name) || empty($phone) || strlen($password) < 6) {
-        $_SESSION['status'] = "Name, phone and password (min 6 chars) are required.";
-        header("Location: index.php");
+    // 3. DUPLICATE CHECK (The Fix)
+    $check_query = "SELECT email, name, phone FROM user WHERE email='$email' OR name='$name' OR phone='$phone' LIMIT 1";
+    $check_run = mysqli_query($conn, $check_query);
+
+    if (mysqli_num_rows($check_run) > 0) {
+        $row = mysqli_fetch_assoc($check_run);
+        if($row['email'] == $email) $_SESSION['status'] = "Error: Email already registered.";
+        elseif($row['phone'] == $phone) $_SESSION['status'] = "Error: Phone number already in used.";
+        else $_SESSION['status'] = "Error: Username already taken.";
+        
+        header("Location: index.php"); // Send back to index.php
         exit();
     }
 
-    // Generate secure code
-    $code = random_int(100000, 999999); // no need for sprintf
+    // 4. If we reached here, no duplicate was found. Now generate code and send email.
+    $code = random_int(100000, 999999);
+    $_SESSION['verify_name']     = $name;
+    $_SESSION['verify_email']    = $email;
+    $_SESSION['verify_phone']    = $phone;
+    $_SESSION['verify_password'] = $password;
+    $_SESSION['verify_code']     = $code;
+    $_SESSION['code_generated_at'] = time();
 
-    // Store in session - use CONSISTENT naming!
-    $_SESSION['verify_name']           = $name;
-    $_SESSION['verify_email']          = $email;
-    $_SESSION['verify_phone']          = $phone;
-    $_SESSION['verify_password']       = $password;               // ← plain for now
-    // or better: $_SESSION['verify_password_hash'] = password_hash($password, PASSWORD_DEFAULT);
-    
-    $_SESSION['verify_code']           = $code;                    // ← important: consistent name!
-    $_SESSION['code_generated_at']     = time();
-
-    // Send email
     if (send_verification_code($name, $email, $code)) {
         $_SESSION['status'] = "Verification code sent to your email!";
         header("Location: verify-email.php");
         exit();
     } else {
-        $_SESSION['status'] = "Failed to send verification email. Please try again.";
+        $_SESSION['status'] = "Mailer Error. Please try again.";
         header("Location: index.php");
         exit();
     }
 }
-
-// Optional: Only for debugging - remove later!
-// Uncomment when you want to check session values
-/*
-echo "<pre style='background:#000;color:#0f0;padding:20px;'>";
-echo "Session debug after registration attempt:\n\n";
-var_dump($_SESSION);
-echo "</pre>";
-die();
-*/
 ?>

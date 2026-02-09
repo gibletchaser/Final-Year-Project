@@ -10,23 +10,25 @@ if (!isset($_SESSION['verify_code'])) {
 $minutes_passed = floor((time() - $_SESSION['code_generated_at']) / 60);
 if ($minutes_passed >= 10) {
     session_destroy();
+    session_start(); // Restart to carry the status message
     $_SESSION['status'] = "Code expired. Please register again.";
     header("Location: index.php");
     exit();
 }
 
+$fail = false; // Initialize the failure flag
+
 if (isset($_POST['verifybtn'])) {
     $entered = trim($_POST['code']);
     $stored  = (string)$_SESSION['verify_code'];
 
+    // --- CHECK 1: Is the code correct? ---
     if ($entered === $stored) {
-        // GET DATA FROM SESSION
-        $name     = $_SESSION['verify_name'];
-        $email    = $_SESSION['verify_email'];
-        $phone    = $_SESSION['verify_phone'];
-        $password = $_SESSION['verify_password'];
+        $name     = mysqli_real_escape_string($conn, $_SESSION['verify_name']);
+        $email    = mysqli_real_escape_string($conn, $_SESSION['verify_email']);
+        $phone    = mysqli_real_escape_string($conn, $_SESSION['verify_phone']);
+        $password = mysqli_real_escape_string($conn, $_SESSION['verify_password']);
 
-        // INSERT INTO DATABASE
         $query = "INSERT INTO user (name, email, phone, password) VALUES ('$name', '$email', '$phone', '$password')";
         $query_run = mysqli_query($conn, $query);
 
@@ -36,10 +38,15 @@ if (isset($_POST['verifybtn'])) {
             header("Location: sign in.php");
             exit();
         } else {
-            $_SESSION['status'] = "Database Error: " . mysqli_error($conn);
+            $_SESSION['status'] = "Registration failed. Please try again.";
+            header("Location: index.php");
+            exit();
         }
-    } else {
-        $_SESSION['status'] = "Invalid code. Please try again.";
+    } 
+    // --- THIS ELSE handles the wrong code ---
+    else {
+        $fail = true; // Triggers the Pop-out
+        $_SESSION['status'] = "Invalid code. Please try again."; // Triggers the Red Text
     }
 }
 ?>
@@ -50,7 +57,7 @@ if (isset($_POST['verifybtn'])) {
     <meta charset="UTF-8">
     <title>Verify Email</title>
     <style>
-        body { font-family: Arial; background: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        body { font-family: Arial; background: #f4f4f4; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; }
         .box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); text-align: center; }
         input { font-size: 20px; padding: 10px; width: 150px; text-align: center; margin: 10px 0; }
         button { background: #28a745; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
@@ -59,14 +66,17 @@ if (isset($_POST['verifybtn'])) {
 <body>
 <div class="box">
     <h2>Verify Your Email</h2>
-    <p>Code sent to: <b><?= $_SESSION['verify_email'] ?></b></p>
-    
-    <?php if(isset($_SESSION['status'])) { echo "<p style='color:red;'>".$_SESSION['status']."</p>"; unset($_SESSION['status']); } ?>
+    <p>Code sent to: <b><?= htmlspecialchars($_SESSION['verify_email']) ?></b></p>
+
+    <?php if(isset($_SESSION['status'])): ?>
+        <p style="color:red; font-size: 14px; margin-bottom: 15px;"><?= $_SESSION['status'] ?></p>
+        <?php unset($_SESSION['status']); ?>
+    <?php endif; ?>
 
     <form method="POST">
         <input type="text" name="code" placeholder="123456" required>
         <br>
-        <button type="submit" name="verifybtn">Verify & Register</button>
+        <button type="submit" name="verifybtn">Verify Email</button>
     </form>
 </div>
 </body>

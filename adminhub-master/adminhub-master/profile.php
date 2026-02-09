@@ -124,8 +124,6 @@ if (!$user) {
 		<!-- NAVBAR -->
 
 
-<!-- CONTENT -->
-<section id="content">
     <main>
         <div class="head-title">
             <div class="left">
@@ -163,6 +161,11 @@ if (!$user) {
                         <td><?= htmlspecialchars($user['created_at']) ?></td>
                     </tr>
                 </table>
+				<a href="change_password.php" class="btn-download" style="margin-top: 15px;">
+    			<i class='bx bxs-lock'></i>
+    			<span class="text">Change Password</span>
+				</a>
+
             </div>
         </div>
     </main>

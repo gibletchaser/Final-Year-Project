@@ -197,40 +197,55 @@
         reader.readAsDataURL(event.target.files[0]);
     }
 
-    function saveProfile() {
-        const sessionData = JSON.parse(localStorage.getItem('yobYongSession'));
-        
-        const newName = document.getElementById('edit-name').value.trim();
-        const newEmail = document.getElementById('edit-email').value.trim();
-        const newPhone = document.getElementById('edit-phone').value.trim();
-        const newPass = document.getElementById('edit-password').value;
-        const confirmPass = document.getElementById('confirm-password').value;
+   function saveProfile() {
+    const sessionData = JSON.parse(localStorage.getItem('yobYongSession'));
+    
+    const newName = document.getElementById('edit-name').value.trim();
+    const newEmail = document.getElementById('edit-email').value.trim();
+    const newPhone = document.getElementById('edit-phone').value.trim();
+    const newPass = document.getElementById('edit-password').value;
+    const confirmPass = document.getElementById('confirm-password').value;
 
-        if (!newName || !newEmail) {
-            alert("Name and Email are required!");
-            return;
-        }
-
-        if (newPass !== "") {
-            if (newPass !== confirmPass) {
-                alert("New passwords do not match!");
-                return;
-            }
-            sessionData.password = newPass;
-        }
-
-        // Update local session object
-        sessionData.name = newName;
-        sessionData.email = newEmail;
-        sessionData.phone = newPhone;
-        sessionData.profilePic = document.getElementById('profile-img').src; 
-
-        localStorage.setItem('yobYongSession', JSON.stringify(sessionData));
-        
-        alert("Profile updated successfully!");
-        toggleEditMode(false);
-        loadUserData();
+    if (newPass !== "" && newPass !== confirmPass) {
+        alert("New passwords do not match!");
+        return;
     }
+
+    // 1. Prepare data to send to PHP
+    const formData = new FormData();
+    formData.append('name', newName);
+    formData.append('email', newEmail); // We use email to find the right user in DB
+    formData.append('phone', newPhone);
+    formData.append('password', newPass);
+
+    // 2. Use fetch to send data to the database
+    fetch('update-profile.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (data.trim() === "success") {
+            // 3. ONLY update localStorage if the Database update worked!
+            sessionData.name = newName;
+            sessionData.email = newEmail;
+            sessionData.phone = newPhone;
+            if (newPass !== "") sessionData.password = newPass;
+
+            localStorage.setItem('yobYongSession', JSON.stringify(sessionData));
+            
+            alert("Profile saved to Database successfully!");
+            toggleEditMode(false);
+            loadUserData();
+        } else {
+            alert("Database Error: " + data);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("System error occurred.");
+    });
+}
 
     function togglePasswordDisplay() {
         const passSpan = document.getElementById('profile-password');
