@@ -1,67 +1,84 @@
 <?php
 session_start();
-include 'db.php'; // your connection file
+include 'db.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: sign_in.php?redirect=receipt");
+    exit;
+}
 
 $order_id = isset($_GET['order_id']) ? (int)$_GET['order_id'] : 0;
-
 if ($order_id <= 0) {
     die("Invalid order.");
 }
-
-$stmt = $conn->prepare("SELECT * FROM orders WHERE id = ?");
-$stmt->bind_param("i", $order_id);
+$stmt = $conn->prepare("
+    SELECT * FROM orders 
+    WHERE id = ? AND customer_email = ?
+");
+$stmt->bind_param("is", $order_id, $_SESSION['email']);   // or $_SESSION['user_id'] if using ID
 $stmt->execute();
 $order = $stmt->get_result()->fetch_assoc();
 
 if (!$order) {
-    die("Order not found.");
+    die("Order not found or you do not have permission to view it.");
+}
+$stmt = $conn->prepare("SELECT * FROM orders WHERE id = ?");
+if (!$stmt) {
+    die("Prepare failed: " . $conn->error);
+}
+$stmt->bind_param("i", $order_id);
+
+if (!$stmt->execute()) {
+    die("Execute failed: " . $stmt->error);
 }
 
-$itemsStmt = $conn->prepare("SELECT * FROM order_items WHERE order_id = ?");
-$itemsStmt->bind_param("i", $order_id);
-$itemsStmt->execute();
-$items = $itemsStmt->get_result();
+$order = $stmt->get_result()->fetch_assoc();
+if (!$order) {
+    http_response_code(404);
+    die("Order not found.");
+}
 ?>
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Order Receipt #<?php echo $order_id; ?></title>
-    <link rel="stylesheet" href="css/style.css"> <!-- your styles -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Receipt #<?php echo $order_id; ?> - Yob Yong</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+        h1 { color: #e67e22; text-align: center; }
+        table { margin: 20px 0; border-collapse: collapse; width: 100%; }
+        th, td { padding: 12px; text-align: left; border: 1px solid #ddd; }
+        th { background: #f8f8f8; }
+        .total { font-size: 1.3em; background: #fff3e0; }
+        .success-box {
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Thank You! Order #<?php echo $order_id; ?></h1>
+<div class="success-box">
+    <h1>Thank You for Your Order!</h1>
+    <p>Your order has been received and is being prepared.</p>
+</div>
 
+<p><strong>Order Number:</strong> #<?php echo $order_id; ?></p>
 <p><strong>Name:</strong> <?php echo htmlspecialchars($order['customer_name']); ?></p>
 <p><strong>Phone:</strong> <?php echo htmlspecialchars($order['phone']); ?></p>
-<p><strong>Date:</strong> <?php echo date('d M Y H:i', strtotime($order['created_at'])); ?></p>
-<p><strong>Payment:</strong> <?php echo ucfirst(str_replace('_', ' ', $order['payment_method'])); ?></p>
-<p><strong>Status:</strong> <strong><?php echo strtoupper($order['status']); ?></strong></p>
+<p><strong>Placed on:</strong> <?php echo date('d M Y, h:i A', strtotime($order['created_at'])); ?></p>
+<p><strong>Payment Method:</strong> <?php echo ucfirst(str_replace('_', ' ', $order['payment_method'])); ?></p>
 
-<h3>Your Items</h3>
-<table border="1" style="width:100%; border-collapse: collapse;">
-    <tr>
-        <th>Item</th>
-        <th>Price</th>
-        <th>Qty</th>
-        <th>Total</th>
-    </tr>
-    <?php while($item = $items->fetch_assoc()): ?>
-    <tr>
-        <td><?php echo htmlspecialchars($item['name']); ?></td>
-        <td>$<?php echo number_format($item['price'], 2); ?></td>
-        <td><?php echo $item['quantity']; ?></td>
-        <td>$<?php echo number_format($item['price'] * $item['quantity'], 2); ?></td>
-    </tr>
-    <?php endwhile; ?>
-    <tr>
-        <td colspan="3"><strong>Grand Total</strong></td>
-        <td><strong>$<?php echo number_format($order['total_amount'], 2); ?></strong></td>
-    </tr>
-</table>
+<?php if ($order['payment_method'] === 'paypal'): ?>
+<p><strong>PayPal Transaction ID:</strong> <?php echo htmlspecialchars($order['paypal_transaction_id'] ?? '—'); ?></p>
+<?php endif; ?>
 
-<a href="my_orders.php">→ View All My Orders & Status</a>
-
+<h3>Order Items</h3>
 </body>
 </html>

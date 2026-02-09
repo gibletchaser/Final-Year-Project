@@ -142,6 +142,10 @@ document.querySelectorAll('.qty-btn').forEach(btn => {
         input.value = value;
     });
 });
+// After pushing/updating item
+localStorage.setItem('cart', JSON.stringify(cart));
+console.log("Cart saved to localStorage:", cart);  // debug
+renderCart();  // update UI
 
 // === HANDLE + / - / REMOVE INSIDE CART MODAL - ATTACH ONLY ONCE ===
 document.addEventListener('DOMContentLoaded', () => {
@@ -256,24 +260,26 @@ function submitOrder(name, phone, method, notes, cart, total, paypalTransactionI
         body: JSON.stringify(orderData)
     })
     .then(res => {
-        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-        return res.json();
-    })
-    .then(data => {
-        if (data.success) {
-            alert("Order placed successfully! Order ID: " + data.order_id);
-            localStorage.removeItem('cart');
-            updateCartDisplay(); // your existing function
-            $('#cartModal').modal('hide');
+    console.log("Raw response status:", res.status, "ok?", res.ok);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.text();   // ← first get as text to see raw
+})
+.then(text => {
+    console.log("Raw response body:", text);
+    try {
+        const data = JSON.parse(text);
+        console.log("Parsed data:", data);
+        if (data.success && data.order_id) {
+            console.log("Redirecting to receipt.php?order_id=" + data.order_id);
             window.location.href = `receipt.php?order_id=${data.order_id}`;
         } else {
-            alert("Order failed: " + (data.message || "Unknown error"));
+            alert("Server said: " + (data.message || "No success flag"));
         }
-    })
-    .catch(err => {
-        console.error("Order submission error:", err);
-        alert("Something went wrong: " + err.message);
-    });
+    } catch (e) {
+        console.error("JSON parse failed:", e, "Raw was:", text);
+        alert("Server response invalid: " + text.substring(0, 200));
+    }
+})
 }
 
 // ────────────────────────────────────────────────

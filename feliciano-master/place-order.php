@@ -1,4 +1,5 @@
 <?php
+file_put_contents('debug.log', date('Y-m-d H:i:s') . " - Received data: " . print_r($data, true) . "\n", FILE_APPEND);
 error_log(print_r($_POST, true));
 session_start();
 header('Content-Type: application/json');
@@ -79,8 +80,16 @@ foreach ($data['items'] as $item) {
 
 $stmt->close();
 
+// ... after all executes ...
+
+header('Content-Type: application/json; charset=utf-8');
+
+// Make sure NOTHING is output before this (no echo, no space before <?php, no error messages)
 echo json_encode([
     "success"  => true,
     "order_id" => $order_id,
     "message"  => "Order placed successfully"
 ]);
+
+exit;   // important - stop any further output
+?>
