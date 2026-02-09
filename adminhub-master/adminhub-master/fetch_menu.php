@@ -1,7 +1,7 @@
 <?php
 include 'db.php';
 
-$result = $conn->query("SELECT * FROM menu");
+$result = $conn->query("SELECT id, name, price, image FROM menu");
 $menus = [];
 
 while ($row = $result->fetch_assoc()) {

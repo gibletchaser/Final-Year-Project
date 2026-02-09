@@ -1,4 +1,9 @@
 const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
+const API = "/anak_anjing_kelaparan/portfolio/Final-Year-Project";
+
+let url = menuId
+    ? API + "/update_menu.php"
+    : API + "/add_menu.php";
 
 
 allSideMenu.forEach(item=> {
@@ -136,21 +141,41 @@ function closeModal() {
 }
 
 function saveMenu() {
-  const id = $("#menuId").val();
-  const url = id ? "update_menu.php" : "add_menu.php";
+    let menuId = $("#menuId").val();
 
-  $.post(url, {
-    id,
-    name: $("#menuName").val(),
-    price: $("#menuPrice").val()
-  }, function (res) {
-    if (res.trim() === "success") {
-      closeModal();
-      loadMenus();
-    } else {
-      alert(res);
+    let formData = new FormData();
+    formData.append("name", $("#menuName").val());
+    formData.append("price", $("#menuPrice").val());
+
+    if (menuId) {
+        formData.append("id", menuId);
     }
-  });
+
+    let fileInput = document.getElementById("menuImage");
+    if (fileInput && fileInput.files.length > 0) {
+        formData.append("image", fileInput.files[0]);
+    }
+
+    let url = menuId
+        ? "update_menu.php"
+        : "add_menu.php";
+
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+            alert(res);
+            closeModal();
+            loadMenus();
+        },
+        error: function (xhr) {
+            console.error(xhr.responseText);
+            alert("Save failed");
+        }
+    });
 }
 
 function deleteMenu() {

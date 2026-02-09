@@ -19,7 +19,7 @@ include 'db.php';
 <section id="sidebar">
   <a href="#" class="brand">
     <i class='bx bxs-smile'></i>
-    <span class="text">AdminHub</span>
+    <span class="text">Yobyong</span>
   </a>
   <ul class="side-menu top">
     <li>
@@ -120,8 +120,11 @@ include 'db.php';
         <label>Price (RM)</label>
         <input type="number" id="menuPrice" step="0.01">
 
+        <label>Menu Image</label>
+        <input type="file" id="menuImage" accept="image/*">
+
         <div class="modal-actions">
-          <button class="btn-save" onclick="saveMenu()">Save</button>
+          <button type="button" class="btn-save" onclick="saveMenu()">Save</button>
           <button class="btn-cancel" onclick="closeModal()">Cancel</button>
           <button id="deleteBtn"
                   onclick="deleteMenu()"
