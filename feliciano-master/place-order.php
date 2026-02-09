@@ -1,4 +1,5 @@
 <?php
+error_log(print_r($_POST, true));
 session_start();
 header('Content-Type: application/json');
 
@@ -44,7 +45,7 @@ $stmt = $conn->prepare("
 // ────────────────────────────────────────────────
 // IMPORTANT: Add 's' for the new string field in bind_param
 $stmt->bind_param(
-    "sssds s",  // ← added one more 's' for paypal_transaction_id
+    "sssdsss",  // ← added one more 's' for paypal_transaction_id
     $customer_email,
     $name,
     $phone,

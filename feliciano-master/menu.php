@@ -445,12 +445,12 @@ function submitOrder(orderData) {
         body: JSON.stringify(orderData)
     })
     .then(res => {
-        console.log("place_order.php status:", res.status);
+        console.log("place-order.php status:", res.status);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
     })
     .then(data => {
-        console.log("place_order.php response:", data);
+        console.log("place-order.php response:", data);
         if (data.success && data.order_id) {
             alert("Order placed! Order ID: " + data.order_id);
             localStorage.removeItem('cart');
@@ -529,37 +529,25 @@ document.getElementById('paymentMethod').addEventListener('change', function() {
             },
 
             onApprove: function(data, actions) {
-                return actions.order.capture().then(function(details) {
-                    console.log("PayPal success:", details);
+    return actions.order.capture().then(function(details) {
+        // Collect everything needed for the DB
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-                    alert('Payment successful! Transaction ID: ' + details.id);
+        const orderData = {
+            customer_name: document.getElementById('orderName').value.trim(),
+            phone: document.getElementById('orderPhone').value.trim(),
+            payment_method: 'paypal',
+            notes: document.getElementById('orderNotes').value.trim(),
+            items: cart,
+            total_amount: total,
+            paypal_transaction_id: details.id // This is details.id from PayPal
+        };
 
-                    // Collect form data
-                    const name  = document.getElementById('orderName').value.trim();
-                    const phone = document.getElementById('orderPhone').value.trim();
-                    const notes = document.getElementById('orderNotes').value.trim();
-                    const cart  = JSON.parse(localStorage.getItem('cart') || '[]');
-                    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-                    if (!name || !phone || cart.length === 0 || total <= 0) {
-                        alert("Order data incomplete after payment.");
-                        return;
-                    }
-
-                    const orderData = {
-                        customer_name: name,
-                        phone: phone,
-                        payment_method: 'paypal',
-                        notes: notes,
-                        items: cart,
-                        total_amount: total,
-                        paypal_transaction_id: details.id
-                    };
-
-                    // Save order
-                    submitOrder(orderData);
-                });
-            },
+        // Call your submission function
+        submitOrder(orderData);
+    });
+}
 
             onCancel: () => alert('Payment cancelled.'),
             onError: (err) => {

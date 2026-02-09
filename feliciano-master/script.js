@@ -231,6 +231,13 @@ document.getElementById('placeOrderBtn')?.addEventListener('click', function (e)
     submitOrder(name, phone, method, notes, cart, total);
 });
 
+// Ensure values are numbers, not strings
+const itemPrice = Number(document.getElementById('price').value);
+const itemQty = Number(document.getElementById('quantity').value);
+const total = (itemPrice * itemQty).toFixed(2); // PayPal needs 2 decimal places
+
+// Pass 'total' to the PayPal purchase_units amount
+
 // Helper function to submit order (used by both COD and PayPal success)
 function submitOrder(name, phone, method, notes, cart, total, paypalTransactionId = null) {
     const orderData = {
@@ -350,4 +357,63 @@ document.getElementById('paymentMethod').addEventListener('change', function () 
             }
         }).render('#paypal-button-container');
     }
+});
+
+// Put this in your <script> or script.js — make sure it runs after DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Load cart once when page loads
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+    // Update badge on load
+    const cartCountEl = document.getElementById('cart-count');
+    if (cartCountEl) {
+        cartCountEl.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+    }
+
+    // Add to cart handler
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const menuContainer = this.closest('.menus') || this.closest('.col-lg-6');
+
+            const nameElement  = menuContainer.querySelector('h3[data-name]') || menuContainer.querySelector('h3');
+            const name = nameElement?.getAttribute('data-name') || nameElement?.textContent.trim();
+
+            const priceElement = menuContainer.querySelector('.price[data-price]') || menuContainer.querySelector('.price');
+            const priceText    = priceElement?.getAttribute('data-price') || priceElement?.textContent.replace('$', '').trim();
+            const price        = parseFloat(priceText);
+
+            const qtyInput     = menuContainer.querySelector('.qty-input');
+            const quantity     = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+
+            if (!name || isNaN(price) || quantity < 1) {
+                alert('Could not read item details');
+                return;
+            }
+
+            // Find if already in cart (match by name for simplicity)
+            const existing = cart.find(item => item.name === name);
+            if (existing) {
+                existing.quantity += quantity;
+            } else {
+                cart.push({ name, price, quantity }); // add id later if needed
+            }
+
+            // Save to localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            // Reset quantity input
+            if (qtyInput) qtyInput.value = '1';
+
+            // Update badge
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            if (cartCountEl) cartCountEl.textContent = totalItems;
+
+            // Optional: update cart modal preview if open
+            if (typeof renderCart === 'function') renderCart();
+
+            alert(`${quantity} × ${name} added to cart!`);
+        });
+    });
 });

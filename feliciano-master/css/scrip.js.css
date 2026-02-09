@@ -22,6 +22,7 @@ menuItems.forEach(item => {
     });
 });
 
+
 function updateCart() {
     cartItemsDiv.innerHTML = '';
     let total = 0;
