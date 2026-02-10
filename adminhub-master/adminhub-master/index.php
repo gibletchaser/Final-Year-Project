@@ -56,7 +56,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 				</a>
 			</li>
 			<li>
-				<a href="#">
+				<a href="staffList.php">
 					<i class='bx bxs-group' ></i>
 					<span class="text">Team</span>
 				</a>
