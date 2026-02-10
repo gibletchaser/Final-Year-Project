@@ -226,6 +226,12 @@
     formData.append('email', sessionData.email);
     formData.append('name', newName);
     formData.append('phone', newPhone);
+
+    const fileInput = document.getElementById('upload-pic');
+    if (fileInput.files.length > 0) {
+        formData.append('profile_pic', fileInput.files[0]);
+    }
+
     if (newPass !== "") {
         formData.append('password', newPass);
     }
@@ -238,6 +244,16 @@
     .then(data => {
         data = data.trim();
 
+        if (data.startsWith("success|")) {
+             const parts = data.split("|");
+             const changedFields = parts[1].split(",");
+             
+             // If PHP returned a new image path, save it to the session
+             if (parts[2]) {
+                 sessionData.profilePic = parts[2];
+                }
+}
+    
         if (data.startsWith("success|")) {
             const changedFields = data.split("|")[1].split(",");
 

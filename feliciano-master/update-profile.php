@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db.php'; // your connection file
+include 'db.php'; 
 
 header('Content-Type: text/plain; charset=utf-8');
 
@@ -17,61 +17,60 @@ if (empty($email)) {
     exit("missing_email");
 }
 
-// Fetch current values from DB to compare
+// Fetch current values
 $result = mysqli_query($conn, "SELECT name, phone, password FROM user WHERE email = '$email' LIMIT 1");
-
 if (!$result || mysqli_num_rows($result) === 0) {
     exit("user_not_found");
 }
-
 $current = mysqli_fetch_assoc($result);
 
-// Decide what actually changed
+// 1. Initialize arrays FIRST
 $changes = [];
+$set_parts = [];
+$imagePath = '';
 
+// 2. Handle Image Upload
+if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === 0) {
+    $uploadDir = 'uploads/'; 
+    if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+    $fileName = time() . '_' . basename($_FILES['profile_pic']['name']);
+    $targetFilePath = $uploadDir . $fileName;
+
+    if (move_uploaded_file($_FILES['profile_pic']['tmp_name'], $targetFilePath)) {
+        $imagePath = $targetFilePath;
+        $set_parts[] = "profilePic = '" . mysqli_real_escape_string($conn, $imagePath) . "'";
+        $changes[] = 'profilePic';
+    }
+}
+
+// 3. Decide what else changed
 if ($name !== '' && $name !== $current['name']) {
     $changes[] = 'name';
-}
-
-if ($phone !== $current['phone']) {  // allow clearing phone
-    $changes[] = 'phone';
-}
-
-$password_changed = !empty($pass);
-
-if ($password_changed) {
-    $changes[] = 'password';
-}
-
-// Nothing changed → early exit
-if (empty($changes)) {
-    exit("no_changes");
-}
-
-// Build query
-$set_parts = [];
-$params = [];
-
-if (in_array('name', $changes)) {
     $set_parts[] = "name = '" . mysqli_real_escape_string($conn, $name) . "'";
 }
-if (in_array('phone', $changes)) {
+
+if ($phone !== $current['phone']) {
+    $changes[] = 'phone';
     $set_parts[] = "phone = '" . mysqli_real_escape_string($conn, $phone) . "'";
 }
-if ($password_changed) {
-    // TODO: in real project → hash the password!
+
+if (!empty($pass)) {
+    $changes[] = 'password';
     $set_parts[] = "password = '" . mysqli_real_escape_string($conn, $pass) . "'";
 }
 
+// 4. Check if anything happened
 if (empty($set_parts)) {
-    exit("no_changes"); // safety
+    exit("no_changes");
 }
 
+// 5. Run the query ONCE
 $query = "UPDATE user SET " . implode(', ', $set_parts) . " WHERE email = '$email'";
 
 if (mysqli_query($conn, $query)) {
-    // Return what changed so JS can make nice message
-    echo "success|" . implode(",", $changes);
+    // Return: success | list,of,changes | new_image_path
+    echo "success|" . implode(",", $changes) . "|" . $imagePath;
 } else {
     echo "error|" . mysqli_error($conn);
 }
