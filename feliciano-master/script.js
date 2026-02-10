@@ -1,249 +1,172 @@
-// Cart array
-let cart = [];
+// =============================================
+// script.js - Complete & Fixed Cart + PayPal Integration
+// =============================================
 
-// Generate unique ID from name
+// Global cart – load once from localStorage
+let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+// Generate unique ID from item name
 function getItemId(name) {
     return name.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 }
 
-// Update cart display in modal + cart count badge
+// Render cart in modal + update badges & totals
 function renderCart() {
     const cartItemsContainer = document.getElementById('cartItems');
-    const modalTotal = document.getElementById('cartTotal'); // Inside modal
+    const modalTotal = document.getElementById('cartTotal');
 
-    // Top summary elements – update ALL possible IDs
-    const countDisplays = [
+    // All possible places where item count is shown
+    const countEls = [
         document.getElementById('cart-count'),
         document.getElementById('cart-item-count'),
         document.querySelector('.cart-item-count'),
         document.querySelector('#navbar-cart-count')
     ];
 
-    const totalDisplays = [
+    // All possible places where total price is shown
+    const totalEls = [
+        modalTotal,
         document.getElementById('cart-total-display'),
         document.getElementById('cart-total'),
         document.querySelector('.cart-total'),
         document.querySelector('#navbar-cart-total')
     ];
 
-    // Calculate total
-    let totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    let totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2);
 
-    // Update item count (top bar + badge)
-    countDisplays.forEach(el => {
-        if (el) el.textContent = totalItems;
-    });
+    // Update count badges
+    countEls.forEach(el => { if (el) el.textContent = totalItems; });
 
-    // Update total price (top bar + modal)
-    const allTotalEls = [modalTotal, ...totalDisplays];
-    allTotalEls.forEach(el => {
-        if (el) el.textContent = totalPrice.toFixed(2);
-    });
+    // Update total displays
+    totalEls.forEach(el => { if (el) el.textContent = totalPrice; });
 
-    // Update modal content
+    // Render items in modal
     if (!cartItemsContainer) return;
 
-    if (cart.length === 0) {
-        cartItemsContainer.innerHTML = '<p class="text-center text-muted">Your cart is empty</p>';
-        return;
-    }
+    cartItemsContainer.innerHTML = cart.length === 0
+        ? '<p class="text-center text-muted">Your cart is empty</p>'
+        : '';
 
-    cartItemsContainer.innerHTML = '';
-   cart.forEach(item => {
-    const itemDiv = document.createElement('div');
-    itemDiv.className = 'd-flex justify-content-between align-items-center py-3 border-bottom';
+    cart.forEach(item => {
+        const subtotal = (item.price * item.quantity).toFixed(2);
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'd-flex justify-content-between align-items-center py-3 border-bottom';
+        itemDiv.innerHTML = `
+            <div class="flex-grow-1">
+                <div class="font-weight-bold mb-1">${item.name}</div>
+                <small class="text-muted">$${item.price.toFixed(2)} × ${item.quantity}</small>
+            </div>
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-secondary decrease" data-id="${item.id}">-</button>
+                <span class="mx-3 font-weight-bold" style="min-width:40px;text-align:center;">${item.quantity}</span>
+                <button class="btn btn-sm btn-outline-secondary increase" data-id="${item.id}">+</button>
+                <button class="btn btn-sm btn-danger ml-3 remove" data-id="${item.id}">Remove</button>
+            </div>
+            <div class="text-right font-weight-bold text-primary" style="min-width:80px;">
+                $${subtotal}
+            </div>
+        `;
+        cartItemsContainer.appendChild(itemDiv);
+    });
 
-    const subtotal = (item.price * item.quantity).toFixed(2);
-
-    itemDiv.innerHTML = `
-        <div class="flex-grow-1">
-            <div class="font-weight-bold mb-1">${item.name}</div>
-            <small class="text-muted">$ ${item.price.toFixed(2)} × ${item.quantity}</small>
-        </div>
-
-        <div class="d-flex align-items-center">
-            <button class="btn btn-sm btn-outline-secondary decrease" data-id="${item.id}">-</button>
-            <span class="mx-3 font-weight-bold" style="min-width: 40px; text-align: center;">${item.quantity}</span>
-            <button class="btn btn-sm btn-outline-secondary increase" data-id="${item.id}">+</button>
-            <button class="btn btn-sm btn-danger ml-3 remove" data-id="${item.id}">Remove</button>
-        </div>
-
-        <div class="text-right font-weight-bold text-primary" style="min-width: 80px;">
-            $ ${subtotal}
-        </div>
-    `;
-
-    cartItemsContainer.appendChild(itemDiv);
-});
-const checkoutBtn = document.querySelector('#cartModal .modal-footer .btn-success');
-if (checkoutBtn) {
-    checkoutBtn.disabled = (cart.length === 0);
-}
+    // Disable checkout button if cart empty
+    const checkoutBtn = document.querySelector('#cartModal .modal-footer .btn-success');
+    if (checkoutBtn) checkoutBtn.disabled = (cart.length === 0);
 }
 
-// === ADD TO CART FROM MENU ===
+// Add item to cart from menu page
 document.querySelectorAll('.add-to-cart').forEach(button => {
     button.addEventListener('click', function(e) {
         e.preventDefault();
+        e.stopPropagation();
 
-        // Find the closest menu item container
-        const menuContainer = this.closest('.menus') || this.closest('.col-lg-6');
+        const container = this.closest('.menus') || this.closest('.col-lg-6');
+        if (!container) return;
 
-        const name = menuContainer.querySelector('[data-name]')?.getAttribute('data-name') ||
-                     menuContainer.querySelector('h3')?.textContent.trim();
+        const nameEl = container.querySelector('h3[data-name]') || container.querySelector('h3');
+        const name = nameEl?.getAttribute('data-name') || nameEl?.textContent.trim();
 
-        const priceText = menuContainer.querySelector('[data-price]')?.getAttribute('data-price') ||
-                          menuContainer.querySelector('.price')?.textContent.replace('$', '').trim();
-
+        const priceEl = container.querySelector('.price[data-price]') || container.querySelector('.price');
+        const priceText = priceEl?.getAttribute('data-price') || priceEl?.textContent.replace('$', '').trim();
         const price = parseFloat(priceText);
 
-        // Get current quantity from the input field on the menu item
-        const qtyInput = menuContainer.querySelector('.qty-input');
+        const qtyInput = container.querySelector('.qty-input');
         const quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
 
-        if (!name || isNaN(price)) {
-            alert('Error reading item info');
+        if (!name || isNaN(price) || quantity < 1) {
+            alert('Could not read item details');
             return;
         }
 
         const id = getItemId(name);
-
-        // Check if item already in cart
         const existing = cart.find(item => item.id === id);
+
         if (existing) {
             existing.quantity += quantity;
         } else {
             cart.push({ id, name, price, quantity });
         }
 
-        // Reset the quantity selector back to 1 for next time
-        if (qtyInput) qtyInput.value = 1;
-
+        localStorage.setItem('cart', JSON.stringify(cart));
         renderCart();
 
-        // Optional: Auto-open modal or show success
+        if (qtyInput) qtyInput.value = '1';
+
         alert(`${quantity} × ${name} added to cart!`);
     });
 });
 
-// === QUANTITY +/- ON MENU ITEM (before adding to cart) ===
+// Quantity controls on menu items (before adding to cart)
 document.querySelectorAll('.qty-btn').forEach(btn => {
     btn.addEventListener('click', function() {
-        const input = this.closest('.quantity-selector').querySelector('.qty-input');
-        let value = parseInt(input.value) || 1;
-
-        if (this.classList.contains('plus')) {
-            value += 1;
-        } else if (this.classList.contains('minus')) {
-            value = value > 1 ? value - 1 : 1;
-        }
-
-        input.value = value;
+        const input = this.closest('.quantity-selector')?.querySelector('.qty-input');
+        if (!input) return;
+        let val = parseInt(input.value) || 1;
+        if (this.classList.contains('plus')) val++;
+        else if (this.classList.contains('minus') && val > 1) val--;
+        input.value = val;
     });
 });
-// After pushing/updating item
-localStorage.setItem('cart', JSON.stringify(cart));
-console.log("Cart saved to localStorage:", cart);  // debug
-renderCart();  // update UI
 
-// === HANDLE + / - / REMOVE INSIDE CART MODAL - ATTACH ONLY ONCE ===
-document.addEventListener('DOMContentLoaded', () => {
-    const cartItemsContainer = document.getElementById('cartItems');
-    
-    if (cartItemsContainer) {
-        cartItemsContainer.addEventListener('click', function(e) {
-            let target = e.target;
-            
-            // If clicked on text inside button, go up to button
-            if (target.tagName !== 'BUTTON') {
-                target = target.closest('button');
-            }
-            
-            if (!target || !target.dataset || !target.dataset.id) return;
-            
-            const id = target.dataset.id;
-            const itemIndex = cart.findIndex(i => i.id === id);
-            if (itemIndex === -1) return;
-            
-            if (target.classList.contains('increase')) {
-                cart[itemIndex].quantity += 1;
-            } 
-            else if (target.classList.contains('decrease')) {
-                if (cart[itemIndex].quantity > 1) {
-                    cart[itemIndex].quantity -= 1;
-                } else {
-                    // Remove item if quantity reaches 0
-                    if (confirm('Remove this item from your cart?')) {
-                        cart.splice(itemIndex, 1);
-                    } else {
-                        return;
-                    }
-                }
-            } 
-            else if (target.classList.contains('remove')) {
-                if (confirm('Remove this item from your cart?')) {
-                    cart.splice(itemIndex, 1);
-                } else {
-                    return;
-                }
-            }
-            
-            renderCart(); // Update display
-        });
+// Cart modal item actions (increase, decrease, remove)
+document.getElementById('cartItems')?.addEventListener('click', function(e) {
+    let btn = e.target.closest('button');
+    if (!btn || !btn.dataset?.id) return;
+
+    const id = btn.dataset.id;
+    const idx = cart.findIndex(i => i.id === id);
+    if (idx === -1) return;
+
+    if (btn.classList.contains('increase')) {
+        cart[idx].quantity += 1;
+    } else if (btn.classList.contains('decrease')) {
+        if (cart[idx].quantity > 1) {
+            cart[idx].quantity -= 1;
+        } else if (confirm('Remove this item?')) {
+            cart.splice(idx, 1);
+        } else return;
+    } else if (btn.classList.contains('remove')) {
+        if (confirm('Remove this item?')) cart.splice(idx, 1);
+        else return;
     }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    renderCart();
 });
 
+// Refresh cart display when modal opens
 $('#cartModal').on('show.bs.modal', renderCart);
 
+// Initial render when page loads
 renderCart();
 
-document.getElementById('placeOrderBtn')?.addEventListener('click', function (e) {
-    e.preventDefault(); // prevent default if needed
-
-    console.log("Place Order button clicked!");
-
-    const name   = document.getElementById('orderName').value.trim();
-    const phone  = document.getElementById('orderPhone').value.trim();
-    const method = document.getElementById('paymentMethod').value;
-    const notes  = document.getElementById('orderNotes').value.trim();
-
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
-    if (!name || !phone) {
-        alert("Please fill in name and phone.");
-        return;
-    }
-    if (cart.length === 0) {
-        alert("Cart is empty!");
-        return;
-    }
-
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-    // ────────────────────────────────────────────────
-    // PayPal special handling
-    // ────────────────────────────────────────────────
-    if (method === 'paypal') {
-        // If PayPal buttons are rendered, user should have clicked them already
-        // We'll rely on onApprove to trigger the final submission
-        alert("Please complete the PayPal payment first.");
-        return; // stop here – onApprove will handle success
-    }
-
-    // For COD → proceed normally
-    submitOrder(name, phone, method, notes, cart, total);
-});
-
-// Ensure values are numbers, not strings
-const itemPrice = Number(document.getElementById('price').value);
-const itemQty = Number(document.getElementById('quantity').value);
-const total = (itemPrice * itemQty).toFixed(2); // PayPal needs 2 decimal places
-
-// Pass 'total' to the PayPal purchase_units amount
-
-// Helper function to submit order (used by both COD and PayPal success)
+// Submit order to server (used for both COD and PayPal success)
 function submitOrder(name, phone, method, notes, cart, total, paypalTransactionId = null) {
+    console.log("Submitting order to place-order.php:", {
+        name, phone, method, total, paypalId: paypalTransactionId, cartLength: cart.length
+    });
+
     const orderData = {
         customer_name: name,
         phone: phone,
@@ -251,7 +174,7 @@ function submitOrder(name, phone, method, notes, cart, total, paypalTransactionI
         notes: notes,
         items: cart,
         total_amount: total,
-        paypal_transaction_id: paypalTransactionId || null  // optional
+        paypal_transaction_id: paypalTransactionId || null
     };
 
     fetch('place-order.php', {
@@ -260,166 +183,152 @@ function submitOrder(name, phone, method, notes, cart, total, paypalTransactionI
         body: JSON.stringify(orderData)
     })
     .then(res => {
-    console.log("Raw response status:", res.status, "ok?", res.ok);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.text();   // ← first get as text to see raw
-})
-.then(text => {
-    console.log("Raw response body:", text);
-    try {
-        const data = JSON.parse(text);
-        console.log("Parsed data:", data);
+        console.log("place-order.php status:", res.status);
+        if (!res.ok) {
+            return res.text().then(text => {
+                console.error("place-order.php raw error:", text);
+                throw new Error(`HTTP ${res.status}: ${text.substring(0,200)}`);
+            });
+        }
+        return res.json();
+    })
+    .then(data => {
+        console.log("place-order.php response:", data);
         if (data.success && data.order_id) {
-            console.log("Redirecting to receipt.php?order_id=" + data.order_id);
+            console.log("Order saved successfully! ID:", data.order_id);
             window.location.href = `receipt.php?order_id=${data.order_id}`;
         } else {
-            alert("Server said: " + (data.message || "No success flag"));
+            console.warn("place-order.php did not confirm success:", data);
+            alert("Payment captured, but order save failed: " + (data.message || "Unknown"));
         }
-    } catch (e) {
-        console.error("JSON parse failed:", e, "Raw was:", text);
-        alert("Server response invalid: " + text.substring(0, 200));
-    }
-})
+    })
+    .catch(err => {
+        console.error("Order submission failed:", err);
+        alert("Failed to save order details: " + err.message + ". Payment was captured – contact support.");
+    });
 }
 
-// ────────────────────────────────────────────────
-// PayPal Button Rendering & Handling
-// ────────────────────────────────────────────────
-document.getElementById('paymentMethod').addEventListener('change', function () {
-    const container = document.getElementById('paypal-button-container');
-    container.style.display = (this.value === 'paypal') ? 'block' : 'none';
+// COD path: Place Order button
+document.getElementById('placeOrderBtn')?.addEventListener('click', function(e) {
+    e.preventDefault();
 
-    if (this.value === 'paypal') {
-        // Clear previous buttons if any
-        container.innerHTML = '';
+    const name   = document.getElementById('orderName')?.value.trim();
+    const phone  = document.getElementById('orderPhone')?.value.trim();
+    const method = document.getElementById('paymentMethod')?.value;
+    const notes  = document.getElementById('orderNotes')?.value.trim();
+
+    if (!name || !phone) return alert("Name and phone required");
+    if (cart.length === 0) return alert("Cart empty");
+
+    const total = cart.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2);
+
+    if (method === 'paypal') {
+        alert("Please complete PayPal payment first.");
+        return;
+    }
+
+    submitOrder(name, phone, method, notes, cart, total);
+});
+
+// PayPal Button – only ONE render
+document.getElementById('paymentMethod')?.addEventListener('change', function() {
+    const container = document.getElementById('paypal-button-container');
+    const placeBtn  = document.getElementById('placeOrderBtn');
+
+    if (!container) return;
+
+    container.style.display = this.value === 'paypal' ? 'block' : 'none';
+    if (placeBtn) placeBtn.style.display = this.value === 'paypal' ? 'none' : 'block';
+
+    if (this.value === 'paypal' && !container.hasChildNodes()) {
+        console.log("Rendering PayPal buttons (only once)");
 
         paypal.Buttons({
-            style: {
-                layout: 'vertical',
-                color: 'gold',
-                shape: 'rect',
-                label: 'paypal'
-            },
+            style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' },
 
-            createOrder: function(data, actions) {
-                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-                const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
+            createOrder: (data, actions) => {
+                const total = cart.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2);
                 if (total <= 0) {
-                    alert("Cart is empty!");
-                    return;
+                    alert("Cart is empty");
+                    throw new Error("Zero total");
                 }
 
                 return fetch('create-paypal-order.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        total: total.toFixed(2),
-                        currency: 'MYR',
-                        description: 'Yob Yong Food Order'
-                    })
+                    body: JSON.stringify({ total, currency: 'MYR', description: 'Yob Yong Order' })
                 })
-                .then(res => res.json())
-                .then(order => {
-                    if (order.error) throw new Error(order.error);
-                    return order.id; // PayPal order ID
+                .then(r => {
+                    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                    return r.json();
+                })
+                .then(o => {
+                    if (o.error) throw new Error(o.error);
+                    return o.id;
                 })
                 .catch(err => {
                     alert("Failed to create PayPal order: " + err.message);
+                    throw err;
                 });
             },
 
-            onApprove: function(data, actions) {
+            onApprove: (data, actions) => {
+                console.log("Payment approved – capturing:", data.orderID);
+
                 return fetch('capture-paypal-order.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ orderID: data.orderID })
                 })
-                .then(res => res.json())
+                .then(r => {
+                    console.log("Capture status:", r.status);
+                    if (!r.ok) {
+                        return r.text().then(text => {
+                            console.error("Capture raw error:", text);
+                            throw new Error(`Capture failed HTTP ${r.status}: ${text.substring(0,200)}`);
+                        });
+                    }
+                    return r.json();
+                })
                 .then(result => {
-                    if (result.status === 'COMPLETED') {
-                        // Payment success → get form data and submit order
-                        const name  = document.getElementById('orderName').value.trim();
-                        const phone = document.getElementById('orderPhone').value.trim();
-                        const notes = document.getElementById('orderNotes').value.trim();
-                        const cart  = JSON.parse(localStorage.getItem('cart') || '[]');
-                        const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                    console.log("Capture full result:", result);
 
-                        submitOrder(name, phone, 'paypal', notes, cart, total, result.id);
+                    if (result && result.success === true && result.your_order_id) {
+                        alert("Payment successful! Order #" + result.your_order_id);
+
+                        const name  = document.getElementById('orderName')?.value.trim() || "Unknown";
+                        const phone = document.getElementById('orderPhone')?.value.trim() || "Unknown";
+                        const notes = document.getElementById('orderNotes')?.value.trim() || "";
+
+                        const total = cart.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2);
+
+                        // Save order + items to database
+                        submitOrder(name, phone, 'paypal', notes, cart, total, result.your_order_id || data.orderID);
+
+                        // Clear cart & UI
+                        localStorage.removeItem('cart');
+                        renderCart?.();
+                        $('#cartModal').modal('hide');
+
+                        // Redirect to receipt
+                        window.location.href = `receipt.php?order_id=${result.your_order_id}`;
                     } else {
-                        alert("Payment capture failed.");
+                        console.warn("Capture succeeded but invalid response:", result);
+                        throw new Error("Server did not return success/order ID");
                     }
                 })
                 .catch(err => {
-                    console.error(err);
-                    alert("Error capturing payment.");
+                    console.error("Finalization error:", err);
+                    alert("Error finalizing payment: " + err.message + ". Check console for details.");
                 });
             },
 
             onCancel: () => alert("Payment cancelled."),
-            onError: (err) => {
-                console.error(err);
-                alert("PayPal error occurred.");
+            onError: err => {
+                console.error("PayPal SDK error:", err);
+                alert("PayPal error: " + (err.message || "Unknown error"));
             }
-        }).render('#paypal-button-container');
+        }).render('#paypal-button-container')
+        .catch(err => console.error("PayPal render failed:", err));
     }
-});
-
-// Put this in your <script> or script.js — make sure it runs after DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    // Load cart once when page loads
-    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
-    // Update badge on load
-    const cartCountEl = document.getElementById('cart-count');
-    if (cartCountEl) {
-        cartCountEl.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
-    }
-
-    // Add to cart handler
-    document.querySelectorAll('.add-to-cart').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            const menuContainer = this.closest('.menus') || this.closest('.col-lg-6');
-
-            const nameElement  = menuContainer.querySelector('h3[data-name]') || menuContainer.querySelector('h3');
-            const name = nameElement?.getAttribute('data-name') || nameElement?.textContent.trim();
-
-            const priceElement = menuContainer.querySelector('.price[data-price]') || menuContainer.querySelector('.price');
-            const priceText    = priceElement?.getAttribute('data-price') || priceElement?.textContent.replace('$', '').trim();
-            const price        = parseFloat(priceText);
-
-            const qtyInput     = menuContainer.querySelector('.qty-input');
-            const quantity     = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
-
-            if (!name || isNaN(price) || quantity < 1) {
-                alert('Could not read item details');
-                return;
-            }
-
-            // Find if already in cart (match by name for simplicity)
-            const existing = cart.find(item => item.name === name);
-            if (existing) {
-                existing.quantity += quantity;
-            } else {
-                cart.push({ name, price, quantity }); // add id later if needed
-            }
-
-            // Save to localStorage
-            localStorage.setItem('cart', JSON.stringify(cart));
-
-            // Reset quantity input
-            if (qtyInput) qtyInput.value = '1';
-
-            // Update badge
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            if (cartCountEl) cartCountEl.textContent = totalItems;
-
-            // Optional: update cart modal preview if open
-            if (typeof renderCart === 'function') renderCart();
-
-            alert(`${quantity} × ${name} added to cart!`);
-        });
-    });
 });

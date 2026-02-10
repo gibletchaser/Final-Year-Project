@@ -373,77 +373,6 @@ function handleLogout() {
     }
 }
 </script>
-<script>
-// Make PayPal container appear/disappear based on selection
-document.getElementById('paymentMethod').addEventListener('change', function() {
-    const paypalContainer = document.getElementById('paypal-button-container');
-    // In your PayPal button script
-createOrder: function(data, actions) {
-    return actions.order.create({
-        purchase_units: [{
-            amount: {
-                // FORCE the value to be a clean number using parseFloat
-                value: parseFloat(totalAmountFromYourCart).toFixed(2) 
-            }
-        }]
-    });
-}
-    
-    if (this.value === 'paypal') {
-        paypalContainer.style.display = 'block';
-        
-        // Render PayPal buttons (only once, or re-render if needed)
-        if (!paypalContainer.hasChildNodes()) {  // prevent duplicate renders
-            paypal.Buttons({
-                // Your PayPal button config here (minimal version to start)
-                style: {
-                    layout: 'vertical',
-                    color:  'gold',
-                    shape:  'rect',
-                    label:  'paypal'
-                },
-                createOrder: function(data, actions) {
-                    // For testing: create a simple order with your cart total
-                    const total = parseFloat(document.getElementById('cartTotal').textContent) || 0;
-                    
-                    if (total <= 0) {
-                        alert("Cart is empty!");
-                        return;
-                    }
-                    
-                    return actions.order.create({
-                        purchase_units: [{
-                            amount: {
-                                value: total.toFixed(2),
-                                currency_code: 'MYR'
-                            },
-                            description: 'Yob Yong Order'
-                        }]
-                    });
-                },
-                onApprove: function(data, actions) {
-                    return actions.order.capture().then(function(details) {
-                        alert('Payment successful! Transaction ID: ' + details.id);
-                        // Here: trigger your normal order submission
-                        // You can call your placeOrderBtn logic or submit form
-                        document.getElementById('placeOrderBtn').click(); // or your fetch
-                    });
-                },
-                onCancel: function() {
-                    alert('Payment cancelled.');
-                },
-                onError: function(err) {
-                    console.error('PayPal error:', err);
-                    alert('An error occurred with PayPal. Please try again.');
-                }
-            }).render('#paypal-button-container');
-        }
-    } else {
-        paypalContainer.style.display = 'none';
-        paypalContainer.innerHTML = ''; // optional: clear buttozns when switching away
-    }
-});
-</script>
 
 <script>
 // Helper: Submit order to place_order.php
@@ -491,60 +420,89 @@ if (cart.length === 0) {
 }
 </script>
 
+
+
 <script>
-function initPayPalButtons() {
-    console.log("Attempting to render PayPal buttons...");
-    const container = document.getElementById('paypal-button-container');
-    if (!container) {
-        console.error("Container #paypal-button-container not found!");
-        return;
-    }
+// PayPal button logic – SINGLE correct version
+let paypalRendered = false;
 
-    paypal.Buttons({
-        style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' },
-
-        createOrder: (data, actions) => {
-            console.log("createOrder called");
-            const total = parseFloat(document.getElementById('cartTotal').textContent) || 0;
-            if (total <= 0) throw new Error("Zero total");
-            return actions.order.create({
-                purchase_units: [{ amount: { value: total.toFixed(2), currency_code: 'MYR' } }]
-            });
-        },
-
-        onApprove: (data, actions) => {
-            console.log("onApprove FIRED! data:", data);
-            return actions.order.capture().then(details => {
-                console.log("Capture OK, details.id =", details.id);
-                alert("Payment captured! Transaction: " + details.id + "\nNow saving order...");
-                // Add your fetch to place-order.php here later
-                // For now just test redirect:
-                window.location.href = 'receipt.php?order_id=TEST123';  // temporary test
-            });
-        },
-
-        onError: err => {
-            console.error("PayPal SDK error:", err);
-            alert("PayPal error: " + err);
-        }
-    }).render('#paypal-button-container')
-    .then(() => console.log("PayPal buttons rendered successfully"))
-    .catch(err => console.error("Render failed:", err));
-}
-
-// Trigger when PayPal is selected
+d// Only one block for PayPal rendering
 document.getElementById('paymentMethod').addEventListener('change', function() {
-    const paypalDiv = document.getElementById('paypal-button-container');
-    const placeBtn  = document.getElementById('placeOrderBtn');
-
+    const container = document.getElementById('paypal-button-container');
+    
+    // Hide/show container
     if (this.value === 'paypal') {
-        paypalDiv.style.display = 'block';
-        placeBtn.style.display = 'none';
-        initPayPalButtons();           // ← render only when needed
+        container.style.display = 'block';
+        
+        // Prevent duplicate renders: clear old content + check if already rendered
+        if (container.hasChildNodes()) {
+            container.innerHTML = '';  // ← This removes previous buttons
+        }
+        
+        console.log("Rendering PayPal buttons..."); // for debugging
+
+        paypal.Buttons({
+            style: {
+                layout: 'vertical',
+                color:  'gold',
+                shape:  'rect',
+                label:  'paypal'
+            },
+            createOrder: function(data, actions) {
+                const total = parseFloat(document.getElementById('cartTotal').textContent) || 0;
+                if (total <= 0) {
+                    alert("Cart is empty!");
+                    throw new Error("Cart empty"); // prevents proceeding
+                }
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: total.toFixed(2),
+                            currency_code: 'MYR'
+                        },
+                        description: 'Yob Yong Order'
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    console.log("PayPal success:", details);
+                    alert('Payment successful! Transaction ID: ' + details.id);
+
+                    // Collect order data and submit
+                    const name  = document.getElementById('orderName').value.trim();
+                    const phone = document.getElementById('orderPhone').value.trim();
+                    const notes = document.getElementById('orderNotes').value.trim();
+                    const cart  = JSON.parse(localStorage.getItem('cart') || '[]');
+                    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+                    if (!name || !phone || cart.length === 0 || total <= 0) {
+                        alert("Order data incomplete after payment.");
+                        return;
+                    }
+
+                    const orderData = {
+                        customer_name: name,
+                        phone: phone,
+                        payment_method: 'paypal',
+                        notes: notes,
+                        items: cart,
+                        total_amount: total,
+                        paypal_transaction_id: details.id
+                    };
+
+                    submitOrder(orderData);  // your fetch to place_order.php
+                });
+            },
+            onCancel: () => alert('Payment cancelled.'),
+            onError: (err) => {
+                console.error('PayPal SDK error:', err);
+                alert('An error occurred with PayPal. Please try again.');
+            }
+        }).render('#paypal-button-container');
     } else {
-        paypalDiv.style.display = 'none';
-        placeBtn.style.display = 'block';
-        paypalDiv.innerHTML = '';      // clear old buttons
+        container.style.display = 'none';
+        container.innerHTML = ''; // clear when switching away (optional but clean)
     }
 });
 </script>
