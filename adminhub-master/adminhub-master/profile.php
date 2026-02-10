@@ -429,8 +429,26 @@ $user = $stmt->get_result()->fetch_assoc();
                 <span class="text">Profile</span>
             </a>
         </li>
+        <li>
+            <a href="staffList.php">
+                <i class='bx bxs-group'></i>
+                <span class="text">Staff</span>
+            </a>
+        </li>
+        <li>
+            <a href="viewFeedback.php">
+                <i class='bx bxs-message-dots'></i>
+                <span class="text">Feedback</span>
+            </a>
+        </li>
     </ul>
     <ul class="side-menu">
+        <li>
+            <a href="#">
+                <i class='bx bxs-cog'></i>
+                <span class="text">Settings</span>
+            </a>
+        </li>
     </ul>
 </section>
 <!-- SIDEBAR -->
@@ -446,6 +464,8 @@ $user = $stmt->get_result()->fetch_assoc();
                 <button class="search-btn"><i class='bx bx-search'></i></button>
             </div>
         </form>
+        <input type="checkbox" id="switch-mode" hidden>
+        <label for="switch-mode" class="switch-mode"></label>
         <a href="#" class="notification">
             <i class='bx bxs-bell'></i>
             <span class="num">8</span>

@@ -41,15 +41,15 @@ include 'db.php';
       </a>
     </li>
     <li>
-      <a href="viewFeedback.php">
-        <i class='bx bxs-message-dots'></i>
-        <span class="text">Message</span>
+      <a href="staffList.php">
+        <i class='bx bxs-group'></i>
+        <span class="text">Staff</span>
       </a>
     </li>
     <li>
-      <a href="staffList.php">
-        <i class='bx bxs-group'></i>
-        <span class="text">Team</span>
+      <a href="viewFeedback.php">
+        <i class='bx bxs-message-dots'></i>
+        <span class="text">Feedback</span>
       </a>
     </li>
   </ul>
@@ -75,6 +75,15 @@ include 'db.php';
         <button class="search-btn"><i class='bx bx-search'></i></button>
       </div>
     </form>
+    <input type="checkbox" id="switch-mode" hidden>
+			<label for="switch-mode" class="switch-mode"></label>
+			<a href="#" class="notification">
+				<i class='bx bxs-bell' ></i>
+				<span class="num">8</span>
+			</a>
+			<a href="profile.php" class="profile">
+				<img src="img/people.png">
+			</a>
   </nav>
 
   <!-- MAIN (THIS IS NEW) -->
@@ -83,7 +92,6 @@ include 'db.php';
       <div class="left">
         <h1>My Store</h1>
         <ul class="breadcrumb">
-          <li><a href="#">My Store</a></li>
           <li><a href="#">My Stores</a></li>
           <li><i class='bx bx-chevron-right'></i></li>
           <li><a class="active" href="#">Menu</a></li>
