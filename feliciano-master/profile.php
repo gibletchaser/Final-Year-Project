@@ -234,7 +234,7 @@
 
             localStorage.setItem('yobYongSession', JSON.stringify(sessionData));
             
-            alert("Profile saved to Database successfully!");
+            alert("Password is changed successfully!");
             toggleEditMode(false);
             loadUserData();
         } else {
