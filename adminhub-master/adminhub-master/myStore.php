@@ -41,7 +41,7 @@ include 'db.php';
       </a>
     </li>
     <li>
-      <a href="#">
+      <a href="viewFeedback.php">
         <i class='bx bxs-message-dots'></i>
         <span class="text">Message</span>
       </a>
