@@ -631,7 +631,7 @@ $user = $stmt->get_result()->fetch_assoc();
                     <div class="profile-card" style="margin-top: 20px;">
                         <h3>Quick Actions</h3>
                         
-                        <button class="action-btn">
+                        <button class="action-btn" onclick="window.location.href='change_password.php'">
                             <i class='bx bx-lock'></i>
                             <span>Change Password</span>
                         </button>
