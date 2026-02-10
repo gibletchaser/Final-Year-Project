@@ -199,51 +199,102 @@
 
    function saveProfile() {
     const sessionData = JSON.parse(localStorage.getItem('yobYongSession'));
-    
-    const newName = document.getElementById('edit-name').value.trim();
-    const newEmail = document.getElementById('edit-email').value.trim();
+    if (!sessionData || !sessionData.email) {
+        alert("Session error. Please sign in again.");
+        return;
+    }
+
+    const originalName  = sessionData.name  || '';
+    const originalPhone = sessionData.phone || '';
+
+    const newName  = document.getElementById('edit-name').value.trim();
+    const newEmail = document.getElementById('edit-email').value.trim(); // currently not changeable
     const newPhone = document.getElementById('edit-phone').value.trim();
-    const newPass = document.getElementById('edit-password').value;
+    const newPass  = document.getElementById('edit-password').value;
     const confirmPass = document.getElementById('confirm-password').value;
 
+    // Password match check
     if (newPass !== "" && newPass !== confirmPass) {
         alert("New passwords do not match!");
         return;
     }
 
-    // 1. Prepare data to send to PHP
-    const formData = new FormData();
-    formData.append('name', newName);
-    formData.append('email', newEmail); // We use email to find the right user in DB
-    formData.append('phone', newPhone);
-    formData.append('password', newPass);
+    // Optional: you can add min length check etc. here
+    // if (newPass !== "" && newPass.length < 6) { alert("Password too short"); return; }
 
-    // 2. Use fetch to send data to the database
+    const formData = new FormData();
+    formData.append('email', sessionData.email);
+    formData.append('name', newName);
+    formData.append('phone', newPhone);
+    if (newPass !== "") {
+        formData.append('password', newPass);
+    }
+
     fetch('update-profile.php', {
         method: 'POST',
         body: formData
     })
     .then(response => response.text())
     .then(data => {
-        if (data.trim() === "success") {
-            // 3. ONLY update localStorage if the Database update worked!
-            sessionData.name = newName;
-            sessionData.email = newEmail;
-            sessionData.phone = newPhone;
-            if (newPass !== "") sessionData.password = newPass;
+        data = data.trim();
+
+        if (data.startsWith("success|")) {
+            const changedFields = data.split("|")[1].split(",");
+
+            // Build friendly message
+            let messages = [];
+            if (changedFields.includes("name")) {
+                messages.push("Username");
+            }
+            if (changedFields.includes("phone")) {
+                messages.push("Phone number");
+            }
+            if (changedFields.includes("password")) {
+                messages.push("Password");
+            }
+
+            let msg = messages.join(", ") + " updated successfully!";
+            if (messages.length === 0) {
+                msg = "No changes were made.";
+            } else if (messages.length === 1) {
+                msg = messages[0] + " updated successfully!";
+            } else if (messages.length === 2) {
+                msg = messages.join(" and ") + " updated successfully!";
+            } else {
+                // 3+ items → last one with "and"
+                let last = messages.pop();
+                msg = messages.join(", ") + " and " + last + " updated successfully!";
+            }
+
+            alert(msg);
+
+            // Update localStorage only with changed values
+            if (changedFields.includes("name"))  sessionData.name  = newName;
+            if (changedFields.includes("phone")) sessionData.phone = newPhone;
+            if (changedFields.includes("password")) sessionData.password = newPass;
 
             localStorage.setItem('yobYongSession', JSON.stringify(sessionData));
-            
-            alert("Password is changed successfully!");
+
+            // Clear password fields
+            document.getElementById('edit-password').value = '';
+            document.getElementById('confirm-password').value = '';
+
             toggleEditMode(false);
             loadUserData();
-        } else {
-            alert("Database Error: " + data);
+        }
+        else if (data === "no_changes") {
+            alert("No changes detected.");
+        }
+        else if (data.startsWith("error|")) {
+            alert("Update failed: " + data.substring(6));
+        }
+        else {
+            alert("Unexpected response: " + data);
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert("System error occurred.");
+        console.error('Fetch error:', error);
+        alert("System error occurred. Please try again.");
     });
 }
 
