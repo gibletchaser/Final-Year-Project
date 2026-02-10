@@ -2,7 +2,7 @@
 include("db.php");
 
 // fetch staff users only
-$sql = "SELECT * FROM users WHERE role='staff' ORDER BY id DESC";
+$sql = "SELECT * FROM users WHERE role='staff' ORDER BY ID DESC";
 $result = mysqli_query($conn, $sql);
 ?>
 
@@ -37,7 +37,14 @@ $result = mysqli_query($conn, $sql);
         <li>
             <a href="myStore.php">
                 <i class='bx bxs-food-menu'></i>
-                <span class="text">Menu</span>
+                <span class="text">My Store</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="profile.php">
+                <i class='bx bxs-user'></i>
+                <span class="text">Profile</span>
             </a>
         </li>
 
@@ -131,7 +138,7 @@ $result = mysqli_query($conn, $sql);
                             while($row = mysqli_fetch_assoc($result)){
                         ?>
                         <tr>
-                            <td><?php echo $row['id']; ?></td>
+                            <td><?php echo $row['ID']; ?></td>
                             <td><?php echo $row['full_name']; ?></td>
                             <td><?php echo $row['username']; ?></td>
                             <td><?php echo $row['email']; ?></td>
@@ -139,12 +146,12 @@ $result = mysqli_query($conn, $sql);
                             <td><?php echo $row['created_at']; ?></td>
 
                             <td>
-                                <a href="editStaff.php?id=<?php echo $row['id']; ?>"
+                                <a href="editStaff.php?id=<?php echo $row['ID']; ?>"
                                    style="background:orange; padding:6px 12px; color:white; border-radius:5px; text-decoration:none;">
                                    Edit
                                 </a>
 
-                                <a href="deleteStaff.php?id=<?php echo $row['id']; ?>"
+                                <a href="deleteStaff.php?id=<?php echo $row['ID']; ?>"
                                    onclick="return confirm('Are you sure you want to delete this staff?');"
                                    style="background:red; padding:6px 12px; color:white; border-radius:5px; text-decoration:none;">
                                    Delete

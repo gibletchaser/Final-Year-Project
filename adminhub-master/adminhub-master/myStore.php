@@ -19,7 +19,7 @@ include 'db.php';
 <section id="sidebar">
   <a href="#" class="brand">
     <i class='bx bxs-smile'></i>
-    <span class="text">Yobyong</span>
+    <span class="text">Yobyong Admin</span>
   </a>
   <ul class="side-menu top">
     <li>
@@ -35,9 +35,9 @@ include 'db.php';
       </a>
     </li>
     <li>
-      <a href="#">
-        <i class='bx bxs-doughnut-chart'></i>
-        <span class="text">Analytics</span>
+      <a href="profile.php">
+        <i class='bx bxs-user'></i>
+        <span class="text">Profile</span>
       </a>
     </li>
     <li>
@@ -47,7 +47,7 @@ include 'db.php';
       </a>
     </li>
     <li>
-      <a href="#">
+      <a href="staffList.php">
         <i class='bx bxs-group'></i>
         <span class="text">Team</span>
       </a>
@@ -58,12 +58,6 @@ include 'db.php';
       <a href="#">
         <i class='bx bxs-cog'></i>
         <span class="text">Settings</span>
-      </a>
-    </li>
-    <li>
-      <a href="logout.php" class="logout">
-        <i class='bx bxs-log-out-circle'></i>
-        <span class="text">Logout</span>
       </a>
     </li>
   </ul>

@@ -28,7 +28,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 	<section id="sidebar">
 		<a href="#" class="brand">
 			<i class='bx bxs-smile'></i>
-			<span class="text">AdminHub</span>
+			<span class="text">Yobyong Admin</span>
 		</a>
 		<ul class="side-menu top">
 			<li class="active">
@@ -44,9 +44,9 @@ if (!isset($_SESSION['admin_logged_in'])) {
 				</a>
 			</li>
 			<li>
-				<a href="#">
-					<i class='bx bxs-doughnut-chart' ></i>
-					<span class="text">Analytics</span>
+				<a href="profile.php">
+					<i class='bx bxs-user' ></i>
+					<span class="text">Profile</span>
 				</a>
 			</li>
 			<li>
@@ -67,12 +67,6 @@ if (!isset($_SESSION['admin_logged_in'])) {
 				<a href="#">
 					<i class='bx bxs-cog' ></i>
 					<span class="text">Settings</span>
-				</a>
-			</li>
-			<li>
-				<a href="logout.php" class="logout">
-					<i class='bx bxs-log-out-circle' ></i>
-					<span class="text">Logout</span>
 				</a>
 			</li>
 		</ul>
