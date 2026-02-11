@@ -19,7 +19,7 @@ include 'db.php';
 <section id="sidebar">
   <a href="#" class="brand">
     <i class='bx bxs-smile'></i>
-    <span class="text">Yobyong</span>
+    <span class="text">Yobyong Admin</span>
   </a>
   <ul class="side-menu top">
     <li>
@@ -35,21 +35,21 @@ include 'db.php';
       </a>
     </li>
     <li>
-      <a href="#">
-        <i class='bx bxs-doughnut-chart'></i>
-        <span class="text">Analytics</span>
+      <a href="profile.php">
+        <i class='bx bxs-user'></i>
+        <span class="text">Profile</span>
       </a>
     </li>
     <li>
-      <a href="#">
-        <i class='bx bxs-message-dots'></i>
-        <span class="text">Message</span>
-      </a>
-    </li>
-    <li>
-      <a href="#">
+      <a href="staffList.php">
         <i class='bx bxs-group'></i>
-        <span class="text">Team</span>
+        <span class="text">Staff</span>
+      </a>
+    </li>
+    <li>
+      <a href="viewFeedback.php">
+        <i class='bx bxs-message-dots'></i>
+        <span class="text">Feedback</span>
       </a>
     </li>
   </ul>
@@ -58,12 +58,6 @@ include 'db.php';
       <a href="#">
         <i class='bx bxs-cog'></i>
         <span class="text">Settings</span>
-      </a>
-    </li>
-    <li>
-      <a href="logout.php" class="logout">
-        <i class='bx bxs-log-out-circle'></i>
-        <span class="text">Logout</span>
       </a>
     </li>
   </ul>
@@ -81,6 +75,15 @@ include 'db.php';
         <button class="search-btn"><i class='bx bx-search'></i></button>
       </div>
     </form>
+    <input type="checkbox" id="switch-mode" hidden>
+			<label for="switch-mode" class="switch-mode"></label>
+			<a href="#" class="notification">
+				<i class='bx bxs-bell' ></i>
+				<span class="num">8</span>
+			</a>
+			<a href="profile.php" class="profile">
+				<img src="img/people.png">
+			</a>
   </nav>
 
   <!-- MAIN (THIS IS NEW) -->
@@ -89,7 +92,6 @@ include 'db.php';
       <div class="left">
         <h1>My Store</h1>
         <ul class="breadcrumb">
-          <li><a href="#">My Store</a></li>
           <li><a href="#">My Stores</a></li>
           <li><i class='bx bx-chevron-right'></i></li>
           <li><a class="active" href="#">Menu</a></li>

@@ -1,8 +1,8 @@
 <?php
+session_start();
 include("db.php");
 
-// fetch staff users only
-$sql = "SELECT * FROM users WHERE role='staff' ORDER BY ID DESC";
+$sql = "SELECT * FROM reviews ORDER BY id DESC";
 $result = mysqli_query($conn, $sql);
 ?>
 
@@ -11,7 +11,7 @@ $result = mysqli_query($conn, $sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff List</title>
+    <title>View Feedback</title>
 
     <link rel="stylesheet" href="style.css">
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
@@ -48,14 +48,14 @@ $result = mysqli_query($conn, $sql);
             </a>
         </li>
 
-        <li class="active">
+        <li>
             <a href="staffList.php">
                 <i class='bx bxs-group'></i>
                 <span class="text">Staff</span>
             </a>
         </li>
 
-        <li>
+        <li class="active">
             <a href="viewFeedback.php">
                 <i class='bx bxs-message-dots'></i>
                 <span class="text">Feedback</span>
@@ -75,14 +75,13 @@ $result = mysqli_query($conn, $sql);
 <!-- SIDEBAR -->
 
 
-
 <!-- CONTENT -->
 <section id="content">
 
     <!-- NAVBAR -->
     <nav>
         <i class='bx bx-menu'></i>
-        <a href="#" class="nav-link">Staff</a>
+        <a href="#" class="nav-link">Feedback</a>
         <form>
             <div class="form-input">
                 <input type="search" placeholder="Search...">
@@ -102,47 +101,37 @@ $result = mysqli_query($conn, $sql);
     <!-- NAVBAR -->
 
 
-
     <!-- MAIN -->
     <main>
 
         <div class="head-title">
             <div class="left">
-                <h1>Staff List</h1>
+                <h1>Feedback</h1>
                 <ul class="breadcrumb">
-                    <li>
-                        <a href="index.php">Dashboard</a>
-                    </li>
+                    <li><a href="index.php">Dashboard</a></li>
                     <li><i class='bx bx-chevron-right'></i></li>
-                    <li>
-                        <a class="active" href="staffList.php">Staff</a>
-                    </li>
+                    <li><a class="active" href="viewFeedback.php">Feedback</a></li>
                 </ul>
             </div>
-
-            <a href="addStaff.php" class="btn-download">
-                <i class='bx bx-plus'></i>
-                <span class="text">Add Staff</span>
-            </a>
         </div>
-
-
 
         <div class="table-data">
             <div class="order">
                 <div class="head">
-                    <h3>Staff Members</h3>
+                    <h3>Customer Feedback</h3>
                 </div>
 
                 <table>
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Full Name</th>
-                            <th>Username</th>
+                            <th>Name</th>
                             <th>Email</th>
-                            <th>Role</th>
-                            <th>Created At</th>
+                            <th>Rating</th>
+                            <th>Comment</th>
+                            <th>Status</th>
+                            <th>Reply</th>
+                            <th>Date</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -153,21 +142,31 @@ $result = mysqli_query($conn, $sql);
                             while($row = mysqli_fetch_assoc($result)){
                         ?>
                         <tr>
-                            <td><?php echo $row['ID']; ?></td>
-                            <td><?php echo $row['full_name']; ?></td>
-                            <td><?php echo $row['username']; ?></td>
-                            <td><?php echo $row['email']; ?></td>
-                            <td><?php echo $row['role']; ?></td>
+                            <td><?php echo $row['id']; ?></td>
+                            <td><?php echo $row['reviewer_name']; ?></td>
+                            <td><?php echo $row['reviewer_email']; ?></td>
+                            <td><?php echo $row['rating']; ?>/5</td>
+                            <td><?php echo $row['comment']; ?></td>
+                            <td>
+                                <?php 
+                                    if($row['status'] == "Replied"){
+                                        echo "<span style='color:green; font-weight:bold;'>Replied</span>";
+                                    } else {
+                                        echo "<span style='color:red; font-weight:bold;'>Pending</span>";
+                                    }
+                                ?>
+                            </td>
+                            <td><?php echo $row['reply']; ?></td>
                             <td><?php echo $row['created_at']; ?></td>
 
                             <td>
-                                <a href="editStaff.php?id=<?php echo $row['ID']; ?>"
-                                   style="background:orange; padding:6px 12px; color:white; border-radius:5px; text-decoration:none;">
-                                   Edit
+                                <a href="replyFeedback.php?id=<?php echo $row['id']; ?>"
+                                   style="background:#3C91E6; padding:6px 12px; color:white; border-radius:5px; text-decoration:none;">
+                                   Reply
                                 </a>
 
-                                <a href="deleteStaff.php?id=<?php echo $row['ID']; ?>"
-                                   onclick="return confirm('Are you sure you want to delete this staff?');"
+                                <a href="deleteFeedback.php?id=<?php echo $row['id']; ?>"
+                                   onclick="return confirm('Are you sure you want to delete this feedback?');"
                                    style="background:red; padding:6px 12px; color:white; border-radius:5px; text-decoration:none;">
                                    Delete
                                 </a>
@@ -179,12 +178,13 @@ $result = mysqli_query($conn, $sql);
                         } else {
                         ?>
                         <tr>
-                            <td colspan="7" style="text-align:center;">No staff found.</td>
+                            <td colspan="9" style="text-align:center;">No feedback found.</td>
                         </tr>
                         <?php } ?>
                     </tbody>
 
                 </table>
+
             </div>
         </div>
 
