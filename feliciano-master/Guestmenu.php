@@ -67,11 +67,7 @@
                 $output .= '</div>';
                 $output .= '<p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>'; // Hardcoded; add to DB if needed
                 $output .= '<div class="quantity-selector d-flex align-items-center mt-3">';
-                $output .= '<button class="qty-btn minus" type="button">-</button>';
-                $output .= '<input type="number" class="qty-input" value="1" min="1" readonly>';
-                $output .= '<button class="qty-btn plus" type="button">+</button>';
                 $output .= '</div>';
-                $output .= '<button class="btn btn-primary add-to-cart">Add to Cart</button>';
                 $output .= '</div>';
                 $output .= '</div>';
                 $output .= '</div>';
@@ -175,11 +171,6 @@
     </section>
 
 		
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="script.js"></script>
-
     <footer class="ftco-footer ftco-bg-dark ftco-section">
       <div class="container">
         <div class="row mb-5">
@@ -268,8 +259,6 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
   <script src="js/google-map.js"></script>
   <script src="js/main.js"></script>
-  <script src="script.js"></script>
-<script src="https://www.paypal.com/sdk/js?client-id=ATYkEEnovNtPctjWpE5ViGlEfEi8WhAplmEhklTwEFN6CAPNpZdDS-B0ZFJiCfxx60cRm508GOPC9sOa&currency=MYR&intent=capture"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
