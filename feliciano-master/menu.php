@@ -163,8 +163,6 @@
 
 	              <a class="nav-link ftco-animate" id="v-pills-5-tab" data-toggle="pill" href="#v-pills-5" role="tab" aria-controls="v-pills-5" aria-selected="false">Desserts</a>
 
-	              <a class="nav-link ftco-animate" id="v-pills-6-tab" data-toggle="pill" href="#v-pills-6" role="tab" aria-controls="v-pills-6" aria-selected="false">Wine</a>
-
 	            </div>
 	          </div>
 	          
@@ -187,8 +185,6 @@
     	</div>
     </section>
 
-		<!-- Cart Modal -->
-<!-- Cart Modal -->
 <div class="modal fade" id="cartModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
