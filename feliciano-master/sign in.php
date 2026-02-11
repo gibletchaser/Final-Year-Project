@@ -55,6 +55,7 @@
         <div class="collapse navbar-collapse" id="ftco-nav">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item"><a href="index.php" class="nav-link">Home</a></li>
+            <li class="nav-item"><a href="Guestmenu.php" class="nav-link">Menu</a></li>
                <li class="nav-item d-flex align-items-center" id="auth-area">
         <a href="sign in.php" class="nav-link btn btn-primary px-4 py-2" style="border-radius: 5px;">Sign In</a>
     </li>

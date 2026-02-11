@@ -72,6 +72,7 @@ if (isset($_SESSION['status'])) {
 	      <div class="collapse navbar-collapse" id="ftco-nav">
 	        <ul class="navbar-nav ml-auto">
 	        	<li class="nav-item active"><a href="index.php" class="nav-link">Home</a></li>>
+            <li class="nav-item"><a href="Guestmenu.php" class="nav-link">Menu</a></li>
 	          <li class="nav-item cta"><a href="sign in.php" class="nav-link">Sign In</a></li>
 	        </ul>
 	      </div>
