@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 // Inside the POST handler:
 $email = trim($_POST['email']);
 
-$sql = "SELECT name, email FROM user WHERE email = ?";
+$sql = "SELECT name, email FROM customer WHERE email = ?";
 $stmt = $conn->prepare($sql);
 
 if ($stmt === false) {
@@ -25,13 +25,13 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
-    $user_identifier = $user['name'];   // ← this is your PK
+    $customer = $result->fetch_assoc();
+    $user_identifier = $customer['name'];   // ← this is your PK
 
     $reset_token = bin2hex(random_bytes(32));
     $token_expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
-    $update_sql = "UPDATE user SET reset_token = ?, reset_token_expires = ? WHERE name = ?";
+    $update_sql = "UPDATE customer SET reset_token = ?, reset_token_expires = ? WHERE name = ?";
     $update = $conn->prepare($update_sql);
 
     if ($update === false) {
@@ -53,7 +53,7 @@ if ($result->num_rows > 0) {
 
 require_once 'mailer.php';  // ← or 'app/mailer.php' if you placed it there
 
-if (sendPasswordResetEmail($email, $user['name'], $reset_token)) {
+if (sendPasswordResetEmail($email, $customer['name'], $reset_token)) {
     $_SESSION['flash'] = 'Password reset link has been sent to your email!';
     $_SESSION['flash_type'] = 'success';
 } else {

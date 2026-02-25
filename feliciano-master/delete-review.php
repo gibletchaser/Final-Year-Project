@@ -1,7 +1,6 @@
 <?php
 include 'db.php';
 
-// Get the page the user came from (fallback to index.php)
 $redirect_page = $_SERVER['HTTP_REFERER'] ?? 'index.php';
 
 // Make sure it's one of our allowed pages

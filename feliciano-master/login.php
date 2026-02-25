@@ -24,7 +24,7 @@ if (empty($email) || empty($pass)) {
     exit();
 }
 
-$stmt = $conn->prepare("SELECT name, email, phone, password FROM user WHERE email = ?");
+$stmt = $conn->prepare("SELECT name, email, phone, password FROM customer WHERE email = ?");
 if (!$stmt) {
     echo json_encode([
         "status"  => "error",
@@ -37,22 +37,23 @@ $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
 
-if ($user = $result->fetch_assoc()) {
-    // Plain text password check (temporary - upgrade to hashing soon!)
-    if ($pass === $user['password']) {
+if ($customer = $result->fetch_assoc()) {
+    $input_hashed = hash('sha256', $pass);
+
+    if ($input_hashed === $customer['password']) {
         // Success - do NOT send password back to frontend
         $safeUser = [
-            "name"  => $user['name'],
-            "email" => $user['email'],
-            "phone" => $user['phone']
+            "name"  => $customer['name'],
+            "email" => $customer['email'],
+            "phone" => $customer['phone']
         ];
 
         // Optional: Store in session if you want server-side session too
-        $_SESSION['user'] = $safeUser;
+        $_SESSION['customer'] = $safeUser;
 
         echo json_encode([
             "status" => "success",
-            "user"   => $safeUser
+            "customer"   => $safeUser
         ]);
     } else {
         echo json_encode([

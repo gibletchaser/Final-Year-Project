@@ -294,7 +294,7 @@ if (isset($_SESSION['status'])) {
                  $servername = "localhost";
 $username = "root"; // your MySQL username
 $password = "";     // your MySQL password
-$dbname = "yibyong";
+$dbname = "yobyong";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 

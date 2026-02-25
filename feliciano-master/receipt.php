@@ -1,84 +1,55 @@
 <?php
-session_start();
-include 'db.php';
+require_once 'vendor/autoload.php';
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: sign_in.php?redirect=receipt");
-    exit;
-}
+\Stripe\Stripe::setApiKey('sk_test_51T4boFHWrfyRRRiKGHEc7DVdYEdqR9dBleew9M40E3veAJtqxREAcwBTQ1Cpxc4jSOdaT1yUa1erqQXSa9qUR23v00ypVrxVQd');
 
-$order_id = isset($_GET['order_id']) ? (int)$_GET['order_id'] : 0;
-if ($order_id <= 0) {
-    die("Invalid order.");
-}
-$stmt = $conn->prepare("
-    SELECT * FROM orders 
-    WHERE id = ? AND customer_email = ?
-");
-$stmt->bind_param("is", $order_id, $_SESSION['email']);   // or $_SESSION['user_id'] if using ID
-$stmt->execute();
-$order = $stmt->get_result()->fetch_assoc();
+// DB connection (copy from place-order.php)
+$servername = "localhost";
+$username   = "root";
+$password   = "";
+$dbname     = "yobyong";
 
-if (!$order) {
-    die("Order not found or you do not have permission to view it.");
-}
-$stmt = $conn->prepare("SELECT * FROM orders WHERE id = ?");
-if (!$stmt) {
-    die("Prepare failed: " . $conn->error);
-}
-$stmt->bind_param("i", $order_id);
-
-if (!$stmt->execute()) {
-    die("Execute failed: " . $stmt->error);
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+    die("DB connection failed: " . $conn->connect_error);
 }
 
-$order = $stmt->get_result()->fetch_assoc();
-if (!$order) {
-    http_response_code(404);
-    die("Order not found.");
-}
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Receipt #<?php echo $order_id; ?> - Yob Yong</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
-        h1 { color: #e67e22; text-align: center; }
-        table { margin: 20px 0; border-collapse: collapse; width: 100%; }
-        th, td { padding: 12px; text-align: left; border: 1px solid #ddd; }
-        th { background: #f8f8f8; }
-        .total { font-size: 1.3em; background: #fff3e0; }
-        .success-box {
-            background: #e8f5e9;
-            border: 1px solid #c8e6c9;
-            padding: 20px;
-            margin-bottom: 30px;
-            border-radius: 8px;
-            text-align: center;
+$session_id = $_GET['session_id'] ?? null;
+
+if ($session_id) {
+    try {
+        $session = \Stripe\Checkout\Session::retrieve($session_id);
+
+        if ($session->payment_status === 'paid') {
+            // Update order status
+            $stmt = $conn->prepare("UPDATE orders SET payment_status = 'paid' WHERE stripe_session_id = ?");
+            if ($stmt) {
+                $stmt->bind_param("s", $session_id);
+                $stmt->execute();
+                $stmt->close();
+            }
+
+            $customer_name = $session->metadata->customer_name ?? 'Customer';
+            $payment_intent = $session->payment_intent ?? 'N/A';
+
+            echo "<h1>Thank You, " . htmlspecialchars($customer_name) . "!</h1>";
+            echo "<p>Your order is confirmed and payment successful.</p>";
+            echo "<p>Payment ID: " . htmlspecialchars($payment_intent) . "</p>";
+            echo "<p>Session ID: " . htmlspecialchars($session_id) . "</p>";
+            echo "<script>localStorage.removeItem('cart');</script>";
+            // Add link back to menu or profile orders
+            echo "<a href='menu.php'>Back to Menu</a>";
+        } else {
+            echo "<h1>Payment not completed.</h1>";
+            echo "<p>Status: " . $session->payment_status . "</p>";
         }
-    </style>
-</head>
-<body>
+    } catch (Exception $e) {
+        echo "<h1>Error retrieving payment details</h1>";
+        echo "<p>" . htmlspecialchars($e->getMessage()) . "</p>";
+    }
+} else {
+    echo "<h1>No session found.</h1>";
+}
 
-<div class="success-box">
-    <h1>Thank You for Your Order!</h1>
-    <p>Your order has been received and is being prepared.</p>
-</div>
-
-<p><strong>Order Number:</strong> #<?php echo $order_id; ?></p>
-<p><strong>Name:</strong> <?php echo htmlspecialchars($order['customer_name']); ?></p>
-<p><strong>Phone:</strong> <?php echo htmlspecialchars($order['phone']); ?></p>
-<p><strong>Placed on:</strong> <?php echo date('d M Y, h:i A', strtotime($order['created_at'])); ?></p>
-<p><strong>Payment Method:</strong> <?php echo ucfirst(str_replace('_', ' ', $order['payment_method'])); ?></p>
-
-<?php if ($order['payment_method'] === 'paypal'): ?>
-<p><strong>PayPal Transaction ID:</strong> <?php echo htmlspecialchars($order['paypal_transaction_id'] ?? '—'); ?></p>
-<?php endif; ?>
-
-<h3>Order Items</h3>
-</body>
-</html>
+$conn->close();
+?>

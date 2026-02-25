@@ -29,7 +29,6 @@
 </head>
 <body>
     <?php
-    // Database connection
     $servername = "localhost"; // Adjust if needed
     $username = "root"; // Adjust if needed
     $password = ""; // Adjust if needed
@@ -212,13 +211,18 @@
                     </div>
                     <div class="form-group">
                         <label>Payment Method</label>
-                        <select class="form-control" id="paymentMethod" required>
-                         <option value="cash_on_delivery">Cash on Delivery</option>
-                         <option value="paypal">PayPal</option>
-                 </select>
+          <select class="form-control" required>
+                <option value="">-- Select Payment Method --</option>
+                <option value="stripe">Credit/Debit Card or FPX (Stripe)</option>
+            </select>
+        </div>
 
-    <div id="paypal-button-container" style="margin-top: 15px; display: none;"></div>
-</div>
+        <!-- Stripe container – right after select, outside of it -->
+        <div id="stripe-payment-container" style="margin-top: 20px; display: none; text-align: center;">
+            <button id="stripe-pay-btn" class="btn btn-primary btn-lg">Pay with Stripe →</button>
+            <p id="stripe-message" style="margin-top:10px; color:#666;"></p>
+        </div>
+ 
                     <div class="form-group">
                         <label>Additional Notes</label>
                         <textarea class="form-control" id="orderNotes" rows="2" placeholder="e.g. Less spicy, No onion..."></textarea>
@@ -327,7 +331,7 @@
   <script src="js/google-map.js"></script>
   <script src="js/main.js"></script>
   <script src="script.js"></script>
-<script src="https://www.paypal.com/sdk/js?client-id=ATYkEEnovNtPctjWpE5ViGlEfEi8WhAplmEhklTwEFN6CAPNpZdDS-B0ZFJiCfxx60cRm508GOPC9sOa&currency=MYR&intent=capture"></script>
+<script src="https://js.stripe.com/v3/"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -371,135 +375,191 @@ function handleLogout() {
 </script>
 
 <script>
-// Helper: Submit order to place_order.php
-function submitOrder(orderData) {
-    console.log("Submitting order:", orderData);
-const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-console.log("Cart before sending:", cart);          // ← add this
-console.log("Cart length:", cart.length);
-if (cart.length === 0) {
-    console.warn("Cart empty - adding test item for debug");
-    cart.push({
-        id: "test-item",
-        name: "Test Burger",
-        price: 10.00,
-        quantity: 1
-    });
-    localStorage.setItem('cart', JSON.stringify(cart));
-}
-    fetch('place-order.php', {
+// Handle Pay button click
+document.getElementById('stripe-pay-btn')?.addEventListener('click', async function() {
+    const name  = document.getElementById('orderName').value.trim();
+    const phone = document.getElementById('orderPhone').value.trim();
+    const notes = document.getElementById('orderNotes').value.trim();
+    const total = parseFloat(document.getElementById('cartTotal').textContent) || 0;
+
+    if (!name || !phone || total <= 0) {
+        alert("Please fill name, phone, and ensure cart is not empty.");
+        return;
+    }
+
+    this.disabled = true;
+    document.getElementById('stripe-message').textContent = 'Creating secure payment session...';
+
+    try {
+        const response = await fetch('create-stripe-checkout.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                customer_name: name,
+                phone: phone,
+                notes: notes,
+                amount: total,              // in MYR
+                cart: JSON.parse(localStorage.getItem('cart') || '[]')
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.sessionId) {
+            const stripe = Stripe('pk_test_51T4boFHWrfyRRRiKL7MLXoVgQRh15T7tTzc5LxW2KVoe34r5gf5CCtXSk7bfl6ppeyUIAt3iV5PGaaozjhC9N0wV00y6EcdaLs');  // ← REPLACE with your pk_test_...
+            stripe.redirectToCheckout({ sessionId: data.sessionId });
+        } else {
+            alert("Error: " + (data.error || "Could not create payment session"));
+        }
+    } catch (err) {
+        alert("Network error: " + err.message);
+    } finally {
+        this.disabled = false;
+    }
+});
+
+// After getting session from create-stripe-checkout.php
+if (data.success && data.sessionId) {
+    // Now save order with this sessionId
+    const orderResponse = await fetch('place-order.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData)
-    })
-    .then(res => {
-        console.log("place-order.php status:", res.status);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-    })
-    .then(data => {
-        console.log("place-order.php response:", data);
-        if (data.success && data.order_id) {
-            alert("Order placed! Order ID: " + data.order_id);
-            localStorage.removeItem('cart');
-            if (typeof updateCartDisplay === 'function') updateCartDisplay();
-            $('#cartModal').modal('hide');
-            window.location.href = `receipt.php?order_id=${data.order_id}`;
-        } else {
-            alert("Order failed: " + (data.message || "Unknown error"));
-        }
-    })
-    .catch(err => {
-        console.error("Order save error:", err);
-        alert("Failed to save order: " + err.message);
+        body: JSON.stringify({
+            customer_name: name,
+            phone: phone,
+            notes: notes,
+            total_amount: total,
+            items: cart,
+            payment_method: 'stripe',
+            stripe_session_id: data.sessionId   // ← key change
+        })
     });
+
+    const orderData = await orderResponse.json();
+
+    if (orderData.success) {
+        const stripe = Stripe('pk_test_...');
+        stripe.redirectToCheckout({ sessionId: data.sessionId });
+    } else {
+        alert("Failed to save order: " + orderData.message);
+    }
 }
 </script>
 
+<script>
+   document.getElementById('placeOrderBtn').addEventListener('click', async function() {
+    const name   = document.getElementById('orderName').value.trim();
+    const phone  = document.getElementById('orderPhone').value.trim();
+    const notes  = document.getElementById('orderNotes').value.trim();
+    const total  = parseFloat(document.getElementById('cartTotal').textContent) || 0;
+    const cart   = JSON.parse(localStorage.getItem('cart') || '[]');
 
+    console.log('Cart from localStorage:', cart);           // ← add this
+    console.log('Cart length:', cart.length);               // ← add this
+    console.log('Total from display:', total);              // ← add this
+
+    if (!name || !phone) {
+        alert("Please fill in your full name and phone number.");
+        return;
+    }
+    if (cart.length === 0 || total <= 0) {
+        alert("Your cart is empty! Add some items first.");
+        return;
+    }
+
+    this.disabled = true;
+    this.textContent = 'Processing...';
+
+    try {
+        // Step 1: Create Stripe Checkout Session
+        const sessionResponse = await fetch('create-stripe-checkout.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                customer_name: name,
+                phone: phone,
+                notes: notes,
+                amount: total,
+                cart: cart
+            })
+        });
+
+        const sessionData = await sessionResponse.json();
+
+        if (!sessionData.success || !sessionData.sessionId) {
+            throw new Error(sessionData.error || "Failed to create payment session. Please try again.");
+        }
+
+        // Step 2: Save pending order in your DB with session ID
+        const orderResponse = await fetch('place-order.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                customer_name: name,
+                phone: phone,
+                notes: notes,
+                total_amount: total,
+                items: cart,
+                payment_method: 'stripe',
+                stripe_session_id: sessionData.sessionId
+            })
+        });
+
+        const orderData = await orderResponse.json();
+
+        if (!orderData.success) {
+            throw new Error(orderData.message || "Failed to save your order. Please contact support.");
+        }
+
+        // Step 3: Redirect to Stripe Checkout
+        const stripe = Stripe('pk_test_51T4boFHWrfyRRRiKL7MLXoVgQRh15T7tTzc5LxW2KVoe34r5gf5CCtXSk7bfl6ppeyUIAt3iV5PGaaozjhC9N0wV00y6EcdaLs');  // ← REPLACE with your REAL test/live publishable key
+        const { error } = await stripe.redirectToCheckout({
+            sessionId: sessionData.sessionId
+        });
+
+        if (error) {
+            console.error('Stripe redirect error:', error);
+            alert("Payment setup error: " + (error.message || "Unknown issue. Please try again."));
+        }
+
+        // If no error, user is redirected – no need for more code here
+
+    } catch (err) {
+    console.error("Error details:", err);
+
+    let msg = "Something went wrong.";
+    
+    if (err.message.includes('Unexpected token') || err.message.includes('<')) {
+        msg = "Server sent an error page instead of JSON (probably PHP notice or error). Check place-order.php";
+    } else if (err.message.includes('json')) {
+        msg = "Invalid response from server – not valid JSON";
+    }
+
+    alert(msg + "\n\nDetail: " + err.message);
+    console.log("Full response (if available):", err);   // ← helps debugging
+} finally {
+        this.disabled = false;
+        this.textContent = 'Place Order';
+    }
+});
+</script>
 
 <script>
-// PayPal button logic – SINGLE correct version
-let paypalRendered = false;
+    // Fix aria-hidden focus conflict on modal hide
+$('#cartModal').on('hide.bs.modal', function (event) {
+    // Set inert before Bootstrap applies aria-hidden
+    this.inert = true;
+});
 
-d// Only one block for PayPal rendering
-document.getElementById('paymentMethod').addEventListener('change', function() {
-    const container = document.getElementById('paypal-button-container');
-    
-    // Hide/show container
-    if (this.value === 'paypal') {
-        container.style.display = 'block';
-        
-        // Prevent duplicate renders: clear old content + check if already rendered
-        if (container.hasChildNodes()) {
-            container.innerHTML = '';  // ← This removes previous buttons
-        }
-        
-        console.log("Rendering PayPal buttons..."); // for debugging
+$('#cartModal').on('hidden.bs.modal', function (event) {
+    // Clean up after fully hidden
+    this.inert = false;
+});
 
-        paypal.Buttons({
-            style: {
-                layout: 'vertical',
-                color:  'gold',
-                shape:  'rect',
-                label:  'paypal'
-            },
-            createOrder: function(data, actions) {
-                const total = parseFloat(document.getElementById('cartTotal').textContent) || 0;
-                if (total <= 0) {
-                    alert("Cart is empty!");
-                    throw new Error("Cart empty"); // prevents proceeding
-                }
-                return actions.order.create({
-                    purchase_units: [{
-                        amount: {
-                            value: total.toFixed(2),
-                            currency_code: 'MYR'
-                        },
-                        description: 'Yob Yong Order'
-                    }]
-                });
-            },
-            onApprove: function(data, actions) {
-                return actions.order.capture().then(function(details) {
-                    console.log("PayPal success:", details);
-                    alert('Payment successful! Transaction ID: ' + details.id);
-
-                    // Collect order data and submit
-                    const name  = document.getElementById('orderName').value.trim();
-                    const phone = document.getElementById('orderPhone').value.trim();
-                    const notes = document.getElementById('orderNotes').value.trim();
-                    const cart  = JSON.parse(localStorage.getItem('cart') || '[]');
-                    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-                    if (!name || !phone || cart.length === 0 || total <= 0) {
-                        alert("Order data incomplete after payment.");
-                        return;
-                    }
-
-                    const orderData = {
-                        customer_name: name,
-                        phone: phone,
-                        payment_method: 'paypal',
-                        notes: notes,
-                        items: cart,
-                        total_amount: total,
-                        paypal_transaction_id: details.id
-                    };
-
-                    submitOrder(orderData);  // your fetch to place_order.php
-                });
-            },
-            onCancel: () => alert('Payment cancelled.'),
-            onError: (err) => {
-                console.error('PayPal SDK error:', err);
-                alert('An error occurred with PayPal. Please try again.');
-            }
-        }).render('#paypal-button-container');
-    } else {
-        container.style.display = 'none';
-        container.innerHTML = ''; // clear when switching away (optional but clean)
-    }
+// Optional: When modal shows, ensure focus goes inside (Bootstrap usually handles this)
+$('#cartModal').on('shown.bs.modal', function () {
+    // e.g. focus first input
+    document.getElementById('orderName')?.focus();
 });
 </script>
   </body>

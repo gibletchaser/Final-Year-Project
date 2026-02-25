@@ -1,8 +1,17 @@
 <?php
-file_put_contents('debug.log', date('Y-m-d H:i:s') . " - Received data: " . print_r($data, true) . "\n", FILE_APPEND);
-error_log(print_r($_POST, true));
+ob_start();
+require_once 'vendor/autoload.php';
+// Suppress ALL display of errors/notices to browser
+ini_set('display_errors', '0');
+ini_set('display_startup_errors', '0');
+error_reporting(E_ALL); // still log them
+
 session_start();
 header('Content-Type: application/json');
+
+// Log raw input for debugging (to file only)
+$rawInput = file_get_contents('php://input');
+file_put_contents('place-order-debug.log', date('Y-m-d H:i:s') . " RAW INPUT: " . $rawInput . "\n", FILE_APPEND);
 
 $servername = "localhost";
 $username   = "root";
@@ -11,85 +20,95 @@ $dbname     = "yobyong";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
-    die(json_encode(["success" => false, "message" => "Database connection failed"]));
+    ob_end_clean();
+    echo json_encode(["success" => false, "message" => "Database connection failed"]);
+    exit;
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
+$data = json_decode($rawInput, true);
+
+if (json_last_error() !== JSON_ERROR_NONE) {
+    ob_end_clean();
+    echo json_encode(["success" => false, "message" => "Invalid JSON input: " . json_last_error_msg()]);
+    exit;
+}
+
+file_put_contents('place-order-debug.log', date('Y-m-d H:i:s') . " Parsed data: " . print_r($data, true) . "\n", FILE_APPEND);
 
 if (!$data || empty($data['items'])) {
+    ob_end_clean();
     echo json_encode(["success" => false, "message" => "No items in order"]);
     exit;
 }
 
-// Get logged in user email (from your current login system)
-$customer_email = $_SESSION['email'] ?? 'guest@example.com'; // ← change if needed
+$customer_name   = $conn->real_escape_string($data['customer_name'] ?? '');
+$phone  = $conn->real_escape_string($data['phone'] ?? '');
+$notes  = $conn->real_escape_string($data['notes'] ?? '');
+$total  = floatval($data['total_amount'] ?? 0);
+$payment_method = $data['payment_method'] ?? 'stripe';
+$stripe_session_id = $data['stripe_session_id'] ?? null;
 
-$name           = $conn->real_escape_string($data['customer_name']);
-$phone          = $conn->real_escape_string($data['phone']);
-$notes          = $conn->real_escape_string($data['notes'] ?? '');
-$total          = floatval($data['total_amount']);
-$payment_method = $data['payment_method'];
+if (empty($customer_name) || empty($phone) || $total <= 0) {
+    ob_end_clean();
+    echo json_encode(["success" => false, "message" => "Missing required fields or invalid total"]);
+    exit;
+}
 
-// ────────────────────────────────────────────────
-// NEW: Get PayPal transaction ID (only sent when PayPal was used)
-$paypal_id = $data['paypal_transaction_id'] ?? null;
-// ────────────────────────────────────────────────
-
-// 1. Create order - ADD paypal_transaction_id to the query
 $stmt = $conn->prepare("
     INSERT INTO orders (
-        customer_email, customer_name, phone, total_amount, 
-        payment_method, notes, paypal_transaction_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        customer_name, phone, total_amount, 
+        payment_method, stripe_session_id, notes, payment_status
+    ) VALUES (  ?, ?, ?, ?, ?, ?, 'pending')
 ");
 
-// ────────────────────────────────────────────────
-// IMPORTANT: Add 's' for the new string field in bind_param
-$stmt->bind_param(
-    "sssdsss",  // ← added one more 's' for paypal_transaction_id
-    $customer_email,
-    $name,
-    $phone,
-    $total,
-    $payment_method,
-    $notes,
-    $paypal_id      // ← new parameter
-);
-// ────────────────────────────────────────────────
+if (!$stmt) {
+    ob_end_clean();
+    echo json_encode(["success" => false, "message" => "Prepare failed: " . $conn->error]);
+    exit;
+}
 
-$stmt->execute();
+$stmt->bind_param("sssdss", $customer_name, $phone, $total, $payment_method, $stripe_session_id, $notes);
+
+if (!$stmt->execute()) {
+    $error = $stmt->error ?: $conn->error;
+    file_put_contents('place-order-errors.log', date('Y-m-d H:i:s') . " Order insert failed: " . $error . "\nData: " . print_r($data, true) . "\n", FILE_APPEND);
+    ob_end_clean();
+    echo json_encode(["success" => false, "message" => "Order creation failed: " . $error]);
+    $stmt->close();
+    $conn->close();
+    exit;
+}
 
 $order_id = $conn->insert_id;
 $stmt->close();
 
-// 2. Insert items (this part stays the same)
-$stmt = $conn->prepare("
-    INSERT INTO order_items (order_id, menu_id, name, price, quantity)
-    VALUES (?, ?, ?, ?, ?)
-");
+// Items insert (skip if table doesn't exist yet – but you should create it)
+if (!empty($data['items'])) {
+    $stmt = $conn->prepare("INSERT INTO order_items (order_id, menu_id, name, price, quantity) VALUES (?, ?, ?, ?, ?)");
+    if ($stmt) {
+        foreach ($data['items'] as $item) {
+            $menu_id  = (int)($item['id'] ?? 0);
+            $itemName = $conn->real_escape_string($item['name'] ?? 'Unknown');
+            $price    = floatval($item['price'] ?? 0);
+            $qty      = (int)($item['quantity'] ?? 1);
 
-foreach ($data['items'] as $item) {
-    $menu_id  = (int)$item['id'];
-    $itemName = $conn->real_escape_string($item['name']);
-    $price    = floatval($item['price']);
-    $qty      = (int)$item['quantity'];
+            if ($menu_id <= 0 || $price <= 0 || $qty <= 0) continue;
 
-    $stmt->bind_param("iisdi", $order_id, $menu_id, $itemName, $price, $qty);
-    $stmt->execute();
+            $stmt->bind_param("iisdi", $order_id, $menu_id, $itemName, $price, $qty);
+            $stmt->execute(); // ignore per-item errors for now
+        }
+        $stmt->close();
+    }
 }
 
-$stmt->close();
-
-// ... after all executes ...
-
-header('Content-Type: application/json; charset=utf-8');
-
-// Make sure NOTHING is output before this (no echo, no space before <?php, no error messages)
+$conn->close();
+ob_end_clean();
 echo json_encode([
-    "success"  => true,
-    "order_id" => $order_id,
-    "message"  => "Order placed successfully"
+    "success"   => true,
+    "order_id"  => $order_id,
+    "message"   => "Order placed successfully (pending payment if using Stripe)"
 ]);
 
-exit;   // important - stop any further output
+exit;
+
 ?>
