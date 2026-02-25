@@ -3,6 +3,13 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 include 'db.php';
+
+// Fetch all categories for the filter tabs
+$catResult = $conn->query("SELECT * FROM categories ORDER BY name ASC");
+$categories = [];
+while ($row = $catResult->fetch_assoc()) {
+    $categories[] = $row;
+}
 ?>
 
 <!DOCTYPE html>
@@ -12,10 +19,11 @@ include 'db.php';
   <title>My Store</title>
   <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 
-<!-- SIDEBAR (SAME AS DASHBOARD) -->
+<!-- SIDEBAR -->
 <section id="sidebar">
   <a href="#" class="brand">
     <i class='bx bxs-smile'></i>
@@ -65,28 +73,28 @@ include 'db.php';
 
 <!-- CONTENT -->
 <section id="content">
-  <!-- NAVBAR (SAME AS DASHBOARD) -->
+  <!-- NAVBAR -->
   <nav>
     <i class='bx bx-menu'></i>
     <a href="#" class="nav-link">Categories</a>
     <form>
       <div class="form-input">
-        <input type="search" placeholder="Search...">
-        <button class="search-btn"><i class='bx bx-search'></i></button>
+        <input type="search" id="searchInput" placeholder="Search...">
+        <button class="search-btn" type="button"><i class='bx bx-search'></i></button>
       </div>
     </form>
     <input type="checkbox" id="switch-mode" hidden>
-			<label for="switch-mode" class="switch-mode"></label>
-			<a href="#" class="notification">
-				<i class='bx bxs-bell' ></i>
-				<span class="num">8</span>
-			</a>
-			<a href="profile.php" class="profile">
-				<img src="img/people.png">
-			</a>
+    <label for="switch-mode" class="switch-mode"></label>
+    <a href="#" class="notification">
+      <i class='bx bxs-bell'></i>
+      <span class="num">8</span>
+    </a>
+    <a href="profile.php" class="profile">
+      <img src="img/people.png">
+    </a>
   </nav>
 
-  <!-- MAIN (THIS IS NEW) -->
+  <!-- MAIN -->
   <main>
     <div class="head-title">
       <div class="left">
@@ -103,13 +111,32 @@ include 'db.php';
       </a>
     </div>
 
-    <!-- MENU GRID -->
-    <div id="menuGrid" class="menu-grid">
-      <!-- Menus will be loaded here dynamically by JavaScript -->
+    <!-- ── CATEGORY FILTER TABS ── -->
+    <div class="category-bar">
+      <button class="cat-tab active" data-cat="all" onclick="filterCategory('all', this)">
+        All
+      </button>
+      <?php foreach ($categories as $cat): ?>
+      <button
+        class="cat-tab"
+        data-cat="<?= htmlspecialchars($cat['id']) ?>"
+        onclick="filterCategory('<?= htmlspecialchars($cat['id']) ?>', this)">
+        <?= htmlspecialchars($cat['name']) ?>
+      </button>
+      <?php endforeach; ?>
+      <button class="cat-tab manage-btn" onclick="openCatModal()">
+        <i class='bx bx-category'></i> Manage Categories
+      </button>
     </div>
 
-    <!-- Modal for Add/Edit/Delete -->
-    <!-- EDIT / ADD MENU MODAL -->
+    <!-- MENU GRID -->
+    <div id="menuGrid" class="menu-grid">
+      <!-- Menus loaded dynamically by JavaScript -->
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         ADD / EDIT MENU MODAL
+    ════════════════════════════════════════════ -->
     <div id="menuModal" class="modal-overlay">
       <div class="modal-box">
         <h3 id="modalTitle">Edit Menu</h3>
@@ -118,6 +145,16 @@ include 'db.php';
 
         <label>Menu Name</label>
         <input type="text" id="menuName">
+
+        <label>Category</label>
+        <select id="menuCategory">
+          <option value="">— No Category —</option>
+          <?php foreach ($categories as $cat): ?>
+          <option value="<?= htmlspecialchars($cat['id']) ?>">
+            <?= htmlspecialchars($cat['name']) ?>
+          </option>
+          <?php endforeach; ?>
+        </select>
 
         <label>Price (RM)</label>
         <input type="number" id="menuPrice" step="0.01">
@@ -136,10 +173,34 @@ include 'db.php';
         </div>
       </div>
     </div>
+
+    <!-- ═══════════════════════════════════════════
+         CATEGORY MANAGEMENT MODAL
+    ════════════════════════════════════════════ -->
+    <div id="catModal" class="modal-overlay">
+      <div class="modal-box">
+        <h3>Manage Categories</h3>
+
+        <div id="catList">
+          <!-- Category list rendered by JS -->
+        </div>
+
+        <div class="add-cat-row">
+          <input type="text" id="newCatName" placeholder="New category name...">
+          <button onclick="addCategory()">
+            <i class='bx bx-plus'></i> Add
+          </button>
+        </div>
+
+        <div class="modal-actions" style="margin-top:18px;">
+          <button class="btn-cancel" onclick="closeCatModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
   </main>
 </section>
 
-<!-- Added jQuery before script.js to ensure proper loading and AJAX support -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="./script.js"></script>
 

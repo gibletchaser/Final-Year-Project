@@ -18,6 +18,11 @@ $result = mysqli_query($conn, $sql);
 </head>
 
 <body>
+    <script>
+		if (localStorage.getItem('darkMode') === 'enabled') {
+			document.body.classList.add('dark');
+		}
+	</script>
 
 <!-- SIDEBAR -->
 <section id="sidebar">

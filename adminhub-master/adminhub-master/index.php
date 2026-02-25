@@ -476,7 +476,11 @@ if (!isset($_SESSION['admin_logged_in'])) {
 	</style>
 </head>
 <body>
-
+	<script>
+		if (localStorage.getItem('darkMode') === 'enabled') {
+			document.body.classList.add('dark');
+		}
+	</script>
 
 	<!-- SIDEBAR -->
 	<section id="sidebar">

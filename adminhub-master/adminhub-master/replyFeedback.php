@@ -37,6 +37,11 @@ if(isset($_POST['sendReply'])){
 </head>
 
 <body>
+    <script>
+		if (localStorage.getItem('darkMode') === 'enabled') {
+			document.body.classList.add('dark');
+		}
+	</script>
 
 <section id="sidebar">
     <a href="#" class="brand">

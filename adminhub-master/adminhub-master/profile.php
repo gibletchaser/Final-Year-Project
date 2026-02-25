@@ -403,6 +403,11 @@ $user = $stmt->get_result()->fetch_assoc();
     </style>
 </head>
 <body>
+    <script>
+		if (localStorage.getItem('darkMode') === 'enabled') {
+			document.body.classList.add('dark');
+		}
+	</script>
 
 <!-- SIDEBAR -->
 <section id="sidebar">
