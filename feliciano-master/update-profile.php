@@ -18,7 +18,7 @@ if (empty($email)) {
 }
 
 // Fetch current values
-$result = mysqli_query($conn, "SELECT name, phone, password FROM user WHERE email = '$email' LIMIT 1");
+$result = mysqli_query($conn, "SELECT name, phone, password FROM customer WHERE email = '$email' LIMIT 1");
 if (!$result || mysqli_num_rows($result) === 0) {
     exit("user_not_found");
 }
@@ -66,7 +66,7 @@ if (empty($set_parts)) {
 }
 
 // 5. Run the query ONCE
-$query = "UPDATE user SET " . implode(', ', $set_parts) . " WHERE email = '$email'";
+$query = "UPDATE customer SET " . implode(', ', $set_parts) . " WHERE email = '$email'";
 
 if (mysqli_query($conn, $query)) {
     // Return: success | list,of,changes | new_image_path
