@@ -8,7 +8,7 @@ $token = $_GET['token'] ?? '';
 
 // Validate token
 if ($token) {
-    $sql = "SELECT name, reset_token_expires FROM user WHERE reset_token = ?";
+    $sql = "SELECT name, reset_token_expires FROM customer WHERE reset_token = ?";
     $stmt = $conn->prepare($sql);
 
     if ($stmt === false) {
@@ -17,11 +17,11 @@ if ($token) {
         $stmt->bind_param("s", $token);
         $stmt->execute();
         $result = $stmt->get_result();
-        $user = $result->fetch_assoc();
+        $customer = $result->fetch_assoc();
 
-        if (!$user) {
+        if (!$customer) {
             $error = 'Invalid or expired reset link.';
-        } elseif (strtotime($user['reset_token_expires']) < time()) {
+        } elseif (strtotime($customer['reset_token_expires']) < time()) {
             $error = 'Reset link has expired. Please request a new one.';
         }
     }
@@ -41,13 +41,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && empty($error)) {
     } else {
         $hashed_password = hash('sha256', $password); // ← change to password_hash() later
 
-        $sql = "UPDATE user SET password = ?, reset_token = NULL, reset_token_expires = NULL WHERE name = ?";
+        $sql = "UPDATE customer SET password = ?, reset_token = NULL, reset_token_expires = NULL WHERE name = ?";
         $stmt = $conn->prepare($sql);
 
         if ($stmt === false) {
             $error = "Update prepare failed: " . $conn->error;
         } else {
-            $stmt->bind_param("ss", $hashed_password, $user['name']);
+            $stmt->bind_param("ss", $hashed_password, $customer['name']);
 
             if ($stmt->execute()) {
                 $success = 'Password has been reset successfully! You can now 
