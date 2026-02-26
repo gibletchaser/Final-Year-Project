@@ -78,7 +78,7 @@ try {
         VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW(), NOW())
     ");
 
-    $stmt->bind_param("sssiss", $customer_name, $phone, $notes, $amount_myr, $cart_json, $session->id);
+    $stmt->bind_param("sssdss", $customer_name, $phone, $notes, $amount_myr, $cart_json, $session->id);
     $stmt->execute();
     $stmt->close();
 

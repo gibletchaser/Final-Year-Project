@@ -1404,3 +1404,95 @@
     [stripe_session_id] => cs_test_a1TrwFHltAIW1V1T6z0yO1T8Co7iawiVp5UDfvYRGCxHy3RJCSveFwgOUY
 )
 
+2026-02-26 08:13:40 RAW INPUT: {"customer_name":"shyna","phone":"12345678","notes":"","total_amount":10,"items":[{"id":"nasi-goreng","name":"nasi goreng","price":5,"quantity":2}],"payment_method":"stripe","stripe_session_id":"cs_test_a19hElNgAENHEkMtRQc9bnreCYZ3r0nGMVmhbz8r2kx7u8dzXfRqS7vf5x"}
+2026-02-26 08:13:40 Parsed data: Array
+(
+    [customer_name] => shyna
+    [phone] => 12345678
+    [notes] => 
+    [total_amount] => 10
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => nasi-goreng
+                    [name] => nasi goreng
+                    [price] => 5
+                    [quantity] => 2
+                )
+
+        )
+
+    [payment_method] => stripe
+    [stripe_session_id] => cs_test_a19hElNgAENHEkMtRQc9bnreCYZ3r0nGMVmhbz8r2kx7u8dzXfRqS7vf5x
+)
+
+2026-02-26 08:13:40 RAW INPUT: {"customer_name":"shyna","phone":"12345678","notes":"","total_amount":10,"items":[{"id":"nasi-goreng","name":"nasi goreng","price":5,"quantity":2}],"payment_method":"stripe","stripe_session_id":"cs_test_a1K9iBZA4V4Vv4yPQKo3n04ggF3XJJNQ5vPJeymgmzbKLe8l4Km3q5R60o"}
+2026-02-26 08:13:40 Parsed data: Array
+(
+    [customer_name] => shyna
+    [phone] => 12345678
+    [notes] => 
+    [total_amount] => 10
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => nasi-goreng
+                    [name] => nasi goreng
+                    [price] => 5
+                    [quantity] => 2
+                )
+
+        )
+
+    [payment_method] => stripe
+    [stripe_session_id] => cs_test_a1K9iBZA4V4Vv4yPQKo3n04ggF3XJJNQ5vPJeymgmzbKLe8l4Km3q5R60o
+)
+
+2026-02-26 08:15:23 RAW INPUT: {"customer_name":"shyna","phone":"12345678","notes":"","total_amount":10,"items":[{"id":"nasi-goreng","name":"nasi goreng","price":5,"quantity":2}],"payment_method":"stripe","stripe_session_id":"cs_test_a1HOL4v8tKJE7chQmEHITDujYb4DYcTy5NVzNKlOzdJFG8tKZEoWW0QnRe"}
+2026-02-26 08:15:23 Parsed data: Array
+(
+    [customer_name] => shyna
+    [phone] => 12345678
+    [notes] => 
+    [total_amount] => 10
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => nasi-goreng
+                    [name] => nasi goreng
+                    [price] => 5
+                    [quantity] => 2
+                )
+
+        )
+
+    [payment_method] => stripe
+    [stripe_session_id] => cs_test_a1HOL4v8tKJE7chQmEHITDujYb4DYcTy5NVzNKlOzdJFG8tKZEoWW0QnRe
+)
+
+2026-02-26 08:15:23 RAW INPUT: {"customer_name":"shyna","phone":"12345678","notes":"","total_amount":10,"items":[{"id":"nasi-goreng","name":"nasi goreng","price":5,"quantity":2}],"payment_method":"stripe","stripe_session_id":"cs_test_a12g4srILSQlVfyAmt0sYSpEuZH9o8Mhg0lBXeohaSt6vt580btnAnuqcn"}
+2026-02-26 08:15:23 Parsed data: Array
+(
+    [customer_name] => shyna
+    [phone] => 12345678
+    [notes] => 
+    [total_amount] => 10
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => nasi-goreng
+                    [name] => nasi goreng
+                    [price] => 5
+                    [quantity] => 2
+                )
+
+        )
+
+    [payment_method] => stripe
+    [stripe_session_id] => cs_test_a12g4srILSQlVfyAmt0sYSpEuZH9o8Mhg0lBXeohaSt6vt580btnAnuqcn
+)
+

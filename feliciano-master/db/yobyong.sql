@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 26, 2026 at 04:45 AM
+-- Generation Time: Feb 26, 2026 at 08:17 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -117,14 +117,29 @@ CREATE TABLE `orders` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `customer_name` varchar(120) NOT NULL,
   `phone` varchar(30) NOT NULL,
+  `items` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`items`)),
   `total_amount` decimal(10,2) NOT NULL,
   `payment_method` enum('card','fpx') NOT NULL,
-  `stripe_session_id` varchar(100) DEFAULT NULL,
+  `stripe_session_id` varchar(255) DEFAULT NULL,
   `notes` text DEFAULT NULL,
   `payment_status` enum('pending','paid','failed','cancelled') NOT NULL DEFAULT 'pending',
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`id`, `customer_name`, `phone`, `items`, `total_amount`, `payment_method`, `stripe_session_id`, `notes`, `payment_status`, `created_at`, `updated_at`) VALUES
+(1, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":5,\"quantity\":2}]', 10.00, 'card', 'cs_test_a19hElNgAENHEkMtRQc9bnreCYZ3r0nGMVmhbz8r2kx7u8dzXfRqS7vf5x', '', 'pending', '2026-02-26 15:13:40', '2026-02-26 15:13:40'),
+(2, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":5,\"quantity\":2}]', 10.00, 'card', 'cs_test_a1K9iBZA4V4Vv4yPQKo3n04ggF3XJJNQ5vPJeymgmzbKLe8l4Km3q5R60o', '', 'pending', '2026-02-26 15:13:40', '2026-02-26 15:13:40'),
+(3, 'shyna', '12345678', NULL, 10.00, '', 'cs_test_a19hElNgAENHEkMtRQc9bnreCYZ3r0nGMVmhbz8r2kx7u8dzXfRqS7vf5x', '', 'pending', '2026-02-26 15:13:40', NULL),
+(4, 'shyna', '12345678', NULL, 10.00, '', 'cs_test_a1K9iBZA4V4Vv4yPQKo3n04ggF3XJJNQ5vPJeymgmzbKLe8l4Km3q5R60o', '', 'pending', '2026-02-26 15:13:40', NULL),
+(5, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":5,\"quantity\":2}]', 10.00, 'card', 'cs_test_a12g4srILSQlVfyAmt0sYSpEuZH9o8Mhg0lBXeohaSt6vt580btnAnuqcn', '', 'pending', '2026-02-26 15:15:23', '2026-02-26 15:15:23'),
+(6, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":5,\"quantity\":2}]', 10.00, 'card', 'cs_test_a1HOL4v8tKJE7chQmEHITDujYb4DYcTy5NVzNKlOzdJFG8tKZEoWW0QnRe', '', 'pending', '2026-02-26 15:15:23', '2026-02-26 15:15:23'),
+(7, 'shyna', '12345678', NULL, 10.00, '', 'cs_test_a1HOL4v8tKJE7chQmEHITDujYb4DYcTy5NVzNKlOzdJFG8tKZEoWW0QnRe', '', 'pending', '2026-02-26 15:15:23', NULL),
+(8, 'shyna', '12345678', NULL, 10.00, '', 'cs_test_a12g4srILSQlVfyAmt0sYSpEuZH9o8Mhg0lBXeohaSt6vt580btnAnuqcn', '', 'pending', '2026-02-26 15:15:23', NULL);
 
 -- --------------------------------------------------------
 
@@ -178,6 +193,34 @@ INSERT INTO `reviews` (`id`, `reviewer_name`, `reviewer_email`, `rating`, `user_
 (30, 'shyna', NULL, 4, 'Guest', 'the food was good', '2026-02-11 02:54:09', '80d08d3c13'),
 (32, 'shyna', NULL, 4, 'Guest', 'the food was good', '2026-02-11 02:54:33', '0976d88a76');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `ID` int(255) NOT NULL,
+  `full_name` varchar(100) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('admin','staff','','') NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `profile_image` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`ID`, `full_name`, `username`, `password`, `role`, `email`, `created_at`, `profile_image`) VALUES
+(1, 'Ahmad', 'GibletChaser', '123Ahmad', 'admin', 'ahmad123@gmail.com', '2026-02-10 14:47:25', 'profile_698b44fdee22d1.80556718.jpg'),
+(2, 'Ali', 'staff01', '123', 'staff', 'ali@company.com', '2026-01-11 17:43:19', NULL),
+(3, 'Akmal Harith', 'maljauAdmin', '123Akmal', 'admin', 'akmal123@gmail.com', '2026-02-10 08:30:17', 'profile_698aec998b21b9.15317313.jpg'),
+(4, 'Syed Azrul', 'SyedAzrul', 'roy', 'staff', 'azrul@company.com', '2026-02-11 03:17:59', 'profile_698bf49c62a8c3.77311945.jpg'),
+(5, 'Shyna Yip How Yee', 'shynaStaff', 'shyna123', 'staff', 'shyna@company.com', '2026-02-11 03:19:21', 'profile_698bdc044fcad8.12497310.jpg');
+
 --
 -- Indexes for dumped tables
 --
@@ -226,6 +269,12 @@ ALTER TABLE `reviews`
   ADD KEY `idx_delete_code` (`delete_code`);
 
 --
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`ID`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -245,7 +294,7 @@ ALTER TABLE `menu`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `order_items`
@@ -258,6 +307,12 @@ ALTER TABLE `order_items`
 --
 ALTER TABLE `reviews`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
