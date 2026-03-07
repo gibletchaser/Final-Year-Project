@@ -21,6 +21,7 @@
 
     <link rel="stylesheet" href="css/bootstrap-datepicker.css">
     <link rel="stylesheet" href="css/jquery.timepicker.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     
     <link rel="stylesheet" href="css/flaticon.css">
@@ -125,8 +126,7 @@
 				<li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
          <li class="nav-item d-flex align-items-center" id="auth-area">
         <a href="sign in.php" class="nav-link btn btn-primary px-4 py-2" style="border-radius: 5px;">Sign In</a>
-    </li>
-			  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    </li>	    
 	        </ul>
 	      </div>	
 	    </div>
@@ -313,10 +313,7 @@
   <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
 
 
-  <script src="js/jquery.min.js"></script>
   <script src="js/jquery-migrate-3.0.1.min.js"></script>
-  <script src="js/popper.min.js"></script>
-  <script src="js/bootstrap.min.js"></script>
   <script src="js/jquery.easing.1.3.js"></script>
   <script src="js/jquery.waypoints.min.js"></script>
   <script src="js/jquery.stellar.min.js"></script>
@@ -355,6 +352,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <a class="dropdown-item py-2" href="profile.php" style="color: #444; font-size: 14px;">
                         <span class="icon-person mr-2"></span> View My Profile
+                    </a>
+                    <a class="dropdown-item py-2" href="view_order_status.php" style="color: #444; font-size: 14px;">
+                        <span class="icon-clock mr-2"></span> View Order Status
                     </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item py-2" href="#" onclick="handleLogout()" style="color: #e74c3c; font-size: 14px; font-weight: 600;">

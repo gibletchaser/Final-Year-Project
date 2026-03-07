@@ -259,6 +259,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <a class="dropdown-item py-2" href="profile.php" style="color: #444; font-size: 14px;">
                         <span class="icon-person mr-2"></span> View My Profile
                     </a>
+                    <a class="dropdown-item py-2" href="view_order_status.php" style="color: #444; font-size: 14px;">
+                        <span class="icon-clock mr-2"></span> View Order Status
+                    </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item py-2" href="#" onclick="handleLogout()" style="color: #e74c3c; font-size: 14px; font-weight: 600;">
                         <span class="icon-log-out mr-2"></span> Sign Out

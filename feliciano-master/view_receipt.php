@@ -268,5 +268,18 @@ document.getElementById('downloadPdf').addEventListener('click', () => {
 });
 </script>
 
+<script>
+    // Run after page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+        
+        if (sessionId) {
+            localStorage.setItem('latestYobyongOrderSession', sessionId);
+            // Optional: console.log('Saved session:', sessionId);
+        }
+    });
+</script>
+
 </body>
 </html>
