@@ -1,44 +1,48 @@
 <?php
 require_once 'vendor/autoload.php';
+require_once 'db.php';   // ← this brings in "your connection"
 
 \Stripe\Stripe::setApiKey('sk_test_51T4boFHWrfyRRRiKGHEc7DVdYEdqR9dBleew9M40E3veAJtqxREAcwBTQ1Cpxc4jSOdaT1yUa1erqQXSa9qUR23v00ypVrxVQd');
 
 $session_id = $_GET['session_id'] ?? null;
 
-if (!$session_id) {
-    http_response_code(400);
-    die("No order information found. <a href='menu.php'>Back to menu</a>");
-}
+// At top, after getting $session
 
-try {
-    $session = \Stripe\Checkout\Session::retrieve([
-        'id' => $session_id,
-        'expand' => ['line_items.data.price.product']
-    ]);
 
-    $status_text = match ($session->status) {
-        'complete' => '✅ Payment successful! Your order is confirmed.',
-        'open'     => '⏳ Order is pending (still processing).',
-        'expired'  => '❌ Order expired. Please try again.',
-        default    => 'Unknown status.'
+// Try to find order by stripe session id
+$stmt = $pdo->prepare("
+    SELECT o.*, GROUP_CONCAT(CONCAT(i.description, ' ×', i.quantity) SEPARATOR '<br>') AS items_list
+    FROM orders o
+    LEFT JOIN order_items i ON i.order_id = o.id
+    WHERE o.stripe_session_id = ?
+    GROUP BY o.id
+");
+$stmt->execute([$session_id]);
+$order = $stmt->fetch();
+
+// Fallback to Stripe data if no DB record yet
+if (!$order) {
+    // use your current Stripe logic
+    $display_status = $status_text;
+    $display_items  = /* build from $line_items */;
+    $display_total  = $total;
+    // ...
+} else {
+    // Use database (more reliable & can show later changes)
+    $order_status_text = match ($order['order_status']) {
+        'new'        => '🆕 New order – we just received it ♡',
+        'processing' => '🔨 Preparing your goodies~',
+        'ready'      => '🎁 Ready for pickup/shipping!',
+        'shipped'    => '🚚 On the way! Check your email/DM',
+        'delivered'  => '🎉 Delivered – enjoy! ♡',
+        'cancelled'  => '❌ Cancelled',
+        default      => 'Processing...'
     };
 
-    $payment_status = $session->payment_status ?? 'unknown';
-
-    $customer_name = $session->customer_details->name ?? 'Cutie customer ♡';
-    $total    = $session->amount_total / 100;
-    $currency = strtoupper($session->currency ?? 'myr');
-    $symbol   = ($currency === 'MYR') ? 'RM' : '$';
-
-    $date     = date('d M Y, h:i A', $session->created);
-    $ref      = substr($session_id, -8); // or use payment_intent if available
-
-    $line_items = $session->line_items->data ?? [];
-
-} catch (\Exception $e) {
-    http_response_code(400);
-    die("Sorry, couldn't load your order: " . htmlspecialchars($e->getMessage()) .
-        "<br><a href='menu.php'>Back to menu</a>");
+    $display_status = $order_status_text;
+    $display_items  = $order['items_list'] ?? '—';
+    $display_total  = $order['total_amount'];
+    // etc.
 }
 ?>
 
