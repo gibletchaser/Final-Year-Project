@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registerbtn'])) {
     $_SESSION['verify_name']     = $name;
     $_SESSION['verify_email']    = $email;
     $_SESSION['verify_phone']    = $phone;
-    $_SESSION['verify_password'] = $password;
+    $_SESSION['verify_password'] = hash('sha256', $password);
     $_SESSION['verify_code']     = $code;
     $_SESSION['code_generated_at'] = time();
 
