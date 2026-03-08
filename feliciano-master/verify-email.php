@@ -29,7 +29,7 @@ if (isset($_POST['verifybtn'])) {
         $phone    = mysqli_real_escape_string($conn, $_SESSION['verify_phone']);
         $password = mysqli_real_escape_string($conn, $_SESSION['verify_password']);
 
-        $query = "INSERT INTO user (name, email, phone, password) VALUES ('$name', '$email', '$phone', '$password')";
+        $query = "INSERT INTO customer (name, email, phone, password) VALUES ('$name', '$email', '$phone', '$password')";
         $query_run = mysqli_query($conn, $query);
 
         if ($query_run) {

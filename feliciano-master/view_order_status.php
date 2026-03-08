@@ -24,7 +24,7 @@ $order = $stmt->fetch();
 if (!$order) {
     // use your current Stripe logic
     $display_status = $status_text;
-    $display_items  = /* build from $line_items */;
+    $display_items  = $items;
     $display_total  = $total;
     // ...
 } else {

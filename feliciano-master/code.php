@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registerbtn'])) {
     }
 
     // 3. DUPLICATE CHECK (The Fix)
-    $check_query = "SELECT email, name, phone FROM user WHERE email='$email' OR name='$name' OR phone='$phone' LIMIT 1";
+    $check_query = "SELECT email, name, phone FROM customer WHERE email='$email' OR name='$name' OR phone='$phone' LIMIT 1";
     $check_run = mysqli_query($conn, $check_query);
 
     if (mysqli_num_rows($check_run) > 0) {

@@ -244,9 +244,9 @@ try {
 
 <!-- Action buttons -->
 <div class="max-w-[400px] mx-auto mt-8 flex flex-col sm:flex-row gap-4 no-print">
-    <button onclick="window.print()"
+    <button id="downloadPdf"
             class="bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-4 rounded-2xl font-bold shadow-lg hover:shadow-xl transition flex-1 text-lg flex items-center justify-center gap-2">
-        🖨️ Download Receipt
+        🖨️ Download PDF 
     </button>
 </div>
 
