@@ -1,48 +1,68 @@
 <?php
 require_once 'vendor/autoload.php';
-require_once 'db.php';   // ← this brings in "your connection"
+require_once 'db.php';   // This brings in your $conn
 
+// Set your Stripe API Key
 \Stripe\Stripe::setApiKey('sk_test_51T4boFHWrfyRRRiKGHEc7DVdYEdqR9dBleew9M40E3veAJtqxREAcwBTQ1Cpxc4jSOdaT1yUa1erqQXSa9qUR23v00ypVrxVQd');
 
 $session_id = $_GET['session_id'] ?? null;
 
-// At top, after getting $session
+if (!$session_id) {
+    die("Error: No session ID provided. Cannot track order.");
+}
 
+// 1. Fetch the official session data from Stripe
+try {
+    $session = \Stripe\Checkout\Session::retrieve($session_id);
+    $line_items_stripe = \Stripe\Checkout\Session::allLineItems($session_id);
+} catch (\Exception $e) {
+    die("Error fetching order from Stripe: " . $e->getMessage());
+}
 
-// Try to find order by stripe session id
-$stmt = $pdo->prepare("
+// 2. Set default variables from the Stripe data so your HTML doesn't crash
+$payment_status = $session->payment_status; // e.g., 'paid'
+$stripe_status  = $session->status;         // e.g., 'complete'
+$status_text    = ucfirst($stripe_status);  // Default text
+$customer_name  = $session->customer_details->name ?? 'Valued Customer';
+$date           = date('F j, Y, g:i a', $session->created);
+$ref            = substr($session->id, -8); // Short 8-character reference code
+$total          = $session->amount_total / 100;
+$line_items     = $line_items_stripe->data;
+
+// Determine currency symbol automatically
+$currency_code  = strtoupper($session->currency);
+$symbol         = ($currency_code === 'MYR') ? 'RM ' : ($currency_code === 'USD' ? '$' : $currency_code . ' ');
+
+// 3. Check your Database for updates using MySQLi ($conn)
+$stmt = $conn->prepare("
     SELECT o.*, GROUP_CONCAT(CONCAT(i.description, ' ×', i.quantity) SEPARATOR '<br>') AS items_list
     FROM orders o
     LEFT JOIN order_items i ON i.order_id = o.id
     WHERE o.stripe_session_id = ?
     GROUP BY o.id
 ");
-$stmt->execute([$session_id]);
-$order = $stmt->fetch();
 
-// Fallback to Stripe data if no DB record yet
-if (!$order) {
-    // use your current Stripe logic
-    $display_status = $status_text;
-    $display_items  = $items;
-    $display_total  = $total;
-    // ...
+if ($stmt) {
+    $stmt->bind_param("s", $session_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $order = $result->fetch_assoc();
+    $stmt->close();
 } else {
-    // Use database (more reliable & can show later changes)
-    $order_status_text = match ($order['order_status']) {
+    $order = false; // Fallback just in case the query fails
+}
+
+// 4. Overwrite the Stripe status text with your custom Database status text
+if ($order && isset($order['order_status'])) {
+    $status_text = match ($order['order_status']) {
         'new'        => '🆕 New order – we just received it ♡',
         'processing' => '🔨 Preparing your goodies~',
         'ready'      => '🎁 Ready for pickup/shipping!',
         'shipped'    => '🚚 On the way! Check your email/DM',
         'delivered'  => '🎉 Delivered – enjoy! ♡',
         'cancelled'  => '❌ Cancelled',
-        default      => 'Processing...'
+        default      => ucfirst($order['order_status'])
     };
-
-    $display_status = $order_status_text;
-    $display_items  = $order['items_list'] ?? '—';
-    $display_total  = $order['total_amount'];
-    // etc.
 }
 ?>
 
@@ -96,7 +116,7 @@ if (!$order) {
 
     <div class="mt-6 text-left space-y-2 text-sm">
         <p><strong>Date:</strong> <?= htmlspecialchars($date) ?></p>
-        <p><strong>Ref #:</strong> #<?= strtoupper($ref) ?></p>
+        <p><strong>Ref #:</strong> #<?= strtoupper(htmlspecialchars($ref)) ?></p>
         <p><strong>Customer:</strong> <?= htmlspecialchars($customer_name) ?></p>
     </div>
 
