@@ -2064,3 +2064,49 @@
     [stripe_session_id] => cs_test_a1zt5V8iZSU4Hn6ExpZiyAfq9x1CbVfMqM2BjV1e4qU8bFOqQ8Az8eywzp
 )
 
+2026-03-08 17:59:20 RAW INPUT: {"customer_name":"kaijin","phone":"098762436","notes":"","total_amount":2,"items":[{"id":"telur-mata","name":"telur mata","price":1,"quantity":2}],"payment_method":"stripe","stripe_session_id":"cs_test_a1E2MFr8TkdzrkHubOQKiqUExlenQOKZJ2QjlsjgEIzsO17ToWikn990le"}
+2026-03-08 17:59:20 Parsed data: Array
+(
+    [customer_name] => kaijin
+    [phone] => 098762436
+    [notes] => 
+    [total_amount] => 2
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => telur-mata
+                    [name] => telur mata
+                    [price] => 1
+                    [quantity] => 2
+                )
+
+        )
+
+    [payment_method] => stripe
+    [stripe_session_id] => cs_test_a1E2MFr8TkdzrkHubOQKiqUExlenQOKZJ2QjlsjgEIzsO17ToWikn990le
+)
+
+2026-03-08 17:59:20 RAW INPUT: {"customer_name":"kaijin","phone":"098762436","notes":"","total_amount":2,"items":[{"id":"telur-mata","name":"telur mata","price":1,"quantity":2}],"payment_method":"stripe","stripe_session_id":"cs_test_a1mYtWK6H6uTmd62IJuxFg0iyf9W9pNu5h29Ib4BtWA2bAyZd34gDgKbCV"}
+2026-03-08 17:59:20 Parsed data: Array
+(
+    [customer_name] => kaijin
+    [phone] => 098762436
+    [notes] => 
+    [total_amount] => 2
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => telur-mata
+                    [name] => telur mata
+                    [price] => 1
+                    [quantity] => 2
+                )
+
+        )
+
+    [payment_method] => stripe
+    [stripe_session_id] => cs_test_a1mYtWK6H6uTmd62IJuxFg0iyf9W9pNu5h29Ib4BtWA2bAyZd34gDgKbCV
+)
+
