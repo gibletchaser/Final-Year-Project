@@ -41,47 +41,62 @@
 
     // Function to generate all menu items (ignoring category)
     function generateMenuItems($conn) {
-        $sql = "SELECT id, name, price, image FROM menu";
-        $result = $conn->query($sql);
-        
-        if (!$result) {
-            return "<p>Error: Query failed - " . $conn->error . "</p>";
-        }
-        
-        $output = '';
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $output .= '<div class="col-md-12 col-lg-6 d-flex align-self-stretch">';
-                $output .= '<div class="menus d-sm-flex ftco-animate align-items-stretch">';
-                $output .= '<div class="menu-img img" style="background-image: url(\'images/' . htmlspecialchars($row["image"]) . '\');"></div>';
-                $output .= '<div class="text d-flex align-items-center">';
-                $output .= '<div>';
-                $output .= '<div class="d-flex">';
-                $output .= '<div class="one-half">';
-                $output .= '<h3 data-name="' . htmlspecialchars($row["name"]) . '">' . htmlspecialchars($row["name"]) . '</h3>';
-                $output .= '</div>';
-                $output .= '<div class="one-forth">';
-                $output .= '<span class="price" data-price="' . htmlspecialchars($row["price"]) . '">$' . htmlspecialchars($row["price"]) . '</span>';
-                $output .= '</div>';
-                $output .= '</div>';
-                $output .= '<p><span>Meat</span>, <span>Potatoes</span>, <span>Rice</span>, <span>Tomatoe</span></p>'; // Hardcoded; add to DB if needed
-                $output .= '<div class="quantity-selector d-flex align-items-center mt-3">';
-                $output .= '<button class="qty-btn minus" type="button">-</button>';
-                $output .= '<input type="number" class="qty-input" value="1" min="1" readonly>';
-                $output .= '<button class="qty-btn plus" type="button">+</button>';
-                $output .= '</div>';
-                $output .= '<button class="btn btn-primary add-to-cart">Add to Cart</button>';
-                $output .= '</div>';
-                $output .= '</div>';
-                $output .= '</div>';
-                $output .= '</div>';
-            }
-        } else {
-            $output = '<p>No items available.</p>';
-        }
-
-        return $output;
+    $sql = "SELECT id, name, price, image FROM menu";
+    $result = $conn->query($sql);
+    
+    if (!$result) {
+        return "<p>Error: Query failed - " . $conn->error . "</p>";
     }
+    
+    $output = '';
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $rawImage = $row["image"];
+
+            // Normalize image path: strip any leading folder prefix and rebuild correctly
+            if (strpos($rawImage, 'uploads/') === 0) {
+                $imagePath = $rawImage; // e.g. uploads/1770779641_nasiGoreng.jpg
+            } elseif (strpos($rawImage, 'img/') === 0) {
+                $imagePath = $rawImage; // e.g. img/NasiKerabu.jpg
+            } else {
+                $imagePath = 'img/' . $rawImage; // fallback
+            }
+
+            $output .= '<div class="col-md-12 col-lg-6 d-flex align-self-stretch">';
+            $output .= '<div class="menus d-flex ftco-animate align-items-stretch" style="width:100%;">';
+            $output .= '<div class="menu-img" style="'
+                . 'background-image: url(\'' . htmlspecialchars($imagePath) . '\');'
+                . 'background-size: cover;'
+                . 'background-position: center;'
+                . 'min-width: 150px;'
+                . 'width: 150px;'
+                . 'height: 150px;'
+                . 'border-radius: 8px;'
+                . 'flex-shrink: 0;'
+                . '"></div>';
+            $output .= '<div class="text d-flex align-items-center" style="padding-left: 15px; flex: 1;">';
+            $output .= '<div style="width:100%;">';
+            $output .= '<div class="d-flex justify-content-between align-items-center">';
+            $output .= '<h3 style="margin:0; font-size:18px;" data-name="' . htmlspecialchars($row["name"]) . '">' . htmlspecialchars($row["name"]) . '</h3>';
+            $output .= '<span class="price" style="font-size:18px; font-weight:600; color:#c4a47c;" data-price="' . htmlspecialchars($row["price"]) . '">RM ' . number_format((float)$row["price"], 2) . '</span>';
+            $output .= '</div>';
+            $output .= '<div class="quantity-selector d-flex align-items-center mt-2">';
+            $output .= '<button class="qty-btn minus" type="button" style="width:30px;height:30px;font-size:18px;border:1px solid #ccc;background:#fff;border-radius:4px;">-</button>';
+            $output .= '<input type="number" class="qty-input" value="1" min="1" readonly style="width:45px;text-align:center;margin:0 6px;border:1px solid #ccc;border-radius:4px;height:30px;">';
+            $output .= '<button class="qty-btn plus" type="button" style="width:30px;height:30px;font-size:18px;border:1px solid #ccc;background:#fff;border-radius:4px;">+</button>';
+            $output .= '</div>';
+            $output .= '<button class="btn btn-primary add-to-cart mt-2" style="font-size:13px;">Add to Cart</button>';
+            $output .= '</div>';
+            $output .= '</div>';
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+    } else {
+        $output = '<p>No items available.</p>';
+    }
+
+    return $output;
+}
     ?>
 
     <div class="py-1 bg-black top">
@@ -98,7 +113,7 @@
 						    <span class="text">yobyong24@gmail.com</span>
 					    </div>
 					    <div class="col-md-5 pr-4 d-flex topper align-items-center text-lg-right justify-content-end">
-						    <p class="mb-0 register-link"><span>Open hours:</span> <span>Monday - Sunday</span> <span>10:00AM - 9:00PM</span></p>
+						    <p class="mb-0 register-link"><span>Open hours:</span> <span>Isnin - Sunday</span> <span>10:00AM - 9:00PM</span></p>
 					    </div>
 				    </div>
 			    </div>
