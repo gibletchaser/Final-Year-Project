@@ -1,15 +1,13 @@
 <?php
 ob_start();
 require_once 'vendor/autoload.php';
-// Suppress ALL display of errors/notices to browser
 ini_set('display_errors', '0');
 ini_set('display_startup_errors', '0');
-error_reporting(E_ALL); // still log them
+error_reporting(E_ALL);
 
 session_start();
 header('Content-Type: application/json');
 
-// Log raw input for debugging (to file only)
 $rawInput = file_get_contents('php://input');
 file_put_contents('place-order-debug.log', date('Y-m-d H:i:s') . " RAW INPUT: " . $rawInput . "\n", FILE_APPEND);
 
@@ -26,14 +24,11 @@ if ($conn->connect_error) {
 }
 
 $data = json_decode($rawInput, true);
-
 if (json_last_error() !== JSON_ERROR_NONE) {
     ob_end_clean();
-    echo json_encode(["success" => false, "message" => "Invalid JSON input: " . json_last_error_msg()]);
+    echo json_encode(["success" => false, "message" => "Invalid JSON input"]);
     exit;
 }
-
-file_put_contents('place-order-debug.log', date('Y-m-d H:i:s') . " Parsed data: " . print_r($data, true) . "\n", FILE_APPEND);
 
 if (!$data || empty($data['items'])) {
     ob_end_clean();
@@ -50,9 +45,36 @@ $stripe_session_id = $data['stripe_session_id'] ?? null;
 
 if (empty($customer_name) || empty($phone) || $total <= 0) {
     ob_end_clean();
-    echo json_encode(["success" => false, "message" => "Missing required fields or invalid total"]);
+    echo json_encode(["success" => false, "message" => "Missing required fields"]);
     exit;
 }
+
+// ==========================================================
+// NEW FIX STARTS HERE: Check for existing Stripe session
+// ==========================================================
+if (!empty($stripe_session_id)) {
+    $check = $conn->prepare("SELECT id FROM orders WHERE stripe_session_id = ?");
+    $check->bind_param("s", $stripe_session_id);
+    $check->execute();
+    $result = $check->get_result();
+
+    if ($result->num_rows > 0) {
+        $existing = $result->fetch_assoc();
+        $conn->close();
+        ob_end_clean();
+        // Return success so the user's browser moves to the next page
+        echo json_encode([
+            "success" => true, 
+            "order_id" => $existing['id'], 
+            "message" => "Order already recorded."
+        ]);
+        exit;
+    }
+    $check->close();
+}
+// ==========================================================
+// NEW FIX ENDS HERE
+// ==========================================================
 
 $stmt = $conn->prepare("
     INSERT INTO orders (
@@ -71,7 +93,7 @@ $stmt->bind_param("sssdss", $customer_name, $phone, $total, $payment_method, $st
 
 if (!$stmt->execute()) {
     $error = $stmt->error ?: $conn->error;
-    file_put_contents('place-order-errors.log', date('Y-m-d H:i:s') . " Order insert failed: " . $error . "\nData: " . print_r($data, true) . "\n", FILE_APPEND);
+    file_put_contents('place-order-errors.log', date('Y-m-d H:i:s') . " Order insert failed: " . $error . "\n", FILE_APPEND);
     ob_end_clean();
     echo json_encode(["success" => false, "message" => "Order creation failed: " . $error]);
     $stmt->close();
@@ -82,7 +104,6 @@ if (!$stmt->execute()) {
 $order_id = $conn->insert_id;
 $stmt->close();
 
-// Items insert (skip if table doesn't exist yet – but you should create it)
 if (!empty($data['items'])) {
     $stmt = $conn->prepare("INSERT INTO order_items (order_id, menu_id, name, price, quantity) VALUES (?, ?, ?, ?, ?)");
     if ($stmt) {
@@ -91,11 +112,9 @@ if (!empty($data['items'])) {
             $itemName = $conn->real_escape_string($item['name'] ?? 'Unknown');
             $price    = floatval($item['price'] ?? 0);
             $qty      = (int)($item['quantity'] ?? 1);
-
             if ($menu_id <= 0 || $price <= 0 || $qty <= 0) continue;
-
             $stmt->bind_param("iisdi", $order_id, $menu_id, $itemName, $price, $qty);
-            $stmt->execute(); // ignore per-item errors for now
+            $stmt->execute();
         }
         $stmt->close();
     }
@@ -106,9 +125,7 @@ ob_end_clean();
 echo json_encode([
     "success"   => true,
     "order_id"  => $order_id,
-    "message"   => "Order placed successfully (pending payment if using Stripe)"
+    "message"   => "Order placed successfully"
 ]);
-
 exit;
-
 ?>

@@ -448,6 +448,8 @@ if (data.success && data.sessionId) {
 
 <script>
    document.getElementById('placeOrderBtn').addEventListener('click', async function() {
+    e.preventDefault();
+    this.disabled = true;
     const name   = document.getElementById('orderName').value.trim();
     const phone  = document.getElementById('orderPhone').value.trim();
     const notes  = document.getElementById('orderNotes').value.trim();

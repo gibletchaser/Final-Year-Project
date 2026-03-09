@@ -2110,3 +2110,143 @@
     [stripe_session_id] => cs_test_a1mYtWK6H6uTmd62IJuxFg0iyf9W9pNu5h29Ib4BtWA2bAyZd34gDgKbCV
 )
 
+2026-03-09 01:56:11 RAW INPUT: {"customer_name":"kaijin","phone":"12345678","notes":"","total_amount":2,"items":[{"id":"telur-mata","name":"telur mata","price":1,"quantity":2}],"payment_method":"stripe","stripe_session_id":"cs_test_a1SfyeMXJH5gfvJGGUbaUnsJqvUYaC6zkkpH9xVBNjJLRMhGvuk7xF2d0R"}
+2026-03-09 01:56:11 Parsed data: Array
+(
+    [customer_name] => kaijin
+    [phone] => 12345678
+    [notes] => 
+    [total_amount] => 2
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => telur-mata
+                    [name] => telur mata
+                    [price] => 1
+                    [quantity] => 2
+                )
+
+        )
+
+    [payment_method] => stripe
+    [stripe_session_id] => cs_test_a1SfyeMXJH5gfvJGGUbaUnsJqvUYaC6zkkpH9xVBNjJLRMhGvuk7xF2d0R
+)
+
+2026-03-09 01:56:11 RAW INPUT: {"customer_name":"kaijin","phone":"12345678","notes":"","total_amount":2,"items":[{"id":"telur-mata","name":"telur mata","price":1,"quantity":2}],"payment_method":"stripe","stripe_session_id":"cs_test_a1P6SywLMLfHrjK9zLoED6KAYX5qxiQC4lsz3hExMqxB84dIcnT9NARKu0"}
+2026-03-09 01:56:11 Parsed data: Array
+(
+    [customer_name] => kaijin
+    [phone] => 12345678
+    [notes] => 
+    [total_amount] => 2
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => telur-mata
+                    [name] => telur mata
+                    [price] => 1
+                    [quantity] => 2
+                )
+
+        )
+
+    [payment_method] => stripe
+    [stripe_session_id] => cs_test_a1P6SywLMLfHrjK9zLoED6KAYX5qxiQC4lsz3hExMqxB84dIcnT9NARKu0
+)
+
+2026-03-09 03:22:10 RAW INPUT: {"customer_name":"kaijin","phone":"12345678","notes":"","total_amount":2,"items":[{"id":"telur-mata","name":"telur mata","price":1,"quantity":2}],"payment_method":"stripe","stripe_session_id":"cs_test_a1AqriXlAMi2PMG5M5RA1xnXriMuzkiaP8ibkZVi8A0qWGi7NQhNrRgz3i"}
+2026-03-09 03:22:10 Parsed data: Array
+(
+    [customer_name] => kaijin
+    [phone] => 12345678
+    [notes] => 
+    [total_amount] => 2
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => telur-mata
+                    [name] => telur mata
+                    [price] => 1
+                    [quantity] => 2
+                )
+
+        )
+
+    [payment_method] => stripe
+    [stripe_session_id] => cs_test_a1AqriXlAMi2PMG5M5RA1xnXriMuzkiaP8ibkZVi8A0qWGi7NQhNrRgz3i
+)
+
+2026-03-09 03:26:48 RAW INPUT: {"customer_name":"kaijin","phone":"12345678","notes":"","total_amount":10,"items":[{"id":"nasi-kerabu","name":"nasi kerabu","price":10,"quantity":1}],"payment_method":"stripe","stripe_session_id":"cs_test_a1mhtY1MJVxPWLDIT78nsjSapIkIe5pgZAipjv5aYxAopn8Y0HL0498A3T"}
+2026-03-09 03:26:48 Parsed data: Array
+(
+    [customer_name] => kaijin
+    [phone] => 12345678
+    [notes] => 
+    [total_amount] => 10
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => nasi-kerabu
+                    [name] => nasi kerabu
+                    [price] => 10
+                    [quantity] => 1
+                )
+
+        )
+
+    [payment_method] => stripe
+    [stripe_session_id] => cs_test_a1mhtY1MJVxPWLDIT78nsjSapIkIe5pgZAipjv5aYxAopn8Y0HL0498A3T
+)
+
+2026-03-09 03:35:39 RAW INPUT: {"customer_name":"kaijin","phone":"12345678","notes":"","total_amount":10,"items":[{"id":"nasi-kerabu","name":"nasi kerabu","price":10,"quantity":1}],"payment_method":"stripe","stripe_session_id":"cs_test_a1g6lwfOJQgtSmELfYoEXbKcpROwYcF5pDLNovf3sgFSRzDkTtO51M8I8T"}
+2026-03-09 03:35:39 Parsed data: Array
+(
+    [customer_name] => kaijin
+    [phone] => 12345678
+    [notes] => 
+    [total_amount] => 10
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => nasi-kerabu
+                    [name] => nasi kerabu
+                    [price] => 10
+                    [quantity] => 1
+                )
+
+        )
+
+    [payment_method] => stripe
+    [stripe_session_id] => cs_test_a1g6lwfOJQgtSmELfYoEXbKcpROwYcF5pDLNovf3sgFSRzDkTtO51M8I8T
+)
+
+2026-03-09 03:35:46 RAW INPUT: {"customer_name":"kaijin","phone":"12345678","notes":"","total_amount":10,"items":[{"id":"nasi-kerabu","name":"nasi kerabu","price":10,"quantity":1}],"payment_method":"stripe","stripe_session_id":"cs_test_a1ltdeQCe54PnB9eK4z6JmYvHM9hQCHihErHr52CtBJIRcC55uLMsNKGW6"}
+2026-03-09 03:35:46 Parsed data: Array
+(
+    [customer_name] => kaijin
+    [phone] => 12345678
+    [notes] => 
+    [total_amount] => 10
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => nasi-kerabu
+                    [name] => nasi kerabu
+                    [price] => 10
+                    [quantity] => 1
+                )
+
+        )
+
+    [payment_method] => stripe
+    [stripe_session_id] => cs_test_a1ltdeQCe54PnB9eK4z6JmYvHM9hQCHihErHr52CtBJIRcC55uLMsNKGW6
+)
+
+2026-03-09 03:37:47 RAW INPUT: {"customer_name":"kaijin","phone":"12345678","notes":"","total_amount":10,"items":[{"id":"nasi-kerabu","name":"nasi kerabu","price":10,"quantity":1}],"payment_method":"stripe","stripe_session_id":"cs_test_a1C7fxig3kqLZ9YhJWIf98EQPsbKB0pFSjnSDsEwQZiOJaAD2LGZJEyoH2"}
+2026-03-09 03:45:06 RAW INPUT: {"customer_name":"kaijin","phone":"12345678","notes":"","total_amount":6,"items":[{"id":"nasi-goreng","name":"nasi goreng","price":6,"quantity":1}],"payment_method":"stripe","stripe_session_id":"cs_test_a1kClrmNxF09DU7a6wwCCDQjEVG5YiEjfV2Gr3VR9q0eexcQG8h1O9xE3X"}

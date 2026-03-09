@@ -1,0 +1,46 @@
+2026-03-09 03:35:39 Order insert failed: Duplicate entry 'cs_test_a1g6lwfOJQgtSmELfYoEXbKcpROwYcF5pDLNovf3sgFSRzDkTtO51...' for key 'stripe_session_id'
+Data: Array
+(
+    [customer_name] => kaijin
+    [phone] => 12345678
+    [notes] => 
+    [total_amount] => 10
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => nasi-kerabu
+                    [name] => nasi kerabu
+                    [price] => 10
+                    [quantity] => 1
+                )
+
+        )
+
+    [payment_method] => stripe
+    [stripe_session_id] => cs_test_a1g6lwfOJQgtSmELfYoEXbKcpROwYcF5pDLNovf3sgFSRzDkTtO51M8I8T
+)
+
+2026-03-09 03:35:46 Order insert failed: Duplicate entry 'cs_test_a1ltdeQCe54PnB9eK4z6JmYvHM9hQCHihErHr52CtBJIRcC55uLMs...' for key 'stripe_session_id'
+Data: Array
+(
+    [customer_name] => kaijin
+    [phone] => 12345678
+    [notes] => 
+    [total_amount] => 10
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [id] => nasi-kerabu
+                    [name] => nasi kerabu
+                    [price] => 10
+                    [quantity] => 1
+                )
+
+        )
+
+    [payment_method] => stripe
+    [stripe_session_id] => cs_test_a1ltdeQCe54PnB9eK4z6JmYvHM9hQCHihErHr52CtBJIRcC55uLMsNKGW6
+)
+
