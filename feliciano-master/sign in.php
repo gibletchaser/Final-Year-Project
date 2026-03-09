@@ -173,7 +173,7 @@ function loginUser() {
     })
     .then(data => {
         if (data.status === "success") {
-            localStorage.setItem('yobYongSession', JSON.stringify(data.user));
+            localStorage.setItem('yobYongSession', JSON.stringify(data.customer));
             window.location.href = "profile.php"; 
         } else {
             // This displays the EXACT message sent from login.php 

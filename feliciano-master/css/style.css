@@ -10169,3 +10169,25 @@ textarea.form-control {
         flex: 0 0 100% !important;
     }
 }
+
+.receipt {
+    width: 80mm !important;
+    max-width: 80mm !important;
+    min-width: 80mm !important;           /* Enforce narrow width everywhere */
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 8mm 5mm;                     /* Inner padding to match real receipts */
+}
+
+@media screen {
+    .receipt {
+        width: 320px !important;          /* Approx 80mm on screen at 96dpi */
+        max-width: 320px !important;
+    }
+}
+
+/* Prevent overflow issues during capture */
+.receipt * {
+    max-width: 100% !important;
+    box-sizing: border-box;
+}
