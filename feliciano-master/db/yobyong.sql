@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 26, 2026 at 08:17 AM
+-- Generation Time: Mar 09, 2026 at 05:38 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -67,8 +67,7 @@ CREATE TABLE `customer` (
 --
 
 INSERT INTO `customer` (`name`, `email`, `phone`, `password`, `profilePic`, `reset_token`, `reset_token_expires`) VALUES
-('haziq', 'hazzziq412@gmail.com', 102102102, '12345678', 'images/default-user.png', NULL, NULL),
-('kaijin', 'louislimkj10@gmail.com', 29238373, '102102102', 'images/default-user.png', NULL, NULL),
+('kaijin', 'louislimkj10@gmail.com', 29238373, 'dd167c4dbc0cde4908f9387d177a0d9160894e3d02e95b7195d382e04e42cf04', 'images/default-user.png', NULL, NULL),
 ('shybroccoli', 'shynayip913@gmail.com', 12345678, 'de9587b4f621f8a5d2b1a0f815fd483589d83eeb40f4745eb211f870eeba4a42', 'uploads/1770778403_bg_2.jpg', NULL, NULL);
 
 -- --------------------------------------------------------
@@ -124,22 +123,22 @@ CREATE TABLE `orders` (
   `notes` text DEFAULT NULL,
   `payment_status` enum('pending','paid','failed','cancelled') NOT NULL DEFAULT 'pending',
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
+  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp(),
+  `order_status` enum('pending','processing','preparing','out_for_delivery','delivered','cancelled','completed') DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `customer_name`, `phone`, `items`, `total_amount`, `payment_method`, `stripe_session_id`, `notes`, `payment_status`, `created_at`, `updated_at`) VALUES
-(1, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":5,\"quantity\":2}]', 10.00, 'card', 'cs_test_a19hElNgAENHEkMtRQc9bnreCYZ3r0nGMVmhbz8r2kx7u8dzXfRqS7vf5x', '', 'pending', '2026-02-26 15:13:40', '2026-02-26 15:13:40'),
-(2, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":5,\"quantity\":2}]', 10.00, 'card', 'cs_test_a1K9iBZA4V4Vv4yPQKo3n04ggF3XJJNQ5vPJeymgmzbKLe8l4Km3q5R60o', '', 'pending', '2026-02-26 15:13:40', '2026-02-26 15:13:40'),
-(3, 'shyna', '12345678', NULL, 10.00, '', 'cs_test_a19hElNgAENHEkMtRQc9bnreCYZ3r0nGMVmhbz8r2kx7u8dzXfRqS7vf5x', '', 'pending', '2026-02-26 15:13:40', NULL),
-(4, 'shyna', '12345678', NULL, 10.00, '', 'cs_test_a1K9iBZA4V4Vv4yPQKo3n04ggF3XJJNQ5vPJeymgmzbKLe8l4Km3q5R60o', '', 'pending', '2026-02-26 15:13:40', NULL),
-(5, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":5,\"quantity\":2}]', 10.00, 'card', 'cs_test_a12g4srILSQlVfyAmt0sYSpEuZH9o8Mhg0lBXeohaSt6vt580btnAnuqcn', '', 'pending', '2026-02-26 15:15:23', '2026-02-26 15:15:23'),
-(6, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":5,\"quantity\":2}]', 10.00, 'card', 'cs_test_a1HOL4v8tKJE7chQmEHITDujYb4DYcTy5NVzNKlOzdJFG8tKZEoWW0QnRe', '', 'pending', '2026-02-26 15:15:23', '2026-02-26 15:15:23'),
-(7, 'shyna', '12345678', NULL, 10.00, '', 'cs_test_a1HOL4v8tKJE7chQmEHITDujYb4DYcTy5NVzNKlOzdJFG8tKZEoWW0QnRe', '', 'pending', '2026-02-26 15:15:23', NULL),
-(8, 'shyna', '12345678', NULL, 10.00, '', 'cs_test_a12g4srILSQlVfyAmt0sYSpEuZH9o8Mhg0lBXeohaSt6vt580btnAnuqcn', '', 'pending', '2026-02-26 15:15:23', NULL);
+INSERT INTO `orders` (`id`, `customer_name`, `phone`, `items`, `total_amount`, `payment_method`, `stripe_session_id`, `notes`, `payment_status`, `created_at`, `updated_at`, `order_status`) VALUES
+(21, 'kaijin', '12345678', '[{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 10.00, 'card', 'cs_test_a1g6lwfOJQgtSmELfYoEXbKcpROwYcF5pDLNovf3sgFSRzDkTtO51M8I8T', '', 'pending', '2026-03-09 10:35:39', '2026-03-09 10:35:39', 'pending'),
+(23, 'kaijin', '12345678', '[{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 10.00, 'card', 'cs_test_a1ltdeQCe54PnB9eK4z6JmYvHM9hQCHihErHr52CtBJIRcC55uLMsNKGW6', '', 'pending', '2026-03-09 10:35:46', '2026-03-09 10:35:46', 'pending'),
+(25, 'kaijin', '12345678', '[{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 10.00, 'card', 'cs_test_a1C7fxig3kqLZ9YhJWIf98EQPsbKB0pFSjnSDsEwQZiOJaAD2LGZJEyoH2', '', 'pending', '2026-03-09 10:37:47', '2026-03-09 10:37:47', 'pending'),
+(26, 'kaijin', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":6,\"quantity\":1}]', 6.00, 'card', 'cs_test_a1kClrmNxF09DU7a6wwCCDQjEVG5YiEjfV2Gr3VR9q0eexcQG8h1O9xE3X', '', 'pending', '2026-03-09 10:45:06', '2026-03-09 10:45:06', 'pending'),
+(27, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":6,\"quantity\":1}]', 6.00, 'card', 'cs_test_a1YZmOfDCWaQuL9GezfD3mRpWGsEObvVafQQjeOWjqyPv1WY7OEIJkJYeW', '', 'pending', '2026-03-09 11:12:57', '2026-03-09 11:12:57', 'pending'),
+(28, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":6,\"quantity\":1}]', 6.00, 'card', 'cs_test_a1h13zr2CDDkBRGnEY0VxBH0h0qndZxGduTifvfEeMbuOoiB72VIIBKjv5', '', 'pending', '2026-03-09 23:34:28', '2026-03-09 23:34:28', 'pending'),
+(29, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":6,\"quantity\":2}]', 12.00, 'card', 'cs_test_a1QvzOcXqTS1oJ296zsZyHSGXj66EvEubtNTsCTDh3Iiu7PlL3xZo9jW5x', '', 'pending', '2026-03-09 23:40:19', '2026-03-09 23:40:19', 'pending');
 
 -- --------------------------------------------------------
 
@@ -251,7 +250,7 @@ ALTER TABLE `menu`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_stripe_session` (`stripe_session_id`),
+  ADD UNIQUE KEY `stripe_session_id` (`stripe_session_id`),
   ADD KEY `idx_status` (`payment_status`);
 
 --
@@ -294,7 +293,7 @@ ALTER TABLE `menu`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `order_items`
