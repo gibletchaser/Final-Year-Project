@@ -146,6 +146,8 @@
 	      </div>	
 	    </div>
 	  </nav>
+
+      
     <!-- END nav -->
     
     <section class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_3.jpg');" data-stellar-background-ratio="0.5">
@@ -343,7 +345,8 @@
   <script src="js/google-map.js"></script>
   <script src="js/main.js"></script>
   <script src="script.js"></script>
-<script src="https://js.stripe.com/v3/"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -353,31 +356,44 @@ document.addEventListener('DOMContentLoaded', function() {
     if (userSession && authArea) {
         const user = JSON.parse(userSession);
 
-        // This replaces the button with ONLY the circle user icon
-        authArea.innerHTML = `
-            <div class="dropdown">
-                <a href="#" class="dropdown-toggle d-flex align-items-center" id="userMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="text-decoration: none;">
-                    <div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #c4a47c; display: flex; align-items: center; justify-content: center; background: transparent; color: #c4a47c;">
-                        <span class="icon-user" style="font-size: 20px;"></span>
-                    </div>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right shadow border-0" aria-labelledby="userMenu" style="background: #fff; margin-top: 10px; border-radius: 10px; min-width: 180px;">
-                    <div class="dropdown-header" style="color: #333; font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 5px;">
-                        Hi, ${user.name}
-                    </div>
-                    <a class="dropdown-item py-2" href="profile.php" style="color: #444; font-size: 14px;">
-                        <span class="icon-person mr-2"></span> View My Profile
-                    </a>
-                    <a class="dropdown-item py-2" href="view_order_status.php" style="color: #444; font-size: 14px;">
-                        <span class="icon-clock mr-2"></span> View Order Status
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item py-2" href="#" onclick="handleLogout()" style="color: #e74c3c; font-size: 14px; font-weight: 600;">
-                        <span class="icon-log-out mr-2"></span> Sign Out
-                    </a>
-                </div>
+       authArea.innerHTML = `
+    <div class="dropdown">
+        <a href="#" class="dropdown-toggle d-flex align-items-center" 
+           id="userMenu" 
+           data-toggle="dropdown" 
+           aria-haspopup="true" 
+           aria-expanded="false" 
+           style="text-decoration: none;">
+            <div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #c4a47c; display: flex; align-items: center; justify-content: center; background: transparent; color: #c4a47c;">
+                <span class="icon-user" style="font-size: 20px;"></span>
             </div>
-        `;
+        </a>
+        
+        <div class="dropdown-menu dropdown-menu-right shadow border-0" 
+             aria-labelledby="userMenu" 
+             style="background: #fff; margin-top: 10px; border-radius: 10px; min-width: 180px;">
+            
+            <div class="dropdown-header" style="color: #333; font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 5px;">
+                Hi, ${user.name}
+            </div>
+            
+            <a class="dropdown-item py-2" href="profile.php" style="color: #444; font-size: 14px;">
+                <span class="icon-person mr-2"></span> View My Profile
+            </a>
+            
+            <a class="dropdown-item py-2" href="order_history.php" style="color: #444; font-size: 14px;">
+                    <span class="icon-clock mr-2"></span> View Order 
+            </a>
+            
+            <div class="dropdown-divider"></div>
+            
+            <a class="dropdown-item py-2" href="#" onclick="handleLogout()" 
+               style="color: #e74c3c; font-size: 14px; font-weight: 600;">
+                <span class="icon-log-out mr-2"></span> Sign Out
+            </a>
+        </div>
+    </div>
+`;
     }
 });
 

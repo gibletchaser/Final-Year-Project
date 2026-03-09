@@ -76,11 +76,30 @@ if (!empty($stripe_session_id)) {
 // NEW FIX ENDS HERE
 // ==========================================================
 
+// ────────────────────────────────────────────────
+// Add this → get the customer ID from session
+$customer_id = null;
+if (isset($_SESSION['user']['id']) && is_numeric($_SESSION['user']['id'])) {
+    $customer_id = (int)$_SESSION['user']['id'];
+}
+// If you use a different session key, change it (examples below)
+// if (isset($_SESSION['customer_id'])) { $customer_id = (int)$_SESSION['customer_id']; }
+// if (isset($_SESSION['id']))           { $customer_id = (int)$_SESSION['id']; }
+
+// Optional: force login (recommended for real shops)
+// if ($customer_id === null) {
+//     echo json_encode(["success" => false, "message" => "Please log in to place an order"]);
+//     exit;
+// }
+// ────────────────────────────────────────────────
+
+// Updated INSERT – add customer_id column and one more ?
 $stmt = $conn->prepare("
     INSERT INTO orders (
         customer_name, phone, total_amount, 
-        payment_method, stripe_session_id, notes, payment_status
-    ) VALUES (  ?, ?, ?, ?, ?, ?, 'pending')
+        payment_method, stripe_session_id, notes, payment_status,
+        customer_id                          ← new
+    ) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)
 ");
 
 if (!$stmt) {
@@ -89,7 +108,16 @@ if (!$stmt) {
     exit;
 }
 
-$stmt->bind_param("sssdss", $customer_name, $phone, $total, $payment_method, $stripe_session_id, $notes);
+// Updated bind_param – add one more 'i' at the end (i = integer)
+$stmt->bind_param("sssdssi", 
+    $customer_name, 
+    $phone, 
+    $total, 
+    $payment_method, 
+    $stripe_session_id, 
+    $notes,
+    $customer_id               
+);
 
 if (!$stmt->execute()) {
     $error = $stmt->error ?: $conn->error;
