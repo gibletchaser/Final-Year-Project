@@ -519,7 +519,20 @@ if ($result->num_rows > 0) {
                 <div class='mb-2' style='font-size: 18px;'>$starsHtml</div>
                 
                 <p class='text-secondary mt-2' style='font-style: italic;'>\"".htmlspecialchars($row['comment'])."\"</p>";
+    if(!empty($row['reply'])){
+    echo "
+    <div style='background:#f8f8f8;
+                border-left:4px solid #c4a47c;
+                padding:10px;
+                margin-top:10px;
+                border-radius:5px;'>
 
+        <strong style='color:#c4a47c;'>Admin Reply:</strong><br>
+        <span>".htmlspecialchars($row['reply'])."</span>
+
+    </div>
+    ";
+}
               
                 // Inside the while loop, after the existing if (logged in && email match) block
 
