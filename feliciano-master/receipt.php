@@ -1,7 +1,7 @@
 <?php
 require_once 'vendor/autoload.php';
 
-\Stripe\Stripe::setApiKey('sk_test_51T4boFHWrfyRRRiKGHEc7DVdYEdqR9dBleew9M40E3veAJtqxREAcwBTQ1Cpxc4jSOdaT1yUa1erqQXSa9qUR23v00ypVrxVQd');
+\Stripe\Stripe::setApiKey('');
 
 // DB connection (copy from place-order.php)
 $servername = "localhost";
