@@ -1,254 +1,278 @@
-// script.js - Cleaned & Fixed for Stripe Only (no PayPal)
+let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-// Global cart
-let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
-// Simple item ID generator
-function getItemId(name) {
-    return name.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+function saveCart(){
+localStorage.setItem("cart",JSON.stringify(cart));
 }
 
-// Render cart in modal + update count & total everywhere
-function renderCart() {
-    const cartItemsContainer = document.getElementById('cartItems');
-    const modalTotal = document.getElementById('cartTotal');
+function renderCart(){
 
-    // Update all cart count badges
-    const countEls = [
-        document.getElementById('cart-count'),
-        document.querySelector('.cart-item-count'),
-        document.querySelector('#navbar-cart-count')
-    ];
-    const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
-    countEls.forEach(el => { if (el) el.textContent = totalItems; });
+const container = document.getElementById("cartItems");
+const totalEl = document.getElementById("cartTotal");
 
-    // Update total displays
-    const totalPrice = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0).toFixed(2);
-    if (modalTotal) modalTotal.textContent = totalPrice;
+let total = 0;
+let count = 0;
 
-    // Render items in modal
-    if (!cartItemsContainer) return;
+if(!container) return;
 
-    cartItemsContainer.innerHTML = cart.length === 0
-        ? '<p class="text-center text-muted">Your cart is empty</p>'
-        : '';
+container.innerHTML="";
 
-    cart.forEach(item => {
-        const subtotal = (item.price * (item.quantity || 1)).toFixed(2);
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'd-flex justify-content-between align-items-center py-3 border-bottom';
-        itemDiv.innerHTML = `
-            <div class="flex-grow-1">
-                <div class="font-weight-bold mb-1">${item.name}</div>
-                <small class="text-muted">$${item.price.toFixed(2)} × ${item.quantity || 1}</small>
-            </div>
-            <div class="d-flex align-items-center">
-                <button class="btn btn-sm btn-outline-secondary decrease" data-id="${item.id}">-</button>
-                <span class="mx-3 font-weight-bold" style="min-width:40px;text-align:center;">${item.quantity || 1}</span>
-                <button class="btn btn-sm btn-outline-secondary increase" data-id="${item.id}">+</button>
-                <button class="btn btn-sm btn-danger ml-3 remove" data-id="${item.id}">Remove</button>
-            </div>
-            <div class="text-right font-weight-bold text-primary" style="min-width:80px;">
-                $${subtotal}
-            </div>
-        `;
-        cartItemsContainer.appendChild(itemDiv);
-    });
-
-    // Disable Place Order button if cart empty
-    const placeBtn = document.getElementById('placeOrderBtn');
-    if (placeBtn) placeBtn.disabled = (cart.length === 0);
+if(cart.length===0){
+container.innerHTML='<p class="text-muted text-center">Cart empty</p>';
 }
 
-// Add to cart from menu page
-document.querySelectorAll('.add-to-cart').forEach(button => {
-    button.addEventListener('click', function(e) {
-        e.preventDefault();
+cart.forEach(item=>{
 
-        const container = this.closest('.menus') || this.closest('.col-lg-6');
-        if (!container) return;
+total += item.price * item.quantity;
+count += item.quantity;
 
-        const nameEl = container.querySelector('h3[data-name]') || container.querySelector('h3');
-        const name = nameEl?.getAttribute('data-name') || nameEl?.textContent.trim();
+const div = document.createElement("div");
 
-        const priceEl = container.querySelector('.price[data-price]') || container.querySelector('.price');
-        const priceText = priceEl?.getAttribute('data-price') || priceEl?.textContent.replace('$', '').trim();
-        const price = parseFloat(priceText);
+div.className="cart-row";
 
-        const qtyInput = container.querySelector('.qty-input');
-        const quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+div.innerHTML=`
 
-        if (!name || isNaN(price) || quantity < 1) {
-            alert('Could not read item details');
-            return;
-        }
+<div class="cart-name">${item.name}</div>
 
-        const id = getItemId(name);
-        const existing = cart.find(item => item.id === id);
+<div class="cart-controls">
 
-        if (existing) {
-            existing.quantity = (existing.quantity || 0) + quantity;
-        } else {
-            cart.push({ id, name, price, quantity });
-        }
+<button class="dec" data-id="${item.id}">-</button>
 
-        localStorage.setItem('cart', JSON.stringify(cart));
-        renderCart();
+<span>${item.quantity}</span>
 
-        if (qtyInput) qtyInput.value = '1';
+<button class="inc" data-id="${item.id}">+</button>
 
-        alert(`${quantity} × ${name} added to cart!`);
-    });
+<button class="remove" data-id="${item.id}">x</button>
+
+</div>
+
+<div>$${(item.price*item.quantity).toFixed(2)}</div>
+
+`;
+
+container.appendChild(div);
+
 });
 
-// Quantity controls on menu page
-document.querySelectorAll('.qty-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const input = this.closest('.quantity-selector')?.querySelector('.qty-input');
-        if (!input) return;
-        let val = parseInt(input.value) || 1;
-        if (this.classList.contains('plus')) val++;
-        else if (this.classList.contains('minus') && val > 1) val--;
-        input.value = val;
-    });
+if(totalEl) totalEl.textContent = total.toFixed(2);
+
+document.querySelectorAll(".cart-count").forEach(el=>{
+el.textContent=count;
 });
 
-// Cart item actions (increase, decrease, remove)
-document.getElementById('cartItems')?.addEventListener('click', function(e) {
-    const btn = e.target.closest('button');
-    if (!btn || !btn.dataset?.id) return;
+saveCart();
+}
 
-    const id = btn.dataset.id;
-    const idx = cart.findIndex(i => i.id === id);
-    if (idx === -1) return;
+document.addEventListener("click",function(e){
 
-    if (btn.classList.contains('increase')) {
-        cart[idx].quantity = (cart[idx].quantity || 0) + 1;
-    } else if (btn.classList.contains('decrease')) {
-        if (cart[idx].quantity > 1) {
-            cart[idx].quantity -= 1;
-        } else if (confirm('Remove this item?')) {
-            cart.splice(idx, 1);
-        } else return;
-    } else if (btn.classList.contains('remove')) {
-        if (confirm('Remove this item?')) cart.splice(idx, 1);
-        else return;
-    }
+const btn = e.target;
 
-    localStorage.setItem('cart', JSON.stringify(cart));
-    renderCart();
+if(btn.classList.contains("add-to-cart")){
+
+const item = btn.closest("[data-id]");
+
+const id = parseInt(item.dataset.id);
+
+const name = item.dataset.name;
+
+const price = parseFloat(item.dataset.price);
+
+let qtyInput = item.querySelector(".qty-input");
+
+let qty = qtyInput ? parseInt(qtyInput.value) : 1;
+
+if(qty<1) qty=1;
+
+let existing = cart.find(i=>i.id===id);
+
+if(existing){
+
+existing.quantity += qty;
+
+}else{
+
+cart.push({
+id:id,
+name:name,
+price:price,
+quantity:qty
 });
 
-// Refresh cart when modal opens
-$('#cartModal').on('show.bs.modal', renderCart);
+}
 
-// Initial render on page load
 renderCart();
 
-// =============================================
-// Stripe-Only Order Submission
-// =============================================
+alert(name+" added to cart");
 
-document.getElementById('placeOrderBtn')?.addEventListener('click', async function(e) {
-    e.preventDefault();
+}
 
-    const name   = document.getElementById('orderName')?.value.trim();
-    const phone  = document.getElementById('orderPhone')?.value.trim();
-    const notes  = document.getElementById('orderNotes')?.value.trim();
-    const total  = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+if(btn.classList.contains("inc")){
 
-    // Validation
-    if (!name || !phone) {
-        return alert("Please fill in your full name and phone number.");
-    }
-    if (cart.length === 0 || total <= 0) {
-        return alert("Your cart is empty! Add some items first.");
-    }
+let id = parseInt(btn.dataset.id);
 
-    this.disabled = true;
-    this.textContent = 'Processing...';
+let item = cart.find(i=>i.id===id);
 
-    try {
-        // Step 1: Create Stripe Checkout Session
-        const sessionRes = await fetch('create-stripe-checkout.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                customer_name: name,
-                phone: phone,
-                notes: notes,
-                amount: total,
-                cart: cart
-            })
-        });
+if(item){
 
-        if (!sessionRes.ok) {
-            const text = await sessionRes.text();
-            throw new Error(`Session creation failed (HTTP ${sessionRes.status}): ${text.substring(0, 200)}`);
-        }
+item.quantity++;
 
-        const sessionData = await sessionRes.json();
+renderCart();
 
-        if (!sessionData.success || !sessionData.sessionId) {
-            throw new Error(sessionData.error || "Failed to create payment session");
-        }
+}
 
-        console.log("Stripe session created:", sessionData.sessionId);
+}
 
-        // Step 2: Save pending order to database
-        const orderRes = await fetch('place-order.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                customer_name: name,
-                phone: phone,
-                notes: notes,
-                total_amount: total,
-                items: cart,
-                payment_method: 'stripe',
-                stripe_session_id: sessionData.sessionId
-            })
-        });
+if(btn.classList.contains("dec")){
 
-        if (!orderRes.ok) {
-            const text = await orderRes.text();
-            throw new Error(`Order save failed (HTTP ${orderRes.status}): ${text.substring(0, 200)}`);
-        }
+let id = parseInt(btn.dataset.id);
 
-        const orderData = await orderRes.json();
+let item = cart.find(i=>i.id===id);
 
-        if (!orderData.success || !orderData.order_id) {
-            throw new Error(orderData.message || "Failed to save order");
-        }
+if(item){
 
-        console.log("Order saved successfully! ID:", orderData.order_id);
+item.quantity--;
 
-        // Step 3: Redirect to Stripe Checkout
-        const stripe = Stripe('pk_test_51T4boFHWrfyRRRiKL7MLXoVgQRh15T7tTzc5LxW2KVoe34r5gf5CCtXSk7bfl6ppeyUIAt3iV5PGaaozjhC9N0wV00y6EcdaLs'); // ← REPLACE with your REAL pk_test_...
-        const { error } = await stripe.redirectToCheckout({
-            sessionId: sessionData.sessionId
-        });
+if(item.quantity<=0){
 
-        if (error) {
-            console.error("Stripe redirect error:", error);
-            alert("Payment redirect error: " + (error.message || "Unknown"));
-        }
-        } catch (err) {
-    console.error("Error details:", err);
+cart = cart.filter(i=>i.id!==id);
 
-    let msg = "Something went wrong.";
-    
-    if (err.message.includes('Unexpected token') || err.message.includes('<')) {
-        msg = "Server sent an error page instead of JSON (probably PHP notice or error). Check place-order.php";
-    } else if (err.message.includes('json')) {
-        msg = "Invalid response from server – not valid JSON";
-    }
+}
 
-    alert(msg + "\n\nDetail: " + err.message);
-    console.log("Full response (if available):", err);   // ← helps debugging
-    } finally {
-        this.disabled = false;
-        this.textContent = 'Place Order';
-    }
+renderCart();
+
+}
+
+}
+
+if(btn.classList.contains("remove")){
+
+let id = parseInt(btn.dataset.id);
+
+cart = cart.filter(i=>i.id!==id);
+
+renderCart();
+
+}
+
 });
 
+renderCart();
+
+document.getElementById("placeOrderBtn")?.addEventListener("click",async function(){
+
+const name = document.getElementById("orderName").value.trim();
+const phone = document.getElementById("orderPhone").value.trim();
+const notes = document.getElementById("orderNotes").value.trim();
+
+if(!name || !phone){
+
+alert("Fill name and phone");
+
+return;
+
+}
+
+if(cart.length===0){
+
+alert("Cart empty");
+
+return;
+
+}
+
+let total = cart.reduce((s,i)=>s+i.price*i.quantity,0);
+
+try{
+
+const sessionRes = await fetch("create-stripe-checkout.php",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+customer_name:name,
+phone:phone,
+notes:notes,
+amount:total,
+cart:cart
+})
+
+});
+
+const sessionText = await sessionRes.text();
+
+let sessionData;
+
+try{
+sessionData = JSON.parse(sessionText);
+}catch{
+
+console.error("HTML returned:",sessionText);
+
+throw new Error("Server returned HTML instead of JSON");
+
+}
+
+if(!sessionData.success){
+
+throw new Error(sessionData.error);
+
+}
+
+const orderRes = await fetch("place-order.php",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+customer_name:name,
+phone:phone,
+notes:notes,
+total_amount:total,
+items:cart,
+payment_method:"stripe",
+stripe_session_id:sessionData.sessionId
+})
+
+});
+
+const orderText = await orderRes.text();
+
+let orderData;
+
+try{
+orderData = JSON.parse(orderText);
+}catch{
+
+console.error(orderText);
+
+throw new Error("Order returned HTML");
+
+}
+
+if(!orderData.success){
+
+throw new Error(orderData.message);
+
+}
+
+const stripe = Stripe("pk_test_REPLACE_WITH_YOUR_KEY");
+
+await stripe.redirectToCheckout({
+sessionId:sessionData.sessionId
+});
+
+}catch(err){
+
+console.error(err);
+
+alert("Checkout error: "+err.message);
+
+}
+
+});

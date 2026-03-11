@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head><title>place-order.php Debug</title></head>
+<body>
+<h2>place-order.php Raw Output Test</h2>
+<pre id="out">Loading...</pre>
+
+<script>
+fetch('place-order.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        customer_name: "Test Customer",
+        phone: "0123456789",
+        notes: "",
+        total_amount: 9.00,
+        payment_method: "stripe",
+        stripe_session_id: null,
+        items: [
+            { id: 1, name: "Test Item", price: 9.00, quantity: 1 }
+        ]
+    })
+})
+.then(r => r.text())   // text() not json() — we want to see RAW output
+.then(raw => {
+    document.getElementById('out').textContent = raw;
+})
+.catch(e => {
+    document.getElementById('out').textContent = 'Fetch error: ' + e;
+});
+</script>
+</body>
+</html>

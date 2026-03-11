@@ -1,159 +1,162 @@
 <?php
-ob_start();
-require_once 'vendor/autoload.php';
+// ── 1. Silence errors & start buffer BEFORE anything else ────
 ini_set('display_errors', '0');
 ini_set('display_startup_errors', '0');
-error_reporting(E_ALL);
+error_reporting(0);
+ob_start();
 
+// ── 2. Session before any output ─────────────────────────────
 session_start();
+
+// ── 3. Now safe to load external libs ────────────────────────
+require_once 'vendor/autoload.php';
+
+// ── 4. Force JSON response header ────────────────────────────
+// Clear anything the autoloader may have leaked, then set header
+ob_clean();
 header('Content-Type: application/json');
 
+// ── Helper: clean exit with JSON ─────────────────────────────
+function jsonExit(array $payload): void {
+    ob_end_clean();
+    echo json_encode($payload);
+    exit;
+}
+
+// ── 5. Read raw POST body ─────────────────────────────────────
 $rawInput = file_get_contents('php://input');
-file_put_contents('place-order-debug.log', date('Y-m-d H:i:s') . " RAW INPUT: " . $rawInput . "\n", FILE_APPEND);
+$data     = json_decode($rawInput, true);
 
-$servername = "localhost";
-$username   = "root";
-$password   = "";
-$dbname     = "yobyong";
+if (json_last_error() !== JSON_ERROR_NONE || empty($data)) {
+    jsonExit(["success" => false, "message" => "Invalid JSON input"]);
+}
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+if (empty($data['items'])) {
+    jsonExit(["success" => false, "message" => "No items in order"]);
+}
+
+// ── 6. DB connection ──────────────────────────────────────────
+$conn = new mysqli("localhost", "root", "", "yobyong");
 if ($conn->connect_error) {
-    ob_end_clean();
-    echo json_encode(["success" => false, "message" => "Database connection failed"]);
-    exit;
+    jsonExit(["success" => false, "message" => "Database connection failed"]);
+}
+$conn->set_charset("utf8mb4");
+
+// ── 7. Get customer info ──────────────────────────────────────
+// Session takes priority; frontend values are fallback
+$customer_id   = isset($_SESSION['user']['id']) ? (int)$_SESSION['user']['id'] : null;
+$customer_name = $_SESSION['user']['name']  ?? trim($data['customer_name'] ?? '');
+$phone         = (string)($_SESSION['user']['phone'] ?? trim($data['phone'] ?? ''));
+$notes         = trim($data['notes']          ?? '');
+$total         = floatval($data['total_amount'] ?? 0);
+$payment_method    = trim($data['payment_method']    ?? 'stripe');
+$stripe_session_id = trim($data['stripe_session_id'] ?? '') ?: null;
+
+if (empty($customer_name) || $total <= 0) {
+    jsonExit(["success" => false, "message" => "Missing required fields (name or total)"]);
 }
 
-$data = json_decode($rawInput, true);
-if (json_last_error() !== JSON_ERROR_NONE) {
-    ob_end_clean();
-    echo json_encode(["success" => false, "message" => "Invalid JSON input"]);
-    exit;
-}
+// ── 8. Prevent duplicate Stripe orders ───────────────────────
+if ($stripe_session_id !== null) {
+    $chk = $conn->prepare("SELECT id FROM orders WHERE stripe_session_id = ? LIMIT 1");
+    $chk->bind_param("s", $stripe_session_id);
+    $chk->execute();
+    $chk->store_result();
 
-if (!$data || empty($data['items'])) {
-    ob_end_clean();
-    echo json_encode(["success" => false, "message" => "No items in order"]);
-    exit;
-}
-
-$customer_name   = $conn->real_escape_string($data['customer_name'] ?? '');
-$phone  = $conn->real_escape_string($data['phone'] ?? '');
-$notes  = $conn->real_escape_string($data['notes'] ?? '');
-$total  = floatval($data['total_amount'] ?? 0);
-$payment_method = $data['payment_method'] ?? 'stripe';
-$stripe_session_id = $data['stripe_session_id'] ?? null;
-
-if (empty($customer_name) || empty($phone) || $total <= 0) {
-    ob_end_clean();
-    echo json_encode(["success" => false, "message" => "Missing required fields"]);
-    exit;
-}
-
-// ==========================================================
-// NEW FIX STARTS HERE: Check for existing Stripe session
-// ==========================================================
-if (!empty($stripe_session_id)) {
-    $check = $conn->prepare("SELECT id FROM orders WHERE stripe_session_id = ?");
-    $check->bind_param("s", $stripe_session_id);
-    $check->execute();
-    $result = $check->get_result();
-
-    if ($result->num_rows > 0) {
-        $existing = $result->fetch_assoc();
+    if ($chk->num_rows > 0) {
+        $chk->bind_result($existing_id);
+        $chk->fetch();
+        $chk->close();
         $conn->close();
-        ob_end_clean();
-        // Return success so the user's browser moves to the next page
-        echo json_encode([
-            "success" => true, 
-            "order_id" => $existing['id'], 
-            "message" => "Order already recorded."
+        jsonExit([
+            "success"  => true,
+            "order_id" => $existing_id,
+            "message"  => "Order already recorded."
         ]);
-        exit;
     }
-    $check->close();
+    $chk->close();
 }
-// ==========================================================
-// NEW FIX ENDS HERE
-// ==========================================================
 
-// ────────────────────────────────────────────────
-// Add this → get the customer ID from session
-$customer_id = null;
-if (isset($_SESSION['user']['id']) && is_numeric($_SESSION['user']['id'])) {
-    $customer_id = (int)$_SESSION['user']['id'];
-}
-// If you use a different session key, change it (examples below)
-// if (isset($_SESSION['customer_id'])) { $customer_id = (int)$_SESSION['customer_id']; }
-// if (isset($_SESSION['id']))           { $customer_id = (int)$_SESSION['id']; }
+// ── 9. Generate unique order code ────────────────────────────
+// Keep trying until we get one that doesn't exist yet
+do {
+    $order_code = 'ORD-' . strtoupper(substr(uniqid('', true), -6));
+    $dup = $conn->prepare("SELECT id FROM orders WHERE order_code = ? LIMIT 1");
+    $dup->bind_param("s", $order_code);
+    $dup->execute();
+    $dup->store_result();
+    $taken = $dup->num_rows > 0;
+    $dup->close();
+} while ($taken);
 
-// Optional: force login (recommended for real shops)
-// if ($customer_id === null) {
-//     echo json_encode(["success" => false, "message" => "Please log in to place an order"]);
-//     exit;
-// }
-// ────────────────────────────────────────────────
-
-// Updated INSERT – add customer_id column and one more ?
+// ── 10. Insert order ──────────────────────────────────────────
 $stmt = $conn->prepare("
-    INSERT INTO orders (
-        customer_name, phone, total_amount, 
-        payment_method, stripe_session_id, notes, payment_status,
-        customer_id                          ← new
-    ) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)
+    INSERT INTO orders
+        (order_code, customer_id, customer_name, phone, notes,
+         total_amount, payment_method, stripe_session_id,
+         payment_status, order_status)
+    VALUES
+        (?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'Pending')
 ");
 
 if (!$stmt) {
-    ob_end_clean();
-    echo json_encode(["success" => false, "message" => "Prepare failed: " . $conn->error]);
-    exit;
+    $conn->close();
+    jsonExit(["success" => false, "message" => "Prepare failed: " . $conn->error]);
 }
 
-// Updated bind_param – add one more 'i' at the end (i = integer)
-$stmt->bind_param("sssdssi", 
-    $customer_name, 
-    $phone, 
-    $total, 
-    $payment_method, 
-    $stripe_session_id, 
+// bind: s=order_code, i=customer_id, s=name, s=phone, s=notes,
+//       d=total, s=payment_method, s=stripe_session_id
+$stmt->bind_param(
+    "sisssdss",
+    $order_code,
+    $customer_id,
+    $customer_name,
+    $phone,
     $notes,
-    $customer_id               
+    $total,
+    $payment_method,
+    $stripe_session_id
 );
 
 if (!$stmt->execute()) {
-    $error = $stmt->error ?: $conn->error;
-    file_put_contents('place-order-errors.log', date('Y-m-d H:i:s') . " Order insert failed: " . $error . "\n", FILE_APPEND);
-    ob_end_clean();
-    echo json_encode(["success" => false, "message" => "Order creation failed: " . $error]);
+    $err = $stmt->error;
     $stmt->close();
     $conn->close();
-    exit;
+    jsonExit(["success" => false, "message" => "Order insert failed: " . $err]);
 }
 
 $order_id = $conn->insert_id;
 $stmt->close();
 
-if (!empty($data['items'])) {
-    $stmt = $conn->prepare("INSERT INTO order_items (order_id, menu_id, name, price, quantity) VALUES (?, ?, ?, ?, ?)");
-    if ($stmt) {
-        foreach ($data['items'] as $item) {
-            $menu_id  = (int)($item['id'] ?? 0);
-            $itemName = $conn->real_escape_string($item['name'] ?? 'Unknown');
-            $price    = floatval($item['price'] ?? 0);
-            $qty      = (int)($item['quantity'] ?? 1);
-            if ($menu_id <= 0 || $price <= 0 || $qty <= 0) continue;
-            $stmt->bind_param("iisdi", $order_id, $menu_id, $itemName, $price, $qty);
-            $stmt->execute();
-        }
-        $stmt->close();
+// ── 11. Insert order items ────────────────────────────────────
+$itemStmt = $conn->prepare("
+    INSERT INTO order_items (order_id, menu_id, name, price, quantity)
+    VALUES (?, ?, ?, ?, ?)
+");
+
+if ($itemStmt) {
+    foreach ($data['items'] as $item) {
+        $menu_id  = (int)($item['id']       ?? 0);
+        $name     = trim($item['name']      ?? 'Unknown');
+        $price    = floatval($item['price'] ?? 0);
+        $qty      = (int)($item['quantity'] ?? 1);
+
+        // Skip malformed items silently
+        if ($menu_id <= 0 || $price <= 0 || $qty <= 0) continue;
+
+        $itemStmt->bind_param("iisdi", $order_id, $menu_id, $name, $price, $qty);
+        $itemStmt->execute();
     }
+    $itemStmt->close();
 }
 
 $conn->close();
-ob_end_clean();
-echo json_encode([
-    "success"   => true,
-    "order_id"  => $order_id,
-    "message"   => "Order placed successfully"
+
+// ── 12. Success ───────────────────────────────────────────────
+jsonExit([
+    "success"    => true,
+    "order_id"   => $order_id,
+    "order_code" => $order_code,
+    "message"    => "Order placed successfully"
 ]);
-exit;
 ?>

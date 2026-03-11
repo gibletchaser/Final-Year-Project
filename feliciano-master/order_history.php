@@ -1,9 +1,7 @@
 <?php
-// order-history.php
-
 session_start();
 
-// Protect the page
+// Protect the page — use 'user' session key set by login.php
 if (!isset($_SESSION['user']['id']) || empty($_SESSION['user']['id'])) {
     header("Location: login.php");
     exit;
@@ -11,55 +9,34 @@ if (!isset($_SESSION['user']['id']) || empty($_SESSION['user']['id'])) {
 
 require_once 'db.php';
 
+$customer_id = (int)$_SESSION['user']['id'];
+$orders      = [];
+$error       = null;
+
 try {
-    // 1. Get current customer's name & phone FROM the customer table
-    $stmt = $pdo->prepare("SELECT name, phone FROM customer WHERE id = ?");
-    $stmt->execute([ $_SESSION['user']['id'] ]);
-    $customer = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $conn->prepare("
+        SELECT o.*, COUNT(oi.id) AS item_count
+        FROM orders o
+        LEFT JOIN order_items oi ON oi.order_id = o.id
+        WHERE o.customer_id = ?
+        GROUP BY o.id
+        ORDER BY o.created_at DESC
+    ");
+    $stmt->bind_param("i", $customer_id);
+    $stmt->execute();
+    $orders = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
 
-    if (!$customer) {
-        // This should never happen if session is valid — but safety check
-        session_destroy();
-        header("Location: login.php?error=account_not_found");
-        exit;
-    }
-
-    $customer_name = $customer['name'];
-    $phone         = $customer['phone'];
-
-    // 2. Now fetch orders using the authoritative values from DB
-   $stmt = $pdo->prepare("
-    INSERT INTO orders 
-    (customer_name, phone, items, total_amount, payment_method, stripe_session_id, notes, payment_status, created_at, updated_at, order_status, customer_id) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-");
-   $stmt->execute([
-    $customer_name,               // 1
-    $phone,                       // 2
-    $items,                       // 3  (your items string or json_encode($cart))
-    $total_amount,                // 4
-    $payment_method,              // 5   e.g. 'stripe', 'cash', 'online banking'
-    $stripe_session_id ?? null,   // 6   can be null if not using Stripe
-    $notes ?? '',                 // 7
-    $payment_status,              // 8   e.g. 'paid', 'pending', 'failed'
-    $order_status ?? 'pending',   // 9   e.g. 'pending', 'preparing', 'completed'
-    $_SESSION['user']['id']       // 10  ← this goes last because customer_id is last in the query
-]);
-
-} catch (PDOException $e) {
-    $error = "Database error: " . $e->getMessage();
-    $orders = [];
+} catch (Exception $e) {
+    $error = "Could not load orders. Please try again.";
 }
-
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Order History - Yob Yong</title>
+    <title>My Order History - Yobyong</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- your other styles -->
 </head>
 <body>
 
@@ -68,14 +45,12 @@ try {
 <div class="container my-5">
     <h2 class="mb-4">My Order History</h2>
 
-    <?php if (isset($error)): ?>
+    <?php if ($error): ?>
         <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
     <?php if (empty($orders)): ?>
-        <div class="alert alert-info">
-            You haven't placed any orders yet.
-        </div>
+        <div class="alert alert-info">You haven't placed any orders yet.</div>
     <?php else: ?>
         <div class="table-responsive">
             <table class="table table-bordered table-hover">
@@ -93,28 +68,31 @@ try {
                 <tbody>
                     <?php foreach ($orders as $order): ?>
                     <tr>
-                        <td>#<?= htmlspecialchars($order['id']) ?></td>
+                        <td><strong><?= htmlspecialchars($order['order_code']) ?></strong></td>
                         <td><?= date('d M Y • h:i A', strtotime($order['created_at'])) ?></td>
-                        <td style="white-space: pre-wrap;"><?= nl2br(htmlspecialchars($order['items'])) ?></td>
+                        <td><?= (int)$order['item_count'] ?> item<?= $order['item_count'] != 1 ? 's' : '' ?></td>
                         <td>RM <?= number_format($order['total_amount'], 2) ?></td>
                         <td>
                             <?= htmlspecialchars($order['payment_method']) ?><br>
-                            <small><?= htmlspecialchars($order['payment_status']) ?></small>
+                            <small class="text-muted"><?= htmlspecialchars($order['payment_status']) ?></small>
                         </td>
                         <td>
-                            <span class="badge 
-                                <?php
-                                    $s = strtolower($order['order_status'] ?? 'pending');
-                                    if     ($s === 'completed')  echo 'bg-success';
-                                    elseif ($s === 'cancelled')  echo 'bg-danger';
-                                    elseif (in_array($s, ['preparing','processing'])) echo 'bg-primary';
-                                    else echo 'bg-warning text-dark';
-                                ?>">
-                                <?= ucfirst($order['order_status'] ?? 'Pending') ?>
+                            <?php
+                                $s = strtolower($order['order_status'] ?? 'pending');
+                                $badgeClass = match($s) {
+                                    'completed'              => 'bg-success',
+                                    'cancelled'              => 'bg-danger',
+                                    'processing', 'ready'    => 'bg-primary',
+                                    default                  => 'bg-warning text-dark'
+                                };
+                            ?>
+                            <span class="badge <?= $badgeClass ?>">
+                                <?= htmlspecialchars(ucfirst($order['order_status'] ?? 'Pending')) ?>
                             </span>
                         </td>
                         <td>
-                            <a href="order-details.php?id=<?= $order['id'] ?>" class="btn btn-sm btn-outline-primary">View</a>
+                            <a href="order-details.php?id=<?= (int)$order['id'] ?>"
+                               class="btn btn-sm btn-outline-primary">View</a>
                         </td>
                     </tr>
                     <?php endforeach; ?>

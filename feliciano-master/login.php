@@ -24,7 +24,8 @@ if (empty($email) || empty($pass)) {
     exit();
 }
 
-$stmt = $conn->prepare("SELECT name, email, phone, password FROM customer WHERE email = ?");
+// Now also select id so we can store it in session
+$stmt = $conn->prepare("SELECT id, name, email, phone, password FROM customer WHERE email = ?");
 if (!$stmt) {
     echo json_encode([
         "status"  => "error",
@@ -41,20 +42,35 @@ if ($customer = $result->fetch_assoc()) {
     $input_hashed = hash('sha256', $pass);
 
     if ($input_hashed === $customer['password']) {
-        // Success - do NOT send password back to frontend
-        $safeUser = [
+
+        // Store full customer info in session including id
+        $_SESSION['customer'] = [
+            "id"    => $customer['id'],
             "name"  => $customer['name'],
             "email" => $customer['email'],
             "phone" => $customer['phone']
         ];
 
-        // Optional: Store in session if you want server-side session too
-        $_SESSION['customer'] = $safeUser;
+        // Also set user key so place-order.php and order_history.php work
+        $_SESSION['user'] = [
+            "id"    => $customer['id'],
+            "name"  => $customer['name'],
+            "email" => $customer['email'],
+            "phone" => $customer['phone']
+        ];
+
+        $safeUser = [
+            "id"    => $customer['id'],
+            "name"  => $customer['name'],
+            "email" => $customer['email'],
+            "phone" => $customer['phone']
+        ];
 
         echo json_encode([
-            "status" => "success",
-            "customer"   => $safeUser
+            "status"   => "success",
+            "customer" => $safeUser
         ]);
+
     } else {
         echo json_encode([
             "status"  => "error",
