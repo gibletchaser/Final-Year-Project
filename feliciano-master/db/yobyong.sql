@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 11, 2026 at 10:43 AM
+-- Generation Time: Mar 11, 2026 at 03:21 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -69,7 +69,7 @@ CREATE TABLE `customer` (
 
 INSERT INTO `customer` (`id`, `name`, `email`, `phone`, `password`, `profilePic`, `reset_token`, `reset_token_expires`) VALUES
 (1, 'kaijin', 'louislimkj10@gmail.com', 29238373, 'dd167c4dbc0cde4908f9387d177a0d9160894e3d02e95b7195d382e04e42cf04', 'images/default-user.png', NULL, NULL),
-(2, 'shybroccoli', 'shynayip913@gmail.com', 12345678, 'de9587b4f621f8a5d2b1a0f815fd483589d83eeb40f4745eb211f870eeba4a42', 'uploads/1770778403_bg_2.jpg', NULL, NULL);
+(2, 'shybroccoli', 'shynayip913@gmail.com', 12345678, 'de9587b4f621f8a5d2b1a0f815fd483589d83eeb40f4745eb211f870eeba4a42', 'uploads/1773236127_Screenshot 2023-11-14 141349.png', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -115,6 +115,7 @@ INSERT INTO `menu` (`id`, `name`, `price`, `image`, `category_id`) VALUES
 
 CREATE TABLE `orders` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` int(11) DEFAULT 2,
   `customer_name` varchar(120) NOT NULL,
   `phone` varchar(30) NOT NULL,
   `items` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`items`)),
@@ -132,14 +133,23 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `customer_name`, `phone`, `items`, `total_amount`, `payment_method`, `stripe_session_id`, `notes`, `payment_status`, `created_at`, `updated_at`, `order_status`) VALUES
-(21, 'kaijin', '12345678', '[{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 10.00, 'card', 'cs_test_a1g6lwfOJQgtSmELfYoEXbKcpROwYcF5pDLNovf3sgFSRzDkTtO51M8I8T', '', 'pending', '2026-03-09 10:35:39', '2026-03-09 10:35:39', 'pending'),
-(23, 'kaijin', '12345678', '[{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 10.00, 'card', 'cs_test_a1ltdeQCe54PnB9eK4z6JmYvHM9hQCHihErHr52CtBJIRcC55uLMsNKGW6', '', 'pending', '2026-03-09 10:35:46', '2026-03-09 10:35:46', 'pending'),
-(25, 'kaijin', '12345678', '[{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 10.00, 'card', 'cs_test_a1C7fxig3kqLZ9YhJWIf98EQPsbKB0pFSjnSDsEwQZiOJaAD2LGZJEyoH2', '', 'pending', '2026-03-09 10:37:47', '2026-03-09 10:37:47', 'pending'),
-(26, 'kaijin', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":6,\"quantity\":1}]', 6.00, 'card', 'cs_test_a1kClrmNxF09DU7a6wwCCDQjEVG5YiEjfV2Gr3VR9q0eexcQG8h1O9xE3X', '', 'pending', '2026-03-09 10:45:06', '2026-03-09 10:45:06', 'pending'),
-(27, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":6,\"quantity\":1}]', 6.00, 'card', 'cs_test_a1YZmOfDCWaQuL9GezfD3mRpWGsEObvVafQQjeOWjqyPv1WY7OEIJkJYeW', '', 'pending', '2026-03-09 11:12:57', '2026-03-09 11:12:57', 'pending'),
-(28, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":6,\"quantity\":1}]', 6.00, 'card', 'cs_test_a1h13zr2CDDkBRGnEY0VxBH0h0qndZxGduTifvfEeMbuOoiB72VIIBKjv5', '', 'pending', '2026-03-09 23:34:28', '2026-03-09 23:34:28', 'pending'),
-(29, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":6,\"quantity\":2}]', 12.00, 'card', 'cs_test_a1QvzOcXqTS1oJ296zsZyHSGXj66EvEubtNTsCTDh3Iiu7PlL3xZo9jW5x', '', 'pending', '2026-03-09 23:40:19', '2026-03-09 23:40:19', 'pending');
+INSERT INTO `orders` (`id`, `user_id`, `customer_name`, `phone`, `items`, `total_amount`, `payment_method`, `stripe_session_id`, `notes`, `payment_status`, `created_at`, `updated_at`, `order_status`) VALUES
+(21, 2, 'kaijin', '12345678', '[{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 10.00, 'card', 'cs_test_a1g6lwfOJQgtSmELfYoEXbKcpROwYcF5pDLNovf3sgFSRzDkTtO51M8I8T', '', 'pending', '2026-03-09 10:35:39', '2026-03-11 20:25:32', 'pending'),
+(23, 2, 'kaijin', '12345678', '[{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 10.00, 'card', 'cs_test_a1ltdeQCe54PnB9eK4z6JmYvHM9hQCHihErHr52CtBJIRcC55uLMsNKGW6', '', 'pending', '2026-03-09 10:35:46', '2026-03-11 20:25:48', 'pending'),
+(25, 0, 'kaijin', '12345678', '[{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 10.00, 'card', 'cs_test_a1C7fxig3kqLZ9YhJWIf98EQPsbKB0pFSjnSDsEwQZiOJaAD2LGZJEyoH2', '', 'pending', '2026-03-09 10:37:47', '2026-03-11 20:27:49', 'pending'),
+(26, NULL, 'kaijin', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":6,\"quantity\":1}]', 6.00, 'card', 'cs_test_a1kClrmNxF09DU7a6wwCCDQjEVG5YiEjfV2Gr3VR9q0eexcQG8h1O9xE3X', '', 'pending', '2026-03-09 10:45:06', '2026-03-09 10:45:06', 'pending'),
+(27, NULL, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":6,\"quantity\":1}]', 6.00, 'card', 'cs_test_a1YZmOfDCWaQuL9GezfD3mRpWGsEObvVafQQjeOWjqyPv1WY7OEIJkJYeW', '', 'pending', '2026-03-09 11:12:57', '2026-03-09 11:12:57', 'pending'),
+(28, NULL, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":6,\"quantity\":1}]', 6.00, 'card', 'cs_test_a1h13zr2CDDkBRGnEY0VxBH0h0qndZxGduTifvfEeMbuOoiB72VIIBKjv5', '', 'pending', '2026-03-09 23:34:28', '2026-03-09 23:34:28', 'pending'),
+(29, NULL, 'shyna', '12345678', '[{\"id\":\"nasi-goreng\",\"name\":\"nasi goreng\",\"price\":6,\"quantity\":2}]', 12.00, 'card', 'cs_test_a1QvzOcXqTS1oJ296zsZyHSGXj66EvEubtNTsCTDh3Iiu7PlL3xZo9jW5x', '', 'pending', '2026-03-09 23:40:19', '2026-03-09 23:40:19', 'pending'),
+(30, NULL, 'shyna', '12345678', '[{\"id\":\"telur-mata\",\"name\":\"telur mata\",\"price\":1,\"quantity\":2},{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 12.00, 'card', 'cs_test_b1C4G8LbgE7DqtIyw2jiABI596iLDEAxrrb2fvqCrQ06vHuh3tY5vXSkMQ', '', 'pending', '2026-03-11 17:44:27', '2026-03-11 17:44:27', 'pending'),
+(31, NULL, 'shyna', '12345678', '[{\"id\":\"telur-mata\",\"name\":\"telur mata\",\"price\":1,\"quantity\":2},{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 12.00, 'card', 'cs_test_b10HXLalcdlbIPwE0MCMVjx8GMk4FstssauXCALZ89viLrjT4ZQNTPLIJA', '', 'pending', '2026-03-11 17:44:27', '2026-03-11 17:44:27', 'pending'),
+(32, NULL, 'shyna', '12345678', '[{\"id\":\"telur-mata\",\"name\":\"telur mata\",\"price\":1,\"quantity\":2},{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 12.00, 'card', 'cs_test_b1u9PxS1dg4sB18OujRc7mJCYozqGev9YrIlwEivpxtmkkTzQv8asnsCZb', '', 'pending', '2026-03-11 17:44:27', '2026-03-11 17:44:27', 'pending'),
+(33, NULL, 'shyna', '12345678', '[{\"id\":\"telur-mata\",\"name\":\"telur mata\",\"price\":1,\"quantity\":2},{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 12.00, 'card', 'cs_test_b1ozO2bg6J9tDrWsHjV5kYWdHmR2ch2mPYDUclfnxnn2gMSH47MI4RSAPo', '', 'pending', '2026-03-11 18:06:30', '2026-03-11 18:06:30', 'pending'),
+(34, NULL, 'shyna', '12345678', '[{\"id\":\"telur-mata\",\"name\":\"telur mata\",\"price\":1,\"quantity\":2},{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 12.00, 'card', 'cs_test_b15yNRJe7tP4wHu8t9UWOmKWXl9QVZMCojndIu2ksCdtGvznu8Amw5RgRk', '', 'pending', '2026-03-11 19:43:53', '2026-03-11 19:43:53', 'pending'),
+(35, NULL, 'shyna', '12345678', '[{\"id\":\"telur-mata\",\"name\":\"telur mata\",\"price\":1,\"quantity\":2},{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 12.00, 'card', 'cs_test_b1OOQGX4fmJhHQ01CwOvA0StrEUSfctpyXIUMd2n4ziMWU9z2Q3PIZhgIF', '', 'pending', '2026-03-11 19:44:17', '2026-03-11 19:44:17', 'pending'),
+(36, NULL, 'shyna', '12345678', '[{\"id\":\"telur-mata\",\"name\":\"telur mata\",\"price\":1,\"quantity\":2},{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 12.00, 'card', 'cs_test_b1JFW2rzozY2B0MvV6IQmHusbqVqy9cATudfSpqWo8V991MmGMrgpet0Ls', '', 'pending', '2026-03-11 19:44:42', '2026-03-11 19:44:42', 'pending'),
+(37, 2, 'shyna', '12345678', '[{\"id\":\"teh-ais\",\"name\":\"teh ais\",\"price\":3,\"quantity\":1}]', 3.00, 'card', 'cs_test_a1oiqH2lmyfJaBKnEYiiGjW2S61HfFP3I6QusIG8gVsnvtjHm8eJi4RoVE', '', 'pending', '2026-03-11 20:27:10', '2026-03-11 20:27:10', 'pending'),
+(38, 2, 'shyna', '12345678', '[{\"id\":\"teh-ais\",\"name\":\"teh ais\",\"price\":3,\"quantity\":2},{\"id\":\"nasi-kerabu\",\"name\":\"nasi kerabu\",\"price\":10,\"quantity\":1}]', 16.00, 'card', 'cs_test_b1ojbDLuITkYTnIpR0N0V5YJscv5RUP9mC5dmy3Oo07QS0EhSxlRieLSwd', '', 'pending', '2026-03-11 20:44:57', '2026-03-11 21:04:07', 'pending');
 
 -- --------------------------------------------------------
 
@@ -300,7 +310,7 @@ ALTER TABLE `menu`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `order_items`
