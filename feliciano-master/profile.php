@@ -1,5 +1,7 @@
-
-
+<?php
+session_start();
+require_once 'db.php'; 
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,24 +10,14 @@
     <title>Yob Yong - My Profile</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
     <style>
-        .profile-card {
-            border-radius: 15px;
-            overflow: hidden;
-        }
-        .hero-wrap-2 {
-            height: 300px;
-            position: relative;
-            background-size: cover;
-            background-position: center center;
-        }
-        .overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-        }
-    #profile-img {
-            /* Increased size from 130px to 200px */
+        .profile-card { border-radius: 15px; overflow: hidden; }
+        .hero-wrap-2 { height: 300px; position: relative; background-size: cover; background-position: center center; }
+        .overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); }
+        
+        .profile-pic-preview {
             width: 200px;
             height: 200px;
             border-radius: 50%;
@@ -35,20 +27,22 @@
             background-color: #fff;
         }
         
-        .btn-edit-pic {
+        .upload-btn {
             position: absolute;
-            bottom: 10px; /* Adjusted position for the larger circle */
+            bottom: 10px;
             right: 15px;
             background: #c4a47c;
             color: white;
             border-radius: 50%;
-            width: 45px; /* Made the edit button a bit larger too */
+            width: 45px;
             height: 45px;
             border: 3px solid #fff;
-            display: none;
             cursor: pointer;
-            font-size: 18px;
             box-shadow: 0px 2px 10px rgba(0,0,0,0.3);
+            display: none; 
+            align-items: center;
+            justify-content: center;
+            padding: 0;
         }
     </style>
 </head>
@@ -71,16 +65,19 @@
                 <div class="col-md-8 col-lg-6">
                     <div class="card profile-card p-4 p-md-5 shadow">
                         <div class="mb-4">
-        <a href="about.php" class="d-flex align-items-center" style="text-decoration: none; color: #c4a47c; font-weight: bold;">
-            <span style="font-size: 22px; margin-right: 8px;">&#8592;</span> 
-            <small>Back</small>
-        </a>
-    </div>
+                            <a href="about.php" class="d-flex align-items-center" style="text-decoration: none; color: #c4a47c; font-weight: bold;">
+                                <span style="font-size: 22px; margin-right: 8px;">&#8592;</span> 
+                                <small>Back</small>
+                            </a>
+                        </div>
+                        
                         <div class="text-center mb-4">
-                            <div style="position: relative; display: inline-block;">
-                                <img id="profile-img" src="images/default-user.png" alt="Profile">
-                                <input type="file" id="upload-pic" hidden accept="image/*" onchange="previewImage(event)">
-                                <button id="edit-pic-btn" class="btn-edit-pic" onclick="document.getElementById('upload-pic').click()">✎</button>
+                            <div class="position-relative d-inline-block">
+                                <img id="profile-img" src="images/default-user.png" class="profile-pic-preview" alt="Profile">
+                                <input type="file" id="upload-pic" accept="image/*" style="display: none;" onchange="uploadImageInstantly(event)">
+                                <button type="button" id="change-pic-btn" class="upload-btn" onclick="document.getElementById('upload-pic').click();">
+                                    <i class="bi bi-camera-fill text-white" style="font-size: 20px;"></i>
+                                </button>
                             </div>
                             <h2 id="profile-name-display" class="mt-3 font-weight-bold">Guest</h2>
                         </div>
@@ -117,7 +114,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Email Address</label>
-                                <input type="email" id="edit-email" class="form-control">
+                                <input type="email" id="edit-email" class="form-control" readonly>
                             </div>
                             <div class="form-group">
                                 <label>Phone Number</label>
@@ -134,14 +131,13 @@
 
                             <div class="row no-gutters">
                                 <div class="col-6 pr-1">
-                                    <button onclick="saveProfile()" class="btn btn-success btn-block py-2">Save</button>
+                                    <button onclick="saveProfile()" class="btn btn-success btn-block py-2">Save Changes</button>
                                 </div>
                                 <div class="col-6 pl-1">
                                     <button onclick="toggleEditMode(false)" class="btn btn-secondary btn-block py-2">Cancel</button>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -149,189 +145,138 @@
     </section>
 
 <script>
-    // 1. Run this as soon as the page loads
     document.addEventListener('DOMContentLoaded', function() {
         loadUserData();
     });
 
-    function loadUserData() {
-        const sessionData = localStorage.getItem('yobYongSession');
-        if (!sessionData) {
-            alert("Session expired. Please sign in again.");
-            window.location.href = "sign in.php";
-            return;
-        }
-
-        const user = JSON.parse(sessionData);
-        
-        // --- DISPLAY DATA (View Mode) ---
-        document.getElementById('profile-name-display').innerText = user.name || 'Guest';
-        document.getElementById('display-email').innerText = user.email || '-';
-        document.getElementById('display-phone').innerText = user.phone || 'Not provided';
-        
-        // Store password globally for the 'Show' button
-        window.userPass = user.password || '********'; 
-
-        // Set Profile Picture if it exists
-        if (user.profilePic) {
-            document.getElementById('profile-img').src = user.profilePic;
-        }
-
-        // --- PRE-FILL EDIT FORM ---
-        document.getElementById('edit-name').value = user.name || '';
-        document.getElementById('edit-email').value = user.email || '';
-        document.getElementById('edit-phone').value = user.phone || '';
-        document.getElementById('edit-password').value = ""; 
-        document.getElementById('confirm-password').value = "";
+   function loadUserData() {
+    const sessionData = localStorage.getItem('yobYongSession');
+    if (!sessionData) {
+        window.location.href = "login.php"; 
+        return;
     }
+
+    const user = JSON.parse(sessionData);
+    
+    document.getElementById('profile-name-display').innerText = user.name || 'Guest';
+    document.getElementById('display-email').innerText = user.email || '-';
+    document.getElementById('display-phone').innerText = user.phone || 'Not provided';
+    window.userPass = user.password || '********';
+
+    // Set default image first
+    document.getElementById('profile-img').src = 'images/default-user.png';
+    
+    // Fetch picture from database
+    fetch('get-profile-pic.php?email=' + encodeURIComponent(user.email))
+        .then(res => res.json())
+        .then(data => {
+            if (data.profile_picture && data.profile_picture !== "") {
+                // Check if file exists before setting
+                document.getElementById('profile-img').src = data.profile_picture + "?t=" + new Date().getTime();
+                // Update localStorage
+                user.profilePic = data.profile_picture;
+                localStorage.setItem('yobYongSession', JSON.stringify(user));
+            }
+        })
+        .catch(err => {
+            console.error("Error loading profile picture:", err);
+        });
+
+    // Populate edit form
+    document.getElementById('edit-name').value = user.name || '';
+    document.getElementById('edit-email').value = user.email || '';
+    document.getElementById('edit-phone').value = user.phone || '';
+}
+
 
     function toggleEditMode(isEditing) {
         document.getElementById('view-mode').style.display = isEditing ? 'none' : 'block';
         document.getElementById('edit-mode').style.display = isEditing ? 'block' : 'none';
-        document.getElementById('edit-pic-btn').style.display = isEditing ? 'block' : 'none';
+        document.getElementById('change-pic-btn').style.display = isEditing ? 'flex' : 'none';
     }
 
-    function previewImage(event) {
+    function uploadImageInstantly(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const sessionData = JSON.parse(localStorage.getItem('yobYongSession'));
+        const formData = new FormData();
+        formData.append('email', sessionData.email);
+        formData.append('profile_pic', file);
+
+        // Instant Preview
         const reader = new FileReader();
-        reader.onload = function() {
-            document.getElementById('profile-img').src = reader.result;
-        };
-        reader.readAsDataURL(event.target.files[0]);
+        reader.onload = e => document.getElementById('profile-img').src = e.target.result;
+        reader.readAsDataURL(file);
+
+        fetch('update-profile.php', { method: 'POST', body: formData })
+        .then(res => res.text())
+        .then(data => {
+            if (data.startsWith("success|")) {
+                const parts = data.split("|");
+                if (parts[2]) {
+                    sessionData.profilePic = parts[2];
+                    localStorage.setItem('yobYongSession', JSON.stringify(sessionData));
+                    // Reload data to ensure everything is synced
+                    loadUserData();
+                }
+            }
+        });
     }
 
-   function saveProfile() {
+    function saveProfile() {
     const sessionData = JSON.parse(localStorage.getItem('yobYongSession'));
-    if (!sessionData || !sessionData.email) {
-        alert("Session error. Please sign in again.");
-        return;
-    }
-
-    const originalName  = sessionData.name  || '';
-    const originalPhone = sessionData.phone || '';
-
-    const newName  = document.getElementById('edit-name').value.trim();
-    const newEmail = document.getElementById('edit-email').value.trim(); // currently not changeable
-    const newPhone = document.getElementById('edit-phone').value.trim();
-    const newPass  = document.getElementById('edit-password').value;
-    const confirmPass = document.getElementById('confirm-password').value;
-
-    // Password match check
-    if (newPass !== "" && newPass !== confirmPass) {
-        alert("New passwords do not match!");
-        return;
-    }
-
-    // Optional: you can add min length check etc. here
-    // if (newPass !== "" && newPass.length < 6) { alert("Password too short"); return; }
-
     const formData = new FormData();
     formData.append('email', sessionData.email);
-    formData.append('name', newName);
-    formData.append('phone', newPhone);
-
-    const fileInput = document.getElementById('upload-pic');
-    if (fileInput.files.length > 0) {
-        formData.append('profile_pic', fileInput.files[0]);
-    }
-
-    if (newPass !== "") {
-        formData.append('password', newPass);
-    }
-
-    fetch('update-profile.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(data => {
-        data = data.trim();
-
-        if (data.startsWith("success|")) {
-             const parts = data.split("|");
-             const changedFields = parts[1].split(",");
-             
-             // If PHP returned a new image path, save it to the session
-             if (parts[2]) {
-                 sessionData.profilePic = parts[2];
-                }
-}
+    formData.append('name', document.getElementById('edit-name').value);
+    formData.append('phone', document.getElementById('edit-phone').value);
     
-        if (data.startsWith("success|")) {
-            const changedFields = data.split("|")[1].split(",");
+    const pass = document.getElementById('edit-password').value;
+    const confirmPass = document.getElementById('confirm-password').value;
+    
+    if (pass !== "") {
+        if (pass !== confirmPass) {
+            alert("Passwords don't match!");
+            return;
+        }
+        formData.append('password', pass);
+    }
 
-            // Build friendly message
-            let messages = [];
-            if (changedFields.includes("name")) {
-                messages.push("Username");
-            }
-            if (changedFields.includes("phone")) {
-                messages.push("Phone number");
-            }
-            if (changedFields.includes("password")) {
-                messages.push("Password");
-            }
-
-            let msg = messages.join(", ") + " updated successfully!";
-            if (messages.length === 0) {
-                msg = "No changes were made.";
-            } else if (messages.length === 1) {
-                msg = messages[0] + " updated successfully!";
-            } else if (messages.length === 2) {
-                msg = messages.join(" and ") + " updated successfully!";
+    fetch('update-profile.php', { method: 'POST', body: formData })
+        .then(res => res.text())
+        .then(data => {
+            if (data.startsWith("success|")) {
+                // Update localStorage with new data
+                sessionData.name = document.getElementById('edit-name').value;
+                sessionData.phone = document.getElementById('edit-phone').value;
+                if (pass !== "") sessionData.password = pass;
+                
+                localStorage.setItem('yobYongSession', JSON.stringify(sessionData));
+                
+                alert("Profile updated successfully!");
+                toggleEditMode(false);
+                loadUserData(); // Reload to show updated data
             } else {
-                // 3+ items → last one with "and"
-                let last = messages.pop();
-                msg = messages.join(", ") + " and " + last + " updated successfully!";
+                alert("Error updating profile");
             }
-
-            alert(msg);
-
-            // Update localStorage only with changed values
-            if (changedFields.includes("name"))  sessionData.name  = newName;
-            if (changedFields.includes("phone")) sessionData.phone = newPhone;
-            if (changedFields.includes("password")) sessionData.password = newPass;
-
-            localStorage.setItem('yobYongSession', JSON.stringify(sessionData));
-
-            // Clear password fields
-            document.getElementById('edit-password').value = '';
-            document.getElementById('confirm-password').value = '';
-
-            toggleEditMode(false);
-            loadUserData();
-        }
-        else if (data === "no_changes") {
-            alert("No changes detected.");
-        }
-        else if (data.startsWith("error|")) {
-            alert("Update failed: " + data.substring(6));
-        }
-        else {
-            alert("Unexpected response: " + data);
-        }
-    })
-    .catch(error => {
-        console.error('Fetch error:', error);
-        alert("System error occurred. Please try again.");
-    });
+        })
+        .catch(err => {
+            console.error("Error:", err);
+            alert("Failed to update profile");
+        });
 }
+
 
     function togglePasswordDisplay() {
         const passSpan = document.getElementById('profile-password');
-        const btn = event.target;
-        if (passSpan.innerText === "********") {
-            passSpan.innerText = window.userPass;
-            btn.innerText = "Hide";
-        } else {
-            passSpan.innerText = "********";
-            btn.innerText = "Show";
-        }
+        passSpan.innerText = passSpan.innerText === "********" ? window.userPass : "********";
+        event.target.innerText = event.target.innerText === "Show" ? "Hide" : "Show";
     }
 
     function handleLogout() {
-        if(confirm("Are you sure you want to sign out?")) {
+        if(confirm("Sign out?")) {
             localStorage.removeItem('yobYongSession');
-            window.location.href = "index.php";
+            window.location.href = "login.php"; 
         }
     }
 </script>
