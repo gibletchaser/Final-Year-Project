@@ -757,6 +757,39 @@ function viewOrder(id) {
   }, 'json');
 }
 
+function renderOrders(orders) {
+    const tableBody = document.querySelector('#orders-table-body');
+    tableBody.innerHTML = '';
+
+    orders.forEach(order => {
+        // FIX 1: Generate Order Code (e.g., #YY-00021)
+        // If your DB doesn't have a 'order_code' column, use the 'id'
+        const orderCode = "#YY-" + String(order.id).padStart(5, '0');
+
+        // FIX 2: Parse Items JSON to get the count
+        let itemCount = 0;
+        try {
+            const itemsArray = JSON.parse(order.items);
+            itemCount = itemsArray.length;
+        } catch (e) {
+            itemCount = 0;
+        }
+
+        const row = `
+            <tr>
+                <td>${orderCode}</td> 
+                <td>${order.customer_name}</td>
+                <td>${itemCount} items</td>
+                <td>RM ${parseFloat(order.total_amount).toFixed(2)}</td>
+                <td><span class="badge status-${order.status}">${order.status}</span></td>
+                <td>${order.date}</td>
+                <td><button onclick="viewDetails(${order.id})">View</button></td>
+            </tr>
+        `;
+        tableBody.innerHTML += row;
+    });
+}
+
 function updateStatus(status) {
   if (!currentOrderId) return;
   $.post('orders_ajax.php', { action: 'update_status', id: currentOrderId, status }, function (res) {
