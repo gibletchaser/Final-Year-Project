@@ -349,6 +349,7 @@ function getCategoryItems($conn, $category_id) {
 <footer class="ftco-footer ftco-bg-dark ftco-section">
     <div class="container">
         <div class="row mb-5">
+<<<<<<< HEAD
             <div class="col-md-6 col-lg-3">
                 <div class="ftco-footer-widget mb-4">
                     <h2 class="ftco-heading-2">Yob Yong</h2>
@@ -358,6 +359,48 @@ function getCategoryItems($conn, $category_id) {
                         <li class="ftco-animate"><a href="https://www.instagram.com/yobyongs_utmkl/"><span class="icon-instagram"></span></a></li>
                     </ul>
                 </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Open Hours</h2>
+              <ul class="list-unstyled open-hours">
+                <li class="d-flex"><span>Monday</span><span>10:00 - 21:00</span></li>
+                <li class="d-flex"><span>Tuesday</span><span>10:00 - 21:00</span></li>
+                <li class="d-flex"><span>Wednesday</span><span>10:00 - 21:00</span></li>
+                <li class="d-flex"><span>Thursday</span><span>10:00 - 21:00</span></li>
+                <li class="d-flex"><span>Friday</span><span>10:00 - 21:00</span></li>
+                <li class="d-flex"><span>Saturday</span><span>10:00 - 21:00</span></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+             <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Instagram</h2>
+              <div class="thumb d-sm-flex">
+	            	<a href="#" class="thumb-menu img" style="background-image: url(images/insta-1.jpg);">
+	            	</a>
+	            	<a href="#" class="thumb-menu img" style="background-image: url(images/insta-2.jpg);">
+	            	</a>
+	            	<a href="#" class="thumb-menu img" style="background-image: url(images/insta-3.jpg);">
+	            	</a>
+	            </div>
+	            <div class="thumb d-flex">
+	            	<a href="#" class="thumb-menu img" style="background-image: url(images/insta-4.jpg);">
+	            	</a>
+	            	<a href="#" class="thumb-menu img" style="background-image: url(images/insta-5.jpg);">
+	            	</a>
+	            	<a href="#" class="thumb-menu img" style="background-image: url(images/insta-6.jpg);">
+	            	</a>
+	            </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="ftco-footer-widget mb-4">
+            	<h2 class="ftco-heading-2">Newsletter</h2>
+            	<p>Far far away, behind the word mountains, far from the countries.</p>
+              <form action="#" class="subscribe-form">
+                
+              </form>
+>>>>>>> 1fcafa029e3de07e532da358300b47a2b4c203f7
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="ftco-footer-widget mb-4">

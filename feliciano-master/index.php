@@ -567,7 +567,7 @@ if (!empty($row['delete_code'])) {
     <div class="row d-flex mb-5">
 
       <!-- LEFT : MAP -->
-      <div class="contact-info d-flex align-items-stretch">
+      <div class="contact-info d-flex align-items-stretch" style="padding-right:30px;">
         <iframe 
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3814.8097229468613!2d101.71961794135335!3d3.171958160257706!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc37e9cb7cea5b%3A0xf6dd729a3188226e!2sJln%20Maktab%2C%20Kampung%20Datuk%20Keramat!5e0!3m2!1sen!2smy"
           width="650px" 
@@ -682,10 +682,7 @@ if (!empty($row['delete_code'])) {
             	<h2 class="ftco-heading-2">Newsletter</h2>
             	<p>Far far away, behind the word mountains, far from the countries.</p>
               <form action="#" class="subscribe-form">
-                <div class="form-group">
-                  <input type="text" class="form-control mb-2 text-center" placeholder="Enter email address">
-                  <input type="submit" value="Subscribe" class="form-control submit px-3">
-                </div>
+                
               </form>
             </div>
           </div>
