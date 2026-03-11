@@ -19,9 +19,13 @@ while ($row = $catResult->fetch_assoc()) {
   <title>My Store</title>
   <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
+  <script>
+    if (localStorage.getItem('darkMode') === 'enabled') {
+      document.body.classList.add('dark');
+    }
+  </script>
 
 <!-- SIDEBAR -->
 <section id="sidebar">
@@ -40,6 +44,12 @@ while ($row = $catResult->fetch_assoc()) {
       <a href="#">
         <i class='bx bxs-shopping-bag-alt'></i>
         <span class="text">My Store</span>
+      </a>
+    </li>
+    <li>
+      <a href="orders.php">
+        <i class='bx bxs-receipt'></i>
+        <span class="text">Orders</span>
       </a>
     </li>
     <li>
