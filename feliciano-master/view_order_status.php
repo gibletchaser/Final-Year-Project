@@ -1,156 +1,109 @@
 <?php
-require_once 'vendor/autoload.php';
-require_once 'db.php';   // This brings in your $conn
+session_start();
+require 'db.php';
+require 'order_functions.php';
 
-// Set your Stripe API Key
-\Stripe\Stripe::setApiKey('sk_test_51T4boFHWrfyRRRiKGHEc7DVdYEdqR9dBleew9M40E3veAJtqxREAcwBTQ1Cpxc4jSOdaT1yUa1erqQXSa9qUR23v00ypVrxVQd');
-
-$session_id = $_GET['session_id'] ?? null;
-
-if (!$session_id) {
-    die("Error: No session ID provided. Cannot track order.");
+if (!hasPermission('view_dashboard')) {
+    header('Location: index.php');
+    exit();
 }
 
-// 1. Fetch the official session data from Stripe
-try {
-    $session = \Stripe\Checkout\Session::retrieve($session_id);
-    $line_items_stripe = \Stripe\Checkout\Session::allLineItems($session_id);
-} catch (\Exception $e) {
-    die("Error fetching order from Stripe: " . $e->getMessage());
-}
+// Get only active orders
+$active_orders = getActiveOrders($pdo); // Assuming this fetches orders NOT cancelled/completed
 
-// 2. Set default variables from the Stripe data so your HTML doesn't crash
-$payment_status = $session->payment_status; // e.g., 'paid'
-$stripe_status  = $session->status;         // e.g., 'complete'
-$status_text    = ucfirst($stripe_status);  // Default text
-$customer_name  = $session->customer_details->name ?? 'Valued Customer';
-$date           = date('F j, Y, g:i a', $session->created);
-$ref            = substr($session->id, -8); // Short 8-character reference code
-$total          = $session->amount_total / 100;
-$line_items     = $line_items_stripe->data;
+$columns = [
+    'pending' => [],
+    'preparing' => [],
+    'ready' => []
+];
 
-// Determine currency symbol automatically
-$currency_code  = strtoupper($session->currency);
-$symbol         = ($currency_code === 'MYR') ? 'RM ' : ($currency_code === 'USD' ? '$' : $currency_code . ' ');
-
-// 3. Check your Database for updates using MySQLi ($conn)
-$stmt = $conn->prepare("
-    SELECT o.*, GROUP_CONCAT(CONCAT(i.description, ' ×', i.quantity) SEPARATOR '<br>') AS items_list
-    FROM orders o
-    LEFT JOIN order_items i ON i.order_id = o.id
-    WHERE o.stripe_session_id = ?
-    GROUP BY o.id
-");
-
-if ($stmt) {
-    $stmt->bind_param("s", $session_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $order = $result->fetch_assoc();
-    $stmt->close();
-} else {
-    $order = false; // Fallback just in case the query fails
-}
-
-// 4. Overwrite the Stripe status text with your custom Database status text
-if ($order && isset($order['order_status'])) {
-    $status_text = match ($order['order_status']) {
-        'new'        => '🆕 New order – we just received it ♡',
-        'processing' => '🔨 Preparing your goodies~',
-        'ready'      => '🎁 Ready for pickup/shipping!',
-        'shipped'    => '🚚 On the way! Check your email/DM',
-        'delivered'  => '🎉 Delivered – enjoy! ♡',
-        'cancelled'  => '❌ Cancelled',
-        default      => ucfirst($order['order_status'])
-    };
+// Sort orders into columns
+foreach ($active_orders as $order) {
+    if (array_key_exists($order['current_status'], $columns)) {
+        $columns[$order['current_status']][] = $order;
+    }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Order Status ♡ - YOBYBYONG</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Patrick+Hand&family=Reenie+Beanie&display=swap" rel="stylesheet">
-
+    <meta http-equiv="refresh" content="30">
+    <title>Live Order Tracking</title>
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: linear-gradient(to bottom, #fff5f5, #fffaf0); font-family: 'Comic Neue', cursive; }
-        .status-card {
-            background: #fffaf0;
-            border: 3px dashed #ff9aa2;
-            border-radius: 16px;
-            box-shadow: 0 8px 25px rgba(255,182,193,0.3);
-            max-width: 420px;
-            margin: 2rem auto;
-            padding: 1.5rem;
-        }
-        .title { font-family: 'Patrick Hand', cursive; font-size: 2.8rem; color: #d6336c; text-align: center; }
-        .status-badge {
-            font-size: 1.3rem;
-            padding: 0.6rem 1.2rem;
-            border-radius: 999px;
-            display: inline-block;
-            margin: 1rem auto;
-        }
-        .good { background: #d4f4e2; color: #2f855a; }
-        .pending { background: #fefcbf; color: #744210; }
-        .bad { background: #fed7d7; color: #9b2c2c; }
+        .kanban-col { min-height: 80vh; background-color: #f8f9fa; border-radius: 8px; padding: 15px; }
+        .order-card-kds { background: white; border-left: 4px solid #ccc; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .order-card-kds.pending { border-left-color: #ffc107; }
+        .order-card-kds.preparing { border-left-color: #0dcaf0; }
+        .order-card-kds.ready { border-left-color: #198754; }
     </style>
 </head>
-<body class="min-h-screen py-10 px-4">
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark px-4 mb-4">
+        <a class="navbar-brand fw-bold" href="dashboard.php">Kitchen Display System</a>
+        <span class="text-white">Last updated: <?php echo date('H:i:s'); ?></span>
+    </nav>
 
-<div class="status-card text-center">
+    <div class="container-fluid px-4">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="kanban-col">
+                    <h4 class="mb-3 text-warning border-bottom pb-2"><i class="bi bi-hourglass"></i> Pending (<?php echo count($columns['pending']); ?>)</h4>
+                    <?php foreach ($columns['pending'] as $order): ?>
+                        <div class="order-card-kds pending p-3 mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <strong>#<?php echo str_pad($order['id'], 6, '0', STR_PAD_LEFT); ?></strong>
+                                <small class="text-muted"><?php echo date('H:i', strtotime($order['created_at'])); ?></small>
+                            </div>
+                            <form action="orders.php" method="POST">
+                                <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                                <input type="hidden" name="status" value="preparing">
+                                <button type="submit" name="update_status" class="btn btn-sm btn-info w-100 mt-2">Start Preparing</button>
+                            </form>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
 
-    <h1 class="title">YOBYBYONG ♡</h1>
-    <p class="text-lg text-pink-600 mb-6">Your Order Status</p>
+            <div class="col-md-4 mb-4">
+                <div class="kanban-col">
+                    <h4 class="mb-3 text-info border-bottom pb-2"><i class="bi bi-fire"></i> Preparing (<?php echo count($columns['preparing']); ?>)</h4>
+                    <?php foreach ($columns['preparing'] as $order): ?>
+                        <div class="order-card-kds preparing p-3 mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <strong>#<?php echo str_pad($order['id'], 6, '0', STR_PAD_LEFT); ?></strong>
+                            </div>
+                            <form action="orders.php" method="POST">
+                                <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                                <input type="hidden" name="status" value="ready">
+                                <button type="submit" name="update_status" class="btn btn-sm btn-success w-100 mt-2">Mark Ready</button>
+                            </form>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
 
-    <div class="status-badge <?= $session->status === 'complete' ? 'good' : ($session->status === 'open' ? 'pending' : 'bad') ?>">
-        <?= $status_text ?>
+            <div class="col-md-4 mb-4">
+                <div class="kanban-col">
+                    <h4 class="mb-3 text-success border-bottom pb-2"><i class="bi bi-bell"></i> Ready for Pickup (<?php echo count($columns['ready']); ?>)</h4>
+                    <?php foreach ($columns['ready'] as $order): ?>
+                        <div class="order-card-kds ready p-3 mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <strong>#<?php echo str_pad($order['id'], 6, '0', STR_PAD_LEFT); ?></strong>
+                                <span class="badge bg-dark"><?php echo $order['pickup_code']; ?></span>
+                            </div>
+                            <form action="orders.php" method="POST">
+                                <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                                <input type="hidden" name="status" value="completed">
+                                <button type="submit" name="update_status" class="btn btn-sm btn-outline-secondary w-100 mt-2">Complete Order</button>
+                            </form>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <?php if ($session->status === 'complete' && $payment_status === 'paid'): ?>
-        <p class="text-xl font-bold text-pink-700 mt-4">Payment Received! 🎉</p>
-    <?php endif; ?>
-
-    <div class="mt-6 text-left space-y-2 text-sm">
-        <p><strong>Date:</strong> <?= htmlspecialchars($date) ?></p>
-        <p><strong>Ref #:</strong> #<?= strtoupper(htmlspecialchars($ref)) ?></p>
-        <p><strong>Customer:</strong> <?= htmlspecialchars($customer_name) ?></p>
-    </div>
-
-    <hr class="border-dashed border-pink-300 my-6">
-
-    <div class="text-left">
-        <p class="font-bold mb-2">Items Ordered:</p>
-        <?php foreach ($line_items as $item): ?>
-            <p class="text-pink-800">
-                <?= htmlspecialchars($item->description ?? $item->price->product->name ?? 'Item') ?>
-                × <?= $item->quantity ?>
-                — <?= $symbol . number_format($item->amount_total / 100, 2) ?>
-            </p>
-        <?php endforeach; ?>
-    </div>
-
-    <hr class="border-dashed border-pink-300 my-6">
-
-    <p class="text-2xl font-black text-pink-700">
-        Total: <?= $symbol . number_format($total, 2) ?>
-    </p>
-
-    <p class="mt-10 text-lg text-pink-600">
-        Thank you so much! ♡<br>
-        We'll prepare your order soon~ ૮₍ ˶•ᴗ•˶ ₎ა
-    </p>
-
-</div>
-
-<div class="text-center mt-8">
-    <a href="menu.php" class="bg-pink-400 text-white px-8 py-3 rounded-xl font-bold shadow hover:bg-pink-500 transition">
-        ← Back to Menu
-    </a>
-</div>
-
 </body>
 </html>
