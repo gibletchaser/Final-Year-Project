@@ -188,9 +188,7 @@ try {
         <h2 style="color: #000; font-weight: 800; letter-spacing: -0.5px; margin: 0;">
             Order History.
         </h2>
-        <a href="track_order.php" class="btn custom-btn-primary px-4 py-2" style="background: #000; border-color: #000;">
-            Track Order
-        </a>
+        
     </div>
 
     <?php if ($error): ?>
@@ -237,8 +235,8 @@ try {
                 </div>
 
                 <div class="order-actions d-flex flex-column gap-2 mt-auto">
-                    <a href="order-details.php?id=<?php echo $order['id']; ?>" class="btn custom-btn-primary btn-sm w-100 py-2">
-                        View Details
+                    <a href="view_order_status.php?id=<?php echo $order['id']; ?>" class="btn custom-btn-primary btn-sm w-100 py-2">
+                        Track Order
                     </a>
                     
                     <a href="view_receipt.php?session_id=<?php echo urlencode($order['stripe_session_id'] ?? ''); ?>" class="btn custom-btn-secondary btn-sm w-100 py-2">

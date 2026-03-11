@@ -28,7 +28,7 @@ if ($action === 'fetch') {
 
     if ($search !== '') {
         $like     = '%' . $search . '%';
-        $where[]  = '(o.order_code LIKE ? OR o.customer_name LIKE ?)';
+        $where[]  = $formatted_id = sprintf("#YY-%05d", $order['id']);
         $params[] = $like;
         $params[] = $like;
         $types   .= 'ss';

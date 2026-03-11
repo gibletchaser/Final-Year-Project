@@ -27,6 +27,8 @@
     <link rel="stylesheet" href="css/flaticon.css">
     <link rel="stylesheet" href="css/icomoon.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
 </head>
 <body>
     <?php
@@ -382,8 +384,8 @@ document.addEventListener('DOMContentLoaded', function() {
             </a>
             
             <a class="dropdown-item py-2" href="order_history.php" style="color: #444; font-size: 14px;">
-                    <span class="icon-clock mr-2"></span> View Order 
-            </a>
+    <i class="bi bi-receipt" style="margin-right: 5px;"></i> View Order 
+</a>
             
             <div class="dropdown-divider"></div>
             
