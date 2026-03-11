@@ -48,8 +48,7 @@ if ($customer = $result->fetch_assoc()) {
             "id"    => $customer['id'],
             "name"  => $customer['name'],
             "email" => $customer['email'],
-            "phone" => $customer['phone'],
-            'profilePic' => $customer['profilePic']
+            "phone" => $customer['phone']
         ];
 
         // Also set user key so place-order.php and order_history.php work
