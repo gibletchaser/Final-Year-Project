@@ -97,18 +97,20 @@
                                 <div id="display-phone" class="h6">-</div>
                             </div>
                             <div class="mb-3">
-                                <label class="text-muted small mb-0">Password</label>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span id="profile-password" class="h6 mb-0">********</span>
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="togglePasswordDisplay()">Show</button>
-                                </div>
-                            </div>
+    <label class="text-muted small mb-0">Password</label>
+    <div class="d-flex justify-content-between align-items-center">
+        <span id="profile-password" class="h6 mb-0">********</span>
+    </div>
+</div>
 
                             <div class="text-center mt-5">
                                 <button onclick="toggleEditMode(true)" class="btn btn-primary btn-block py-2" style="background: #c4a47c; border: none;">Edit Profile</button>
                                 <button onclick="handleLogout()" class="btn btn-link text-danger mt-2">Sign Out</button>
+                                <div><button onclick="deleteAccount()" class="btn btn-link text-danger mt-1" style="font-size: 14px; text-decoration: underline;">Delete Account</button>
+</div>
                             </div>
                         </div>
+</div>
 
                         <div id="edit-mode" style="display: none;">
                             <div class="form-group">
@@ -139,6 +141,7 @@
                                 <div class="col-6 pl-1">
                                     <button onclick="toggleEditMode(false)" class="btn btn-secondary btn-block py-2">Cancel</button>
                                 </div>
+                                
                             </div>
                         </div>
 
@@ -317,16 +320,21 @@
 }
 
     function togglePasswordDisplay() {
-        const passSpan = document.getElementById('profile-password');
-        const btn = event.target;
-        if (passSpan.innerText === "********") {
-            passSpan.innerText = window.userPass;
-            btn.innerText = "Hide";
-        } else {
-            passSpan.innerText = "********";
-            btn.innerText = "Show";
-        }
+    const passSpan = document.getElementById('profile-password');
+    const btn = document.getElementById('toggle-pass-btn'); // Finds the exact button
+    
+    // Fallback just in case window.userPass wasn't loaded properly
+    const actualPassword = window.userPass || 'Not set';
+
+    // Look directly at the button's text
+    if (btn.innerText.trim() === "Show") {
+        passSpan.innerText = actualPassword;
+        btn.innerText = "Hide";
+    } else {
+        passSpan.innerText = "********";
+        btn.innerText = "Show";
     }
+}
 
     function handleLogout() {
         if(confirm("Are you sure you want to sign out?")) {
@@ -334,6 +342,41 @@
             window.location.href = "index.php";
         }
     }
+    function deleteAccount() {
+    const sessionData = JSON.parse(localStorage.getItem('yobYongSession'));
+    if (!sessionData || !sessionData.email) {
+        alert("Session error. Please sign in again.");
+        return;
+    }
+
+    // Double confirmation to prevent accidental clicks
+    if (confirm("WARNING: Are you sure you want to permanently delete your account? You will lose your order history and profile data.")) {
+        if (confirm("This action cannot be undone. Click OK to delete your account forever.")) {
+            
+            const formData = new FormData();
+            formData.append('email', sessionData.email);
+
+            fetch('delete-account.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data.trim() === 'success') {
+                    alert("Your account has been completely deleted. We're sad to see you go!");
+                    localStorage.removeItem('yobYongSession'); // Clear session
+                    window.location.href = "index.php"; // Kick them back to home
+                } else {
+                    alert("Failed to delete account: " + data);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("A system error occurred. Please try again later.");
+            });
+        }
+    }
+}
 </script>
 </body>
 </html>

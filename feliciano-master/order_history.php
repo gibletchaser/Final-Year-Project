@@ -43,7 +43,11 @@ try {
     <style>
         /* Modern, clean Instagrammable background */
         body { 
-            background-color: #fafafa; 
+            background-image: url('images/bg76.jpg'); 
+
+            background-color: #1c181884;
+            background-blend-mode: multiply;
+
             font-family: 'Helvetica Neue', Arial, sans-serif;
         } 
         
@@ -180,12 +184,12 @@ try {
 
 <div class="order-list-container">
     
-    <a href="javascript:history.back()" class="back-btn">
+    <a href="javascript:history.back()" class="back-btn" style="color: #fafafa;">
         <i class="bi bi-arrow-left me-2"></i> Back
     </a>
 
     <div class="d-flex justify-content-between align-items-center mb-5">
-        <h2 style="color: #000; font-weight: 800; letter-spacing: -0.5px; margin: 0;">
+        <h2 style="color: #C0A57B; font-weight: 800; letter-spacing: -0.5px; margin: 0;">
             Order History.
         </h2>
         

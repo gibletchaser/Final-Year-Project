@@ -451,10 +451,7 @@ if (!empty($row['delete_code'])) {
             	<h2 class="ftco-heading-2">Newsletter</h2>
             	<p>Far far away, behind the word mountains, far from the countries.</p>
               <form action="#" class="subscribe-form">
-                <div class="form-group">
-                  <input type="text" class="form-control mb-2 text-center" placeholder="Enter email address">
-                  <input type="submit" value="Subscribe" class="form-control submit px-3">
-                </div>
+                
               </form>
             </div>
           </div>
