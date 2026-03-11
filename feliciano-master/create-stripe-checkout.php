@@ -1,152 +1,98 @@
 <?php
-// create-stripe-checkout.php
-
-// -----------------------------
-// SAFE JSON OUTPUT SETTINGS
-// -----------------------------
-ini_set('display_errors', 0);
-error_reporting(0);
-
-ob_start();
 header('Content-Type: application/json');
 
-// -----------------------------
-// LOAD STRIPE
-// -----------------------------
-require_once __DIR__ . '/vendor/autoload.php';
+require_once 'vendor/autoload.php';
+\Stripe\Stripe::setApiKey('sk_test_51T4boFHWrfyRRRiKGHEc7DVdYEdqR9dBleew9M40E3veAJtqxREAcwBTQ1Cpxc4jSOdaT1yUa1erqQXSa9qUR23v00ypVrxVQd');
 
-\Stripe\Stripe::setApiKey('sk_test_YOUR_SECRET_KEY_HERE'); // ← Replace with your real secret key
-
-// -----------------------------
-// HELPER FUNCTION
-// -----------------------------
-function jsonExit($data, $status = 200) {
-    http_response_code($status);
-    ob_clean();
-    echo json_encode($data);
+$conn = new mysqli("localhost", "root", "", "yobyong");
+if ($conn->connect_error) {
+    echo json_encode(['success'=>false, 'error'=>'DB failed']);
     exit;
 }
 
-// -----------------------------
-// ONLY ALLOW POST
-// -----------------------------
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    jsonExit([
-        "success" => false,
-        "error" => "Invalid request method"
-    ], 405);
+$data = json_decode(file_get_contents('php://input'), true);
+
+if (!$data || empty($data['amount']) || empty($data['cart'])) {
+    echo json_encode(['success'=>false, 'error'=>'Invalid amount or empty cart']);
+    exit;
 }
 
-// -----------------------------
-// READ JSON INPUT
-// -----------------------------
-$input = json_decode(file_get_contents("php://input"), true);
+$amount_myr   = floatval($data['amount']);
+$customer_name = trim($data['customer_name'] ?? '');
+$phone         = trim($data['phone'] ?? '');
+$notes         = trim($data['notes'] ?? '');
+$cart_json     = json_encode($data['cart']);
 
-if (!$input) {
-    jsonExit([
-        "success" => false,
-        "error" => "Invalid JSON payload"
-    ], 400);
-}
-
-// -----------------------------
-// VALIDATE DATA
-// -----------------------------
-$name   = trim($input['customer_name'] ?? '');
-$phone  = trim($input['phone'] ?? '');
-$notes  = trim($input['notes'] ?? '');
-$cart   = $input['cart'] ?? [];
-$amount = floatval($input['amount'] ?? 0);
-
-if (!$name || !$phone) {
-    jsonExit([
-        "success" => false,
-        "error" => "Missing customer details"
-    ], 400);
-}
-
-if (empty($cart)) {
-    jsonExit([
-        "success" => false,
-        "error" => "Cart is empty"
-    ], 400);
-}
-
-// -----------------------------
-// BUILD STRIPE LINE ITEMS
-// -----------------------------
+// Build line items from cart (this is the fix)
 $line_items = [];
+$calculated_total = 0;
 
-foreach ($cart as $item) {
-
-    $item_name = trim($item['name'] ?? 'Item');
+foreach ($data['cart'] as $item) {
+    $name      = trim($item['name'] ?? $item['title'] ?? 'Item');
     $price     = floatval($item['price'] ?? 0);
-    $qty       = intval($item['quantity'] ?? 1);
+    $quantity  = (int)($item['quantity'] ?? 1);
 
-    if ($price <= 0 || $qty <= 0) {
-        continue;
-    }
+    if ($price <= 0 || $quantity < 1 || empty($name)) continue;
 
     $line_items[] = [
-        "price_data" => [
-            "currency" => "usd",   // Change to MYR if needed
-            "product_data" => [
-                "name" => $item_name
-            ],
-            "unit_amount" => intval($price * 100) // Stripe uses cents
+        'price_data' => [
+            'currency'     => 'myr',
+            'product_data' => ['name' => $name],
+            'unit_amount'  => (int)($price * 100),
         ],
-        "quantity" => $qty
+        'quantity' => $quantity,
     ];
+
+    $calculated_total += $price * $quantity;
+}
+
+// Optional: verify frontend total matches backend calculation (anti-tampering)
+if (abs($calculated_total - $amount_myr) > 0.01) {
+    echo json_encode(['success'=>false, 'error'=>'Amount mismatch']);
+    exit;
 }
 
 if (empty($line_items)) {
-    jsonExit([
-        "success" => false,
-        "error" => "Invalid cart items"
-    ], 400);
+    echo json_encode(['success'=>false, 'error'=>'No valid cart items']);
+    exit;
 }
 
-// -----------------------------
-// CREATE STRIPE SESSION
-// -----------------------------
 try {
-
     $session = \Stripe\Checkout\Session::create([
-        "payment_method_types" => ["card"],
-        "mode" => "payment",
-
-        "line_items" => $line_items,
-
-        "metadata" => [
-            "customer_name" => $name,
-            "phone" => $phone,
-            "notes" => $notes
-        ],
-
-        "success_url" => "http://localhost/yourproject/receipt.php?session_id={CHECKOUT_SESSION_ID}",
-        "cancel_url"  => "http://localhost/yourproject/index.php?payment=cancelled"
+        'payment_method_types' => ['card','fpx'],
+        'line_items'           => $line_items,
+        'mode'                 => 'payment',
+        'success_url'          => 'http://localhost/yyos/Final-Year-Project/feliciano-master/receipt.php?session_id={CHECKOUT_SESSION_ID}',
+        'cancel_url'           => 'http://localhost/yyos/Final-Year-Project/feliciano-master/menu.php',
+        'metadata'             => [
+            'customer_name' => $customer_name,
+            'phone'         => $phone,
+            'cart'          => $cart_json
+        ]
     ]);
 
-    jsonExit([
-        "success" => true,
-        "sessionId" => $session->id
+    // Insert into DB (your existing code – looks fine)
+    $stmt = $conn->prepare("
+        INSERT INTO orders 
+        (customer_name, phone, notes, total_amount, items, stripe_session_id, payment_status, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW(), NOW())
+    ");
+
+    $stmt->bind_param("sssdss", $customer_name, $phone, $notes, $amount_myr, $cart_json, $session->id);
+    $stmt->execute();
+    $stmt->close();
+
+    echo json_encode([
+        'success'   => true,
+        'sessionId' => $session->id
     ]);
-
-} catch (\Stripe\Exception\ApiErrorException $e) {
-
-    error_log("Stripe API error: " . $e->getMessage());
-
-    jsonExit([
-        "success" => false,
-        "error" => "Stripe API error"
-    ], 500);
 
 } catch (Exception $e) {
-
-    error_log("Stripe session error: " . $e->getMessage());
-
-    jsonExit([
-        "success" => false,
-        "error" => "Server error"
-    ], 500);
+    echo json_encode([
+        'success' => false,
+        'error'   => $e->getMessage()
+    ]);
 }
+
+$conn->close();
+?>
