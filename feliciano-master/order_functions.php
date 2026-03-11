@@ -1,4 +1,3 @@
-
 <?php
 function createOrder($pdo, $user_id, $cart_items, $total, $payment_id) {
     try {
@@ -6,7 +5,7 @@ function createOrder($pdo, $user_id, $cart_items, $total, $payment_id) {
 
         // Create order record
         $stmt = $pdo->prepare("
-            INSERT INTO orders (user_id, total_amount, payment_id, status, created_at)
+            INSERT INTO orders (user_id, total_amount, payment_id, order_status, created_at)
             VALUES (?, ?, ?, 'pending', NOW())
         ");
         $stmt->execute([$user_id, $total, $payment_id]);
@@ -27,12 +26,7 @@ function createOrder($pdo, $user_id, $cart_items, $total, $payment_id) {
             ]);
         }
 
-        // Create initial status log
-        $stmt = $pdo->prepare("
-            INSERT INTO order_status_logs (order_id, status, notes, created_at)
-            VALUES (?, 'pending', 'Order created and payment confirmed', NOW())
-        ");
-        $stmt->execute([$order_id]);
+        // REMOVED: order_status_logs insertion
 
         $pdo->commit();
         return $order_id;
@@ -58,10 +52,11 @@ function getCustomerOrders($pdo, $user_id, $limit = 10) {
     // Cast limit to integer for safety
     $limit = (int)$limit;
 
+    // FIX: Pulling 'order_status' directly from the orders table instead of the logs table
     $stmt = $pdo->prepare("
         SELECT o.*,
                COUNT(oi.id) as item_count,
-               (SELECT status FROM order_status_logs WHERE order_id = o.id ORDER BY created_at DESC LIMIT 1) as current_status
+               o.order_status as current_status
         FROM orders o
         LEFT JOIN order_items oi ON o.id = oi.order_id
         WHERE o.user_id = ?
@@ -74,11 +69,12 @@ function getCustomerOrders($pdo, $user_id, $limit = 10) {
 }
 
 function getOrderDetails($pdo, $order_id, $user_id = null) {
+    // FIX: Replaced subquery with o.order_status
     $sql = "
         SELECT o.*,
                u.username,
                u.email,
-               (SELECT status FROM order_status_logs WHERE order_id = o.id ORDER BY created_at DESC LIMIT 1) as current_status
+               o.order_status as current_status
         FROM orders o
         LEFT JOIN users u ON o.user_id = u.id
         WHERE o.id = ?
@@ -109,10 +105,11 @@ function getOrderItems($pdo, $order_id) {
 }
 
 function getOrderStatusHistory($pdo, $order_id) {
+    // FIX: We simulate history by just fetching the current status and last updated time from 'orders'
     $stmt = $pdo->prepare("
-        SELECT * FROM order_status_logs
-        WHERE order_id = ?
-        ORDER BY created_at ASC
+        SELECT order_status as status, updated_at as created_at, notes 
+        FROM orders
+        WHERE id = ?
     ");
     $stmt->execute([$order_id]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -122,16 +119,11 @@ function updateOrderStatus($pdo, $order_id, $status, $notes = null) {
     try {
         $pdo->beginTransaction();
 
-        // Update main order status
-        $stmt = $pdo->prepare("UPDATE orders SET status = ?, updated_at = NOW() WHERE id = ?");
-        $stmt->execute([$status, $order_id]);
+        // FIX: Updated to use 'order_status' column
+        $stmt = $pdo->prepare("UPDATE orders SET order_status = ?, notes = ?, updated_at = NOW() WHERE id = ?");
+        $stmt->execute([$status, $notes, $order_id]);
 
-        // Log status change
-        $stmt = $pdo->prepare("
-            INSERT INTO order_status_logs (order_id, status, notes, created_at)
-            VALUES (?, ?, ?, NOW())
-        ");
-        $stmt->execute([$order_id, $status, $notes]);
+        // REMOVED: order_status_logs insertion
 
         // Set estimated ready time for "preparing" status
         if ($status === 'preparing') {
@@ -167,7 +159,7 @@ function getOrderStatusDisplay($status) {
         'cancelled' => ['text' => 'Cancelled', 'class' => 'danger', 'icon' => 'bi-x-circle'],
     ];
 
-    return $statuses[$status] ?? ['text' => 'Unknown', 'class' => 'dark', 'icon' => 'bi-question-circle'];
+    return $statuses[$status] ?? ['text' => ucfirst($status), 'class' => 'dark', 'icon' => 'bi-question-circle'];
 }
 
 function getOrdersWithFilters($pdo, $status = 'all', $date_from = '', $date_to = '', $search = '') {
@@ -177,7 +169,7 @@ function getOrdersWithFilters($pdo, $status = 'all', $date_from = '', $date_to =
                u.email,
                u.profile_picture,
                COUNT(oi.id) as item_count,
-               (SELECT status FROM order_status_logs WHERE order_id = o.id ORDER BY created_at DESC LIMIT 1) as current_status
+               o.order_status as current_status
         FROM orders o
         LEFT JOIN users u ON o.user_id = u.id
         LEFT JOIN order_items oi ON o.id = oi.order_id
@@ -187,7 +179,7 @@ function getOrdersWithFilters($pdo, $status = 'all', $date_from = '', $date_to =
     $params = [];
 
     if ($status !== 'all') {
-        $sql .= " AND o.status = ?";
+        $sql .= " AND o.order_status = ?";
         $params[] = $status;
     }
 
@@ -226,7 +218,7 @@ function getOrderForDashboard($pdo, $order_id) {
                u.username,
                u.email,
                u.profile_picture,
-               (SELECT status FROM order_status_logs WHERE order_id = o.id ORDER BY created_at DESC LIMIT 1) as current_status
+               o.order_status as current_status
         FROM orders o
         LEFT JOIN users u ON o.user_id = u.id
         WHERE o.id = ?

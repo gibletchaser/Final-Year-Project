@@ -1,268 +1,258 @@
 <?php
 session_start();
-require 'db.php';
-require 'order_functions.php';
+require_once 'db.php';
+require_once 'order_functions.php';
 
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-// 1. Database Configuration
-$host = 'localhost';
-$dbname = 'yobyong'; 
-$username = 'root';
-$password = ''; 
-=======
->>>>>>> Stashed changes
 // Protect the page — use 'user' session key set by login.php
 if (!isset($_SESSION['user']['id']) || empty($_SESSION['user']['id'])) {
     header("Location: login.php");
     exit;
 }
 
-require_once 'db.php';
->>>>>>> bd33f361939d2c1b9b18746cecfd216e8db38528
+// 1. Database Configuration
+$host = 'localhost';
+$dbname = 'yobyong';
+$username = 'root';
+$password = '';
 
-$customer_id = (int)$_SESSION['user']['id'];
-$orders      = [];
-$error       = null;
-
-$customer_id = (int)$_SESSION['user']['id'];
-$orders      = [];
-$error       = null;
+$user_id = (int)$_SESSION['user']['id'];
+$orders = [];
+$error = null;
 
 try {
-<<<<<<< Updated upstream
-    $stmt = $conn->prepare("
-        SELECT o.*, COUNT(oi.id) AS item_count
-        FROM orders o
-        LEFT JOIN order_items oi ON oi.order_id = o.id
-        WHERE o.customer_id = ?
-        GROUP BY o.id
-        ORDER BY o.created_at DESC
-    ");
-    $stmt->bind_param("i", $customer_id);
-    $stmt->execute();
-    $orders = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-
-} catch (Exception $e) {
-    $error = "Could not load orders. Please try again.";
-}
-?>
-=======
-<<<<<<< HEAD
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // 2. Fetch Orders using your function
+    $orders = getCustomerOrders($pdo, $user_id, 20);
+
 } catch(PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
-}
-
-// 2. Get User ID
-$user_id = $_SESSION['user_id'] ?? 2; 
-
-// 3. Fetch Orders
-$orders = getCustomerOrders($pdo, $user_id, 20); 
-?>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-=======
-    $stmt = $conn->prepare("
-        SELECT o.*, COUNT(oi.id) AS item_count
-        FROM orders o
-        LEFT JOIN order_items oi ON oi.order_id = o.id
-        WHERE o.customer_id = ?
-        GROUP BY o.id
-        ORDER BY o.created_at DESC
-    ");
-    $stmt->bind_param("i", $customer_id);
-    $stmt->execute();
-    $orders = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-
-} catch (Exception $e) {
-    $error = "Could not load orders. Please try again.";
+    $error = "Database connection failed: " . $e->getMessage();
+} catch(Exception $e) {
+    $error = "Could not load orders: " . $e->getMessage();
 }
 ?>
->>>>>>> Stashed changes
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>My Order History - Yobyong</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        /* Modern, clean Instagrammable background */
+        body { 
+            background-color: #fafafa; 
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        } 
+        
+        .order-list-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 15px;
+        }
+
+        /* Aesthetic Back Button */
+        .back-btn {
+            color: #000;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+        .back-btn:hover {
+            color: #C0A57B; /* Turns tan on hover */
+        }
+
+        /* GRID LAYOUT: This forces the cards into squares side-by-side */
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        /* Square, Minimalist Cards */
+        .order-card {
+            background-color: #ffffff;
+            border: 1px solid #eaeaea;
+            border-top: 4px solid #C0A57B; /* The tan color */
+            border-radius: 0px; 
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            aspect-ratio: 1 / 1; /* This CSS trick makes the box a perfect square */
+            color: #333;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .order-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(192, 165, 123, 0.15); /* Soft tan shadow on hover */
+        }
+        
+        .order-info {
+            flex-grow: 1; /* Pushes buttons to the bottom */
+        }
+        
+        .text-accent { 
+            color: #000; 
+            font-weight: 800; 
+            letter-spacing: 0.5px;
+            font-size: 1.2rem;
+        }
+        
+        /* Badges using your specific tan color */
+        .aesthetic-badge {
+            background-color: #C0A57B;
+            color: #fff;
+            border-radius: 0px; 
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        /* Sleek Buttons */
+        .custom-btn-primary {
+            background-color: #C0A57B; /* Tan color */
+            color: #fff;
+            border: 1px solid #C0A57B;
+            border-radius: 0px; 
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .custom-btn-primary:hover { 
+            background: #a88d61; 
+            border-color: #a88d61;
+            color: #fff; 
+        }
+        
+        .custom-btn-secondary {
+            border: 1px solid #eaeaea;
+            color: #666;
+            background: transparent;
+            border-radius: 0px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .custom-btn-secondary:hover { 
+            border-color: #000;
+            color: #000; 
+        }
+        
+        .small-label {
+            color: #999;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+            font-weight: 500;
+        }
+
+        .data-text {
+            color: #000;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 <body>
->>>>>>> bd33f361939d2c1b9b18746cecfd216e8db38528
 
-<style>
-    body { background-color: #f4f6f9; } /* Light background so you can see things clearly */
-    
-    .order-list-container { 
-        max-width: 900px; 
-        margin: 40px auto; 
-        padding: 0 15px; 
-    }
-    
-    .order-card {
-        background-color: #2c241b; /* Dark coffee brown */
-        border: 1px solid #4a3f35;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: #f8f9fa;
-    }
-    
-    .order-info p { margin-bottom: 0.2rem; font-size: 0.9rem; color: #d1d1d1; }
-    .text-gold { color: #d4af37; font-weight: bold; }
-    
-    /* Fixed Button Colors so they are visible immediately! */
-    .custom-btn-gold {
-        border: 1px solid #d4af37;
-        color: #d4af37; 
-        background: transparent;
-        border-radius: 5px;
-    }
-    .custom-btn-gold:hover { background: #d4af37; color: #000; }
-    
-    .custom-btn-light {
-        border: 1px solid #e9ecef;
-        color: #e9ecef; /* Bright white/gray text */
-        background: transparent;
-        border-radius: 5px;
-    }
-    .custom-btn-light:hover { background: #e9ecef; color: #000; }
-    
-    .badge { padding: 6px 10px; }
-</style>
-
-<<<<<<< HEAD
 <div class="order-list-container">
     
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 style="color: #2c241b; font-weight: bold;">
-            <i class="bi bi-clock-history me-2"></i>Order History
+    <a href="javascript:history.back()" class="back-btn">
+        <i class="bi bi-arrow-left me-2"></i> Back
+    </a>
+
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 style="color: #000; font-weight: 800; letter-spacing: -0.5px; margin: 0;">
+            Order History.
         </h2>
-        <a href="track_order.php" class="btn" style="background-color: #d4af37; color: #000; font-weight: bold; border-radius: 8px;">
-            <i class="bi bi-truck me-1"></i> Track Order
+        <a href="track_order.php" class="btn custom-btn-primary px-4 py-2" style="background: #000; border-color: #000;">
+            Track Order
         </a>
     </div>
 
-    <?php if (empty($orders)): ?>
-        <div class="alert alert-dark text-center py-5" style="background: #2c241b; color: #ccc;">
-            You have no orders yet. 
-        </div>
-    <?php else: ?>
-        
-        <?php foreach ($orders as $order): 
-            $status = $order['current_status'] ?? 'pending';
-            $statusDisplay = getOrderStatusDisplay($status); 
-            $order_date = isset($order['created_at']) ? date('M d, Y h:i A', strtotime($order['created_at'])) : 'Recently';
-            
-            // FIX: Count the items by decoding the JSON array from your database
-            $items_array = json_decode($order['items'], true);
-            $item_count = is_array($items_array) ? count($items_array) : 0;
-            
-            // Format ID
-            $formatted_id = sprintf("#KTB-%05d", $order['id']); 
-        ?>
-        
-        <div class="order-card shadow-sm">
-            <div class="order-info w-75">
-                <div class="d-flex align-items-center mb-2">
-                    <h5 class="text-gold mb-0 me-3"><?php echo $formatted_id; ?></h5>
-                    <span class="badge bg-warning text-dark rounded-pill text-uppercase" style="font-size: 0.75rem;">
-                        <i class="bi bi-hourglass-split me-1"></i> PENDING
-                    </span>
-                </div>
-                
-                <div class="row mt-3">
-                    <div class="col-md-4">
-                        <small class="text-muted d-block" style="color: #888 !important;">Order Date</small>
-                        <p><?php echo $order_date; ?></p>
-                    </div>
-                    <div class="col-md-4">
-                        <small class="text-muted d-block" style="color: #888 !important;">Items</small>
-                        <p><?php echo $item_count; ?> items</p> </div>
-                    <div class="col-md-4">
-                        <small class="text-muted d-block" style="color: #888 !important;">Total</small>
-                        <p class="fw-bold text-white">RM <?php echo number_format($order['total_amount'], 2); ?></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="order-actions w-25 text-end d-flex flex-column gap-2">
-                <a href="order-details.php?id=<?php echo $order['id']; ?>" class="btn custom-btn-gold btn-sm w-100 py-2">
-                    <i class="bi bi-eye me-1"></i> View Details
-                </a>
-                
-                <a href="view_receipt.php?id=<?php echo $order['id']; ?>" class="btn custom-btn-light btn-sm w-100 py-2">
-                    <i class="bi bi-receipt me-1"></i> View Receipt
-                </a>
-            </div>
-=======
-<div class="container my-5">
-    <h2 class="mb-4">My Order History</h2>
-
     <?php if ($error): ?>
-        <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+        <div class="alert alert-danger shadow-sm border-0 rounded-0"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
-    <?php if (empty($orders)): ?>
-        <div class="alert alert-info">You haven't placed any orders yet.</div>
-    <?php else: ?>
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Order #</th>
-                        <th>Date</th>
-                        <th>Items</th>
-                        <th>Total (RM)</th>
-                        <th>Payment</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($orders as $order): ?>
-                    <tr>
-                        <td><strong><?= htmlspecialchars($order['order_code']) ?></strong></td>
-                        <td><?= date('d M Y • h:i A', strtotime($order['created_at'])) ?></td>
-                        <td><?= (int)$order['item_count'] ?> item<?= $order['item_count'] != 1 ? 's' : '' ?></td>
-                        <td>RM <?= number_format($order['total_amount'], 2) ?></td>
-                        <td>
-                            <?= htmlspecialchars($order['payment_method']) ?><br>
-                            <small class="text-muted"><?= htmlspecialchars($order['payment_status']) ?></small>
-                        </td>
-                        <td>
-                            <?php
-                                $s = strtolower($order['order_status'] ?? 'pending');
-                                $badgeClass = match($s) {
-                                    'completed'              => 'bg-success',
-                                    'cancelled'              => 'bg-danger',
-                                    'processing', 'ready'    => 'bg-primary',
-                                    default                  => 'bg-warning text-dark'
-                                };
-                            ?>
-                            <span class="badge <?= $badgeClass ?>">
-                                <?= htmlspecialchars(ucfirst($order['order_status'] ?? 'Pending')) ?>
-                            </span>
-                        </td>
-                        <td>
-                            <a href="order-details.php?id=<?= (int)$order['id'] ?>"
-                               class="btn btn-sm btn-outline-primary">View</a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
->>>>>>> bd33f361939d2c1b9b18746cecfd216e8db38528
+    <?php if (empty($orders) && !$error): ?>
+        <div class="alert text-center py-5 border-0" style="background: #fff; color: #888; border: 1px dashed #ddd !important; border-radius: 0;">
+            <i class="bi bi-bag-x fs-1 d-block mb-3" style="color: #ccc;"></i>
+            You have no orders yet.
         </div>
+    <?php elseif (!empty($orders)): ?>
         
-        <?php endforeach; ?>
+        <div class="orders-grid">
+            <?php foreach ($orders as $order):
+                $status = $order['current_status'] ?? $order['order_status'] ?? 'pending';
+                
+                // Format the date
+                $order_date = isset($order['created_at']) ? date('M d, Y', strtotime($order['created_at'])) : 'Recently';
+                
+                // Count the items
+                $items_array = json_decode($order['items'] ?? '[]', true);
+                $item_count = is_array($items_array) ? count($items_array) : 0;
+                
+                // Format ID to use YY- prefix
+                $formatted_id = sprintf("#YY-%05d", $order['id']);
+            ?>
+            
+            <div class="order-card">
+                <div class="order-info">
+                    <span class="aesthetic-badge">
+                        <?= htmlspecialchars($status) ?>
+                    </span>
+                    <h5 class="text-accent mb-4"><?php echo $formatted_id; ?></h5>
+                    
+                    <div class="small-label">Date</div>
+                    <p class="data-text"><?php echo $order_date; ?></p>
+                    
+                    <div class="small-label">Items</div>
+                    <p class="data-text"><?php echo $item_count; ?> items</p>
+                    
+                    <div class="small-label">Total</div>
+                    <p class="data-text" style="font-size: 1.2rem;">RM <?php echo number_format($order['total_amount'] ?? 0, 2); ?></p>
+                </div>
+
+                <div class="order-actions d-flex flex-column gap-2 mt-auto">
+                    <a href="order-details.php?id=<?php echo $order['id']; ?>" class="btn custom-btn-primary btn-sm w-100 py-2">
+                        View Details
+                    </a>
+                    
+                    <a href="view_receipt.php?session_id=<?php echo urlencode($order['stripe_session_id'] ?? ''); ?>" class="btn custom-btn-secondary btn-sm w-100 py-2">
+                        View Receipt
+                    </a>
+                </div>
+            </div>
+            
+            <?php endforeach; ?>
+        </div>
+
     <?php endif; ?>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

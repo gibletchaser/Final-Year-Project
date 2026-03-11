@@ -57,12 +57,6 @@ $badgeClass = match($s) {
 
 <?php include 'header.php'; ?>
 
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-<a href="order_history.php" class="btn btn-secondary">Back to History</a>
-=======
->>>>>>> Stashed changes
 <div class="container my-5" style="max-width: 680px;">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -153,9 +147,4 @@ $badgeClass = match($s) {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-<<<<<<< Updated upstream
 </html>
-=======
-</html>
->>>>>>> bd33f361939d2c1b9b18746cecfd216e8db38528
->>>>>>> Stashed changes
