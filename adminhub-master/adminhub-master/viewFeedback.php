@@ -47,6 +47,13 @@ $result = mysqli_query($conn, $sql);
         </li>
 
         <li>
+            <a href="orders.php">
+                <i class='bx bxs-receipt'></i>
+                <span class="text">Orders</span>
+            </a>
+        </li>
+
+        <li>
             <a href="profile.php">
                 <i class='bx bxs-user'></i>
                 <span class="text">Profile</span>

@@ -428,6 +428,12 @@ $user = $stmt->get_result()->fetch_assoc();
                 <span class="text">My Store</span>
             </a>
         </li>
+        <li>
+            <a href="orders.php">
+                <i class='bx bxs-receipt'></i>
+                <span class="text">Orders</span>
+            </a>
+        </li>
         <li class="active">
             <a href="profile.php">
                 <i class='bx bxs-user'></i>
