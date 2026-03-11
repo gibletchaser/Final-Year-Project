@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 09, 2026 at 05:38 PM
+-- Generation Time: Mar 11, 2026 at 10:43 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -53,6 +53,7 @@ INSERT INTO `categories` (`id`, `name`) VALUES
 --
 
 CREATE TABLE `customer` (
+  `id` int(11) NOT NULL,
   `name` varchar(256) NOT NULL,
   `email` varchar(256) NOT NULL,
   `phone` int(255) NOT NULL,
@@ -66,9 +67,9 @@ CREATE TABLE `customer` (
 -- Dumping data for table `customer`
 --
 
-INSERT INTO `customer` (`name`, `email`, `phone`, `password`, `profilePic`, `reset_token`, `reset_token_expires`) VALUES
-('kaijin', 'louislimkj10@gmail.com', 29238373, 'dd167c4dbc0cde4908f9387d177a0d9160894e3d02e95b7195d382e04e42cf04', 'images/default-user.png', NULL, NULL),
-('shybroccoli', 'shynayip913@gmail.com', 12345678, 'de9587b4f621f8a5d2b1a0f815fd483589d83eeb40f4745eb211f870eeba4a42', 'uploads/1770778403_bg_2.jpg', NULL, NULL);
+INSERT INTO `customer` (`id`, `name`, `email`, `phone`, `password`, `profilePic`, `reset_token`, `reset_token_expires`) VALUES
+(1, 'kaijin', 'louislimkj10@gmail.com', 29238373, 'dd167c4dbc0cde4908f9387d177a0d9160894e3d02e95b7195d382e04e42cf04', 'images/default-user.png', NULL, NULL),
+(2, 'shybroccoli', 'shynayip913@gmail.com', 12345678, 'de9587b4f621f8a5d2b1a0f815fd483589d83eeb40f4745eb211f870eeba4a42', 'uploads/1770778403_bg_2.jpg', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -235,7 +236,7 @@ ALTER TABLE `categories`
 -- Indexes for table `customer`
 --
 ALTER TABLE `customer`
-  ADD PRIMARY KEY (`name`),
+  ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `Date of Birth` (`name`);
 
 --
@@ -282,6 +283,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `customer`
+--
+ALTER TABLE `customer`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `menu`

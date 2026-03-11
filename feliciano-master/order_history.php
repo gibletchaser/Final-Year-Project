@@ -11,16 +11,13 @@ $host = 'localhost';
 $dbname = 'yobyong'; 
 $username = 'root';
 $password = ''; 
-=======
->>>>>>> Stashed changes
-// Protect the page — use 'user' session key set by login.php
+
 if (!isset($_SESSION['user']['id']) || empty($_SESSION['user']['id'])) {
     header("Location: login.php");
     exit;
 }
 
 require_once 'db.php';
->>>>>>> bd33f361939d2c1b9b18746cecfd216e8db38528
 
 $customer_id = (int)$_SESSION['user']['id'];
 $orders      = [];
