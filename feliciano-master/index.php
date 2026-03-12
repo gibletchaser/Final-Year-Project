@@ -498,64 +498,42 @@ if ($conn->connect_error) {
         </div>
         <div class="row">
             <?php
-// Fetch reviews
-$result = $conn->query("SELECT * FROM reviews ORDER BY created_at DESC");
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $ratingCount = (int)$row['rating'];
-        $starsHtml = "";
-        for($i = 1; $i <= 5; $i++) {
-            $starsHtml .= ($i <= $ratingCount) ? "<span style='color: #c4a47c;'>★</span>" : "<span style='color: #ccc;'>★</span>";
-        }
+session_start();
+include 'db.php';
 
-        echo "
-        <div class='col-md-4 mb-4 ftco-animate'>
-            <div class='card border-0 shadow-sm p-4' style='border-radius: 15px;'>
-                <div class='d-flex justify-content-between mb-2'>
-                    <h6 class='font-weight-bold' style='color: #c4a47c; margin-bottom: 0;'>".htmlspecialchars($row['reviewer_name'])."</h6>
-                    <small class='text-muted'>".date('M d', strtotime($row['created_at']))."</small>
-                </div>
-                
-                <div class='mb-2' style='font-size: 18px;'>$starsHtml</div>
-                
-                <p class='text-secondary mt-2' style='font-style: italic;'>\"".htmlspecialchars($row['comment'])."\"</p>";
-    if(!empty($row['reply'])){
-    echo "
-    <div style='background:#f8f8f8;
-                border-left:4px solid #c4a47c;
-                padding:10px;
-                margin-top:10px;
-                border-radius:5px;'>
+header('Content-Type: text/plain');
 
-        <strong style='color:#c4a47c;'>Admin Reply:</strong><br>
-        <span>".htmlspecialchars($row['reply'])."</span>
-
-    </div>
-    ";
-}
-              
-                // Inside the while loop, after the existing if (logged in && email match) block
-
-// Always show delete-by-code link if code exists (for guests or if they lost session)
-if (!empty($row['delete_code'])) {
-    echo "
-    <div class='text-right mt-3'>
-        
-        <a href='delete-review.php?code=" . htmlspecialchars($row['delete_code']) . "'
-           onclick='return confirm(\"Delete this review?\");'
-           style='color:#dc3545; font-size:13px;'>
-           <i class='fas fa-trash-alt'></i> Delete
-        </a>
-    </div>";
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    echo "error: Invalid request"; exit();
 }
 
-        echo "
-            </div>
-        </div>";
-    }
+$name    = trim($_POST['name'] ?? 'Anonymous Guest');
+$comment = trim($_POST['comment'] ?? '');
+$rating  = isset($_POST['rating']) ? (int)$_POST['rating'] : 5;
+
+$email = null;
+if (isset($_SESSION['email']) && filter_var($_SESSION['email'], FILTER_VALIDATE_EMAIL)) {
+    $email = $_SESSION['email'];
+}
+
+// Keep the database insert exactly as it was originally
+$delete_code = null;
+
+$stmt = $conn->prepare("
+    INSERT INTO reviews 
+    (reviewer_name, reviewer_email, rating, comment, delete_code, created_at) 
+    VALUES (?, ?, ?, ?, ?, NOW())
+");
+
+$stmt->bind_param("ssiss", $name, $email, $rating, $comment, $delete_code);
+
+if ($stmt->execute()) {
+    echo "success";
 } else {
-    echo "<div class='col-12 text-center'><p>No reviews yet. Be the first to share!</p></div>";
+    echo "error: " . $stmt->error;
 }
+
+$stmt->close();
 ?>
         </div>
     </div>
