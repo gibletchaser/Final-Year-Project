@@ -561,7 +561,6 @@ function submitReview() {
         return;
     }
 
-    // rest of your fetch code remains the same...
     const data = new FormData();
     data.append('name', name);
     data.append('comment', comment);
@@ -570,7 +569,17 @@ function submitReview() {
     fetch('save-review.php', { method: 'POST', body: data })
     .then(res => res.text())
     .then(response => {
-        // your existing success/error handling
+        // CHECK IF IT WAS SUCCESSFUL
+        if (response.startsWith('success')) {
+            // Give a quick success message
+            alert("Thank you! Your review has been posted.");
+            
+            // RELOAD THE PAGE AUTOMATICALLY
+            window.location.reload(); 
+        } else {
+            // Show an error if something went wrong
+            alert("Oops! Something went wrong: " + response);
+        }
     })
     .catch(err => {
         console.error(err);
