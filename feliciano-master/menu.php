@@ -117,7 +117,7 @@ function getCategoryItems($conn, $category_id) {
                         <span class="text">info@yobyong.com</span>
                     </div>
                     <div class="col-md-5 pr-4 d-flex topper align-items-center text-lg-right justify-content-end">
-                        <p class="mb-0 register-link"><span>Open hours:</span> <span>Isnin - Sunday</span> <span>10:00AM - 9:00PM</span></p>
+                        <p class="mb-0 register-link"><span>Open hours:</span> <span>Monday - Saturday</span> <span>10:00AM - 9:00PM</span></p>
                     </div>
                 </div>
             </div>
@@ -347,10 +347,8 @@ function getCategoryItems($conn, $category_id) {
 
 <!-- FOOTER -->
 <footer class="ftco-footer ftco-bg-dark ftco-section">
-    <div class="container">
+      <div class="container">
         <div class="row mb-5">
-<<<<<<< HEAD
-<<<<<<< HEAD
           <div class="col-md-6 col-lg-3">
             <div class="ftco-footer-widget mb-4">
               <h2 class="ftco-heading-2">Yob Yong</h2>
@@ -361,17 +359,6 @@ function getCategoryItems($conn, $category_id) {
               </ul>
             </div>
           </div>
-=======
-            <div class="col-md-6 col-lg-3">
-                <div class="ftco-footer-widget mb-4">
-                    <h2 class="ftco-heading-2">Yob Yong</h2>
-                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                    <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-3">
-                        <li class="ftco-animate"><a href="https://www.facebook.com/YobnYongsSemarak/"><span class="icon-facebook"></span></a></li>
-                        <li class="ftco-animate"><a href="https://www.instagram.com/yobyongs_utmkl/"><span class="icon-instagram"></span></a></li>
-                    </ul>
-                </div>
->>>>>>> c09c0ecd450a2397f1dd57176d2bf7fbb1d25359
           <div class="col-md-6 col-lg-3">
             <div class="ftco-footer-widget mb-4">
               <h2 class="ftco-heading-2">Open Hours</h2>
@@ -413,72 +400,21 @@ function getCategoryItems($conn, $category_id) {
               <form action="#" class="subscribe-form">
                 
               </form>
-<<<<<<< HEAD
-=======
-            <div class="col-md-6 col-lg-3">
-                <div class="ftco-footer-widget mb-4">
-                    <h2 class="ftco-heading-2">Yob Yong</h2>
-                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                    <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-3">
-                        <li class="ftco-animate"><a href="https://www.facebook.com/YobnYongsSemarak/"><span class="icon-facebook"></span></a></li>
-                        <li class="ftco-animate"><a href="https://www.instagram.com/yobyongs_utmkl/"><span class="icon-instagram"></span></a></li>
-                    </ul>
-                </div>
->>>>>>> 81d369cebe9c61e48ef92f9c1c07470077754cf7
-=======
->>>>>>> 1fcafa029e3de07e532da358300b47a2b4c203f7
->>>>>>> c09c0ecd450a2397f1dd57176d2bf7fbb1d25359
             </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="ftco-footer-widget mb-4">
-                    <h2 class="ftco-heading-2">Open Hours</h2>
-                    <ul class="list-unstyled open-hours">
-                        <li class="d-flex"><span>Monday</span><span>10:00 - 21:00</span></li>
-                        <li class="d-flex"><span>Tuesday</span><span>10:00 - 21:00</span></li>
-                        <li class="d-flex"><span>Wednesday</span><span>10:00 - 21:00</span></li>
-                        <li class="d-flex"><span>Thursday</span><span>10:00 - 21:00</span></li>
-                        <li class="d-flex"><span>Friday</span><span>10:00 - 21:00</span></li>
-                        <li class="d-flex"><span>Saturday</span><span>10:00 - 21:00</span></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="ftco-footer-widget mb-4">
-                    <h2 class="ftco-heading-2">Instagram</h2>
-                    <div class="thumb d-sm-flex">
-                        <a href="#" class="thumb-menu img" style="background-image: url(images/insta-1.jpg);"></a>
-                        <a href="#" class="thumb-menu img" style="background-image: url(images/insta-2.jpg);"></a>
-                        <a href="#" class="thumb-menu img" style="background-image: url(images/insta-3.jpg);"></a>
-                    </div>
-                    <div class="thumb d-flex">
-                        <a href="#" class="thumb-menu img" style="background-image: url(images/insta-4.jpg);"></a>
-                        <a href="#" class="thumb-menu img" style="background-image: url(images/insta-5.jpg);"></a>
-                        <a href="#" class="thumb-menu img" style="background-image: url(images/insta-6.jpg);"></a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="ftco-footer-widget mb-4">
-                    <h2 class="ftco-heading-2">Newsletter</h2>
-                    <p>Far far away, behind the word mountains.</p>
-                    <form action="#" class="subscribe-form">
-                        <div class="form-group">
-                            <input type="text" class="form-control mb-2 text-center" placeholder="Enter email address">
-                            <input type="submit" value="Subscribe" class="form-control submit px-3">
-                        </div>
-                    </form>
-                </div>
-            </div>
+          </div>
         </div>
-    </div>
-</footer>
+        <div class="row">
+          <div class="col-md-12 text-center">
+          </div>
+        </div>
+      </div>
+    </footer>
+  
 
-<div id="ftco-loader" class="show fullscreen">
-    <svg class="circular" width="48px" height="48px">
-        <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/>
-        <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/>
-    </svg>
-</div>
+  <!-- loader -->
+  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+
 
 <!-- SCRIPTS — jQuery must come first, only once -->
 <script src="js/jquery.min.js"></script>
@@ -524,9 +460,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 <a class="dropdown-item py-2" href="profile.php" style="color:#444;font-size:14px;">
                     <span class="icon-person mr-2"></span> My Profile
                 </a>
-                <a class="dropdown-item py-2" href="order_history.php" style="color:#444;font-size:14px;">
-                    <span class="icon-clock mr-2"></span> My Orders
-                </a>
+                <a class="dropdown-item py-2" href="order_history.php" style="color: #444; font-size: 14px;">
+    <i class="bi bi-receipt" style="margin-right: 5px;"></i> View Order 
+</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item py-2" href="#" onclick="handleLogout()"
                    style="color:#e74c3c;font-size:14px;font-weight:600;">
