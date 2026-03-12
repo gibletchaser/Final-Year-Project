@@ -117,7 +117,7 @@ function getCategoryItems($conn, $category_id) {
                         <span class="text">info@yobyong.com</span>
                     </div>
                     <div class="col-md-5 pr-4 d-flex topper align-items-center text-lg-right justify-content-end">
-                        <p class="mb-0 register-link"><span>Open hours:</span> <span>Isnin - Sunday</span> <span>10:00AM - 9:00PM</span></p>
+                        <p class="mb-0 register-link"><span>Open hours:</span> <span>Monday - Saturday</span> <span>10:00AM - 9:00PM</span></p>
                     </div>
                 </div>
             </div>
@@ -302,7 +302,7 @@ function getCategoryItems($conn, $category_id) {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Your Cart</h5>
-                <button type="button" class="close" data-dismiss="modal">×</button>
+                <button type="button" class="close" data-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div id="cartItems" class="cart-items"></div>
@@ -347,8 +347,9 @@ function getCategoryItems($conn, $category_id) {
 
 <!-- FOOTER -->
 <footer class="ftco-footer ftco-bg-dark ftco-section">
-    <div class="container">
+      <div class="container">
         <div class="row mb-5">
+<<<<<<< HEAD
             <div class="col-md-6 col-lg-3">
                 <div class="ftco-footer-widget mb-4">
                     <h2 class="ftco-heading-2">Yob Yong</h2>
@@ -399,16 +400,20 @@ function getCategoryItems($conn, $category_id) {
                     </form>
                 </div>
             </div>
+          </div>
         </div>
-    </div>
-</footer>
+        <div class="row">
+          <div class="col-md-12 text-center">
+          </div>
+        </div>
+      </div>
+    </footer>
+  
 
-<div id="ftco-loader" class="show fullscreen">
-    <svg class="circular" width="48px" height="48px">
-        <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/>
-        <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/>
-    </svg>
-</div>
+  <!-- loader -->
+  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+
 
 <!-- SCRIPTS — jQuery must come first, only once -->
 <script src="js/jquery.min.js"></script>
@@ -454,9 +459,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 <a class="dropdown-item py-2" href="profile.php" style="color:#444;font-size:14px;">
                     <span class="icon-person mr-2"></span> My Profile
                 </a>
-                <a class="dropdown-item py-2" href="order_history.php" style="color:#444;font-size:14px;">
-                    <span class="icon-clock mr-2"></span> My Orders
-                </a>
+                <a class="dropdown-item py-2" href="order_history.php" style="color: #444; font-size: 14px;">
+    <i class="bi bi-receipt" style="margin-right: 5px;"></i> View Order 
+</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item py-2" href="#" onclick="handleLogout()"
                    style="color:#e74c3c;font-size:14px;font-weight:600;">
