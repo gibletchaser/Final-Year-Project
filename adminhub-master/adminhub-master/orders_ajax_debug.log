@@ -1,0 +1,12 @@
+2026-03-12 01:13:42 update_status | id=64 | status=ready | POST={"action":"update_status","id":"64","status":"Ready"}
+2026-03-12 01:13:42 PREPARE FAILED: Unknown column 'pickup_code' in 'field list'
+2026-03-12 01:13:44 update_status | id=64 | status=ready | POST={"action":"update_status","id":"64","status":"Ready"}
+2026-03-12 01:13:44 PREPARE FAILED: Unknown column 'pickup_code' in 'field list'
+2026-03-12 01:13:47 update_status | id=64 | status=ready | POST={"action":"update_status","id":"64","status":"Ready"}
+2026-03-12 01:13:47 PREPARE FAILED: Unknown column 'pickup_code' in 'field list'
+2026-03-12 01:14:01 update_status | id=64 | status=ready | POST={"action":"update_status","id":"64","status":"ready"}
+2026-03-12 01:14:01 PREPARE FAILED: Unknown column 'pickup_code' in 'field list'
+2026-03-12 01:15:38 update_status | id=64 | status=ready | POST={"action":"update_status","id":"64","status":"ready"}
+2026-03-12 01:15:38 PREPARE FAILED: Unknown column 'pickup_code' in 'field list'
+2026-03-12 01:15:50 update_status | id=64 | status=ready | POST={"action":"update_status","id":"64","status":"ready"}
+2026-03-12 01:15:50 PREPARE FAILED: Unknown column 'pickup_code' in 'field list'

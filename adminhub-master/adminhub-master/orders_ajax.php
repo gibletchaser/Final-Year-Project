@@ -13,7 +13,7 @@ $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
 // ── FETCH ORDERS LIST ─────────────────────────────────────────
 if ($action === 'fetch') {
-    $status = $_GET['status'] ?? 'all';
+    $status = strtolower(trim($_GET['status'] ?? 'all'));
     $search = trim($_GET['search'] ?? '');
 
     $where  = [];
@@ -28,14 +28,13 @@ if ($action === 'fetch') {
 
     if ($search !== '') {
         $like     = '%' . $search . '%';
-        $where[]  = $formatted_id = sprintf("#YY-%05d", $order['id']);
+        $where[]  = '(o.customer_name LIKE ? OR o.id LIKE ?)';
         $params[] = $like;
         $params[] = $like;
         $types   .= 'ss';
     }
 
-    $sql = "SELECT o.*,
-                   COUNT(oi.id) AS item_count
+    $sql = "SELECT o.*, COUNT(oi.id) AS item_count
             FROM orders o
             LEFT JOIN order_items oi ON oi.order_id = o.id";
 
@@ -55,11 +54,7 @@ if ($action === 'fetch') {
 if ($action === 'detail') {
     $id = intval($_GET['id'] ?? 0);
 
-    $stmt = $conn->prepare(
-        "SELECT o.*
-         FROM orders o
-         WHERE o.id = ?"
-    );
+    $stmt = $conn->prepare("SELECT * FROM orders WHERE id = ?");
     $stmt->bind_param('i', $id);
     $stmt->execute();
     $order = $stmt->get_result()->fetch_assoc();
@@ -69,9 +64,8 @@ if ($action === 'detail') {
         exit;
     }
 
-    // Fetch items separately
     $stmt2 = $conn->prepare(
-        "SELECT oi.*, m.image
+        "SELECT oi.quantity AS qty, oi.price, COALESCE(oi.name, m.name) AS name, m.image
          FROM order_items oi
          LEFT JOIN menu m ON m.id = oi.menu_id
          WHERE oi.order_id = ?"
@@ -87,19 +81,27 @@ if ($action === 'detail') {
 // ── UPDATE ORDER STATUS ───────────────────────────────────────
 if ($action === 'update_status') {
     $id     = intval($_POST['id'] ?? 0);
-    $status = $_POST['status'] ?? '';
+    $status = strtolower(trim($_POST['status'] ?? ''));
 
-    $allowed = ['Pending', 'Processing', 'Ready', 'Completed', 'Cancelled'];
+    $allowed = ['pending', 'processing', 'ready', 'completed', 'cancelled'];
     if (!in_array($status, $allowed)) {
-        echo json_encode(['error' => 'Invalid status']);
+        echo json_encode(['error' => 'Invalid status: ' . $status]);
         exit;
     }
 
-    $stmt = $conn->prepare(
-        "UPDATE orders SET order_status = ? WHERE id = ?"
-    );
+    // Simple update — only touches order_status column which we know exists
+    $stmt = $conn->prepare("UPDATE orders SET order_status = ? WHERE id = ?");
+    if (!$stmt) {
+        echo json_encode(['error' => 'Prepare failed: ' . $conn->error]);
+        exit;
+    }
     $stmt->bind_param('si', $status, $id);
-    $stmt->execute();
+    $result = $stmt->execute();
+
+    if (!$result) {
+        echo json_encode(['error' => 'Execute failed: ' . $stmt->error]);
+        exit;
+    }
 
     echo json_encode(['success' => true, 'status' => $status]);
     exit;
@@ -109,9 +111,7 @@ if ($action === 'update_status') {
 if ($action === 'cancel') {
     $id = intval($_POST['id'] ?? 0);
 
-    $stmt = $conn->prepare(
-        "UPDATE orders SET order_status = 'Cancelled' WHERE id = ?"
-    );
+    $stmt = $conn->prepare("UPDATE orders SET order_status = 'cancelled' WHERE id = ?");
     $stmt->bind_param('i', $id);
     $stmt->execute();
 
