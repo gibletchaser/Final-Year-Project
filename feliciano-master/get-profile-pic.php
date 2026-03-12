@@ -10,9 +10,9 @@ if (empty($email)) {
     exit;
 }
 
-$stmt = $conn->prepare("SELECT profilePic FROM users WHERE email = ?");
-$stmt->execute([$email]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
+$email = mysqli_real_escape_string($conn, $email);
+$result = mysqli_query($conn, "SELECT profilePic FROM customer WHERE email = '$email' LIMIT 1");
+$user = $result ? mysqli_fetch_assoc($result) : null;
 
 if ($user) {
     echo json_encode(['profile_picture' => $user['profilePic']]);

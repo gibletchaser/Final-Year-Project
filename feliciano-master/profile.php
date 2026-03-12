@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -175,17 +173,32 @@
         // Store password globally for the 'Show' button
         window.userPass = user.password || '********'; 
 
-        // Set Profile Picture if it exists
-        if (user.profilePic) {
-            document.getElementById('profile-img').src = user.profilePic;
-        }
-
         // --- PRE-FILL EDIT FORM ---
         document.getElementById('edit-name').value = user.name || '';
         document.getElementById('edit-email').value = user.email || '';
         document.getElementById('edit-phone').value = user.phone || '';
         document.getElementById('edit-password').value = ""; 
         document.getElementById('confirm-password').value = "";
+
+        // Fetch latest profile pic from DB so it persists after refresh
+        fetch('get-profile-pic.php?email=' + encodeURIComponent(user.email))
+            .then(response => response.json())
+            .then(data => {
+                if (data.profile_picture) {
+                    document.getElementById('profile-img').src = data.profile_picture;
+                    // Keep localStorage in sync
+                    user.profilePic = data.profile_picture;
+                    localStorage.setItem('yobYongSession', JSON.stringify(user));
+                } else if (user.profilePic) {
+                    document.getElementById('profile-img').src = user.profilePic;
+                }
+            })
+            .catch(() => {
+                // Fallback to localStorage copy if fetch fails
+                if (user.profilePic) {
+                    document.getElementById('profile-img').src = user.profilePic;
+                }
+            });
     }
 
     function toggleEditMode(isEditing) {
