@@ -497,43 +497,34 @@ if ($conn->connect_error) {
           </div>
         </div>
         <div class="row">
-            <?php
-session_start();
-include 'db.php';
+             <?php
+// Fetch reviews from database
+$result = $conn->query("SELECT * FROM reviews ORDER BY created_at DESC");
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        $ratingCount = (int)$row['rating'];
+        $starsHtml = "";
+        for($i = 1; $i <= 5; $i++) {
+            $starsHtml .= ($i <= $ratingCount) ? "<span style='color: #c4a47c;'>★</span>" : "<span style='color: #ccc;'>★</span>";
+        }
 
-header('Content-Type: text/plain');
-
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    echo "error: Invalid request"; exit();
-}
-
-$name    = trim($_POST['name'] ?? 'Anonymous Guest');
-$comment = trim($_POST['comment'] ?? '');
-$rating  = isset($_POST['rating']) ? (int)$_POST['rating'] : 5;
-
-$email = null;
-if (isset($_SESSION['email']) && filter_var($_SESSION['email'], FILTER_VALIDATE_EMAIL)) {
-    $email = $_SESSION['email'];
-}
-
-// Keep the database insert exactly as it was originally
-$delete_code = null;
-
-$stmt = $conn->prepare("
-    INSERT INTO reviews 
-    (reviewer_name, reviewer_email, rating, comment, delete_code, created_at) 
-    VALUES (?, ?, ?, ?, ?, NOW())
-");
-
-$stmt->bind_param("ssiss", $name, $email, $rating, $comment, $delete_code);
-
-if ($stmt->execute()) {
-    echo "success";
+        echo "
+        <div class='col-md-4 mb-4 ftco-animate'>
+            <div class='card border-0 shadow-sm p-4' style='border-radius: 15px;'>
+                <div class='d-flex justify-content-between mb-2'>
+                    <h6 class='font-weight-bold' style='color: #c4a47c; margin-bottom: 0;'>".htmlspecialchars($row['reviewer_name'])."</h6>
+                    <small class='text-muted'>".date('M d', strtotime($row['created_at']))."</small>
+                </div>
+                
+                <div class='mb-2' style='font-size: 18px;'>$starsHtml</div>
+                
+                <p class='text-secondary mt-2' style='font-style: italic; margin-bottom: 0;'>\"".htmlspecialchars($row['comment'])."\"</p>
+            </div>
+        </div>";
+    }
 } else {
-    echo "error: " . $stmt->error;
+    echo "<div class='col-12 text-center'><p>No reviews yet. Be the first to share!</p></div>";
 }
-
-$stmt->close();
 ?>
         </div>
     </div>
