@@ -8,22 +8,17 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     echo "error: Invalid request"; exit();
 }
 
-// ... honeypot, trim, validation ... (keep your existing code)
-
 $name    = trim($_POST['name'] ?? 'Anonymous Guest');
 $comment = trim($_POST['comment'] ?? '');
 $rating  = isset($_POST['rating']) ? (int)$_POST['rating'] : 5;
-
-// Generate random delete code (only if comment is not empty)
-$delete_code = null;
-if (!empty($comment)) {
-    $delete_code = bin2hex(random_bytes(5));   // e.g. "a1b2c3d4e5" (10 chars)
-}
 
 $email = null;
 if (isset($_SESSION['email']) && filter_var($_SESSION['email'], FILTER_VALIDATE_EMAIL)) {
     $email = $_SESSION['email'];
 }
+
+// Keep the database insert exactly as it was originally
+$delete_code = null;
 
 $stmt = $conn->prepare("
     INSERT INTO reviews 
@@ -34,11 +29,7 @@ $stmt = $conn->prepare("
 $stmt->bind_param("ssiss", $name, $email, $rating, $comment, $delete_code);
 
 if ($stmt->execute()) {
-    if ($delete_code) {
-        echo "success|{$delete_code}";
-    } else {
-        echo "success";
-    }
+    echo "success";
 } else {
     echo "error: " . $stmt->error;
 }

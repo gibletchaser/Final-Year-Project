@@ -348,8 +348,8 @@ include 'db.php';
           </div>
         </div>
         <div class="row">
-            <?php
-// Fetch reviews
+           <?php
+// Fetch reviews from database
 $result = $conn->query("SELECT * FROM reviews ORDER BY created_at DESC");
 if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
@@ -369,25 +369,7 @@ if ($result->num_rows > 0) {
                 
                 <div class='mb-2' style='font-size: 18px;'>$starsHtml</div>
                 
-                <p class='text-secondary mt-2' style='font-style: italic;'>\"".htmlspecialchars($row['comment'])."\"</p>";
-
-              
-                // Inside the while loop, after the existing if (logged in && email match) block
-
-// Always show delete-by-code link if code exists (for guests or if they lost session)
-if (!empty($row['delete_code'])) {
-    echo "
-    <div class='text-right mt-3'>
-        
-        <a href='delete-review.php?code=" . htmlspecialchars($row['delete_code']) . "'
-           onclick='return confirm(\"Delete this review?\");'
-           style='color:#dc3545; font-size:13px;'>
-           <i class='fas fa-trash-alt'></i> Delete
-        </a>
-    </div>";
-}
-
-        echo "
+                <p class='text-secondary mt-2' style='font-style: italic; margin-bottom: 0;'>\"".htmlspecialchars($row['comment'])."\"</p>
             </div>
         </div>";
     }
