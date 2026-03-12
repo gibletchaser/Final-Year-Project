@@ -3,32 +3,37 @@ session_start();
 require_once 'db.php';
 require_once 'order_functions.php';
 
-// Protect the page — use 'user' session key set by login.php
-if (!isset($_SESSION['user']['id']) || empty($_SESSION['user']['id'])) {
+// ─── Resolve user_id ──────────────────────────────────────────────────────────
+$user_id = null;
+
+if (!empty($_SESSION['user']['id'])) {
+    $user_id = (int)$_SESSION['user']['id'];
+} elseif (!empty($_SESSION['user_id'])) {
+    $user_id = (int)$_SESSION['user_id'];
+} elseif (!empty($_SESSION['user_email'])) {
+    $email = $conn->real_escape_string($_SESSION['user_email']);
+    $res   = $conn->query("SELECT id FROM customers WHERE email = '$email' LIMIT 1");
+    if ($res && $row = $res->fetch_assoc()) {
+        $user_id = (int)$row['id'];
+    }
+}
+
+if (!$user_id) {
     header("Location: login.php");
     exit;
 }
+// ─────────────────────────────────────────────────────────────────────────────
 
-// 1. Database Configuration
-$host = 'localhost';
-$dbname = 'yobyong';
-$username = 'root';
-$password = '';
-
-$user_id = (int)$_SESSION['user']['id'];
 $orders = [];
-$error = null;
+$error  = null;
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+    $pdo = new PDO("mysql:host=localhost;dbname=yobyong;charset=utf8mb4", "root", "");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-    // 2. Fetch Orders using your function
     $orders = getCustomerOrders($pdo, $user_id, 20);
-
-} catch(PDOException $e) {
+} catch (PDOException $e) {
     $error = "Database connection failed: " . $e->getMessage();
-} catch(Exception $e) {
+} catch (Exception $e) {
     $error = "Could not load orders: " . $e->getMessage();
 }
 ?>

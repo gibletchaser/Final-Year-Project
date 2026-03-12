@@ -3,30 +3,25 @@ function createOrder($pdo, $user_id, $cart_items, $total, $payment_id) {
     try {
         $pdo->beginTransaction();
 
-        // Create order record
         $stmt = $pdo->prepare("
-            INSERT INTO orders (user_id, total_amount, payment_id, order_status, created_at)
+            INSERT INTO orders (customer_id, total_amount, payment_id, order_status, created_at)
             VALUES (?, ?, ?, 'pending', NOW())
         ");
         $stmt->execute([$user_id, $total, $payment_id]);
         $order_id = $pdo->lastInsertId();
 
-        // Insert order items
         $stmt = $pdo->prepare("
-            INSERT INTO order_items (order_id, menu_item_id, quantity, price)
+            INSERT INTO order_items (order_id, menu_id, quantity, price)
             VALUES (?, ?, ?, ?)
         ");
-
         foreach ($cart_items as $item) {
             $stmt->execute([
                 $order_id,
-                $item['menu_item_id'],
+                $item['menu_id'],
                 $item['quantity'],
                 $item['price']
             ]);
         }
-
-        // REMOVED: order_status_logs insertion
 
         $pdo->commit();
         return $order_id;
@@ -49,41 +44,36 @@ function clearCart($pdo, $user_id) {
 }
 
 function getCustomerOrders($pdo, $user_id, $limit = 10) {
-    // Cast limit to integer for safety
     $limit = (int)$limit;
-
-    // FIX: Pulling 'order_status' directly from the orders table instead of the logs table
-    $stmt = $pdo->prepare("
+    $stmt  = $pdo->prepare("
         SELECT o.*,
-               COUNT(oi.id) as item_count,
-               o.order_status as current_status
+               COUNT(oi.id)   AS item_count,
+               o.order_status AS current_status
         FROM orders o
         LEFT JOIN order_items oi ON o.id = oi.order_id
-        WHERE o.user_id = ?
+        WHERE o.customer_id = ?
         GROUP BY o.id
         ORDER BY o.created_at DESC
-        LIMIT " . $limit . "
-    ");
+        LIMIT " . $limit
+    );
     $stmt->execute([$user_id]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function getOrderDetails($pdo, $order_id, $user_id = null) {
-    // FIX: Replaced subquery with o.order_status
     $sql = "
         SELECT o.*,
-               u.username,
-               u.email,
-               o.order_status as current_status
+               c.name  AS customer_name,
+               c.email AS customer_email,
+               o.order_status AS current_status
         FROM orders o
-        LEFT JOIN users u ON o.user_id = u.id
+        LEFT JOIN customers c ON o.customer_id = c.id
         WHERE o.id = ?
     ";
-
     $params = [$order_id];
 
     if ($user_id) {
-        $sql .= " AND o.user_id = ?";
+        $sql     .= " AND o.customer_id = ?";
         $params[] = $user_id;
     }
 
@@ -94,9 +84,9 @@ function getOrderDetails($pdo, $order_id, $user_id = null) {
 
 function getOrderItems($pdo, $order_id) {
     $stmt = $pdo->prepare("
-        SELECT oi.*, mi.name, mi.description, mi.image_url
+        SELECT oi.*, mi.name, mi.image
         FROM order_items oi
-        JOIN menu_items mi ON oi.menu_item_id = mi.id
+        JOIN menu mi ON oi.menu_id = mi.id
         WHERE oi.order_id = ?
         ORDER BY oi.id
     ");
@@ -105,9 +95,8 @@ function getOrderItems($pdo, $order_id) {
 }
 
 function getOrderStatusHistory($pdo, $order_id) {
-    // FIX: We simulate history by just fetching the current status and last updated time from 'orders'
     $stmt = $pdo->prepare("
-        SELECT order_status as status, updated_at as created_at, notes 
+        SELECT order_status AS status, updated_at AS created_at, notes
         FROM orders
         WHERE id = ?
     ");
@@ -119,20 +108,15 @@ function updateOrderStatus($pdo, $order_id, $status, $notes = null) {
     try {
         $pdo->beginTransaction();
 
-        // FIX: Updated to use 'order_status' column
         $stmt = $pdo->prepare("UPDATE orders SET order_status = ?, notes = ?, updated_at = NOW() WHERE id = ?");
         $stmt->execute([$status, $notes, $order_id]);
 
-        // REMOVED: order_status_logs insertion
-
-        // Set estimated ready time for "preparing" status
         if ($status === 'preparing') {
             $ready_time = date('Y-m-d H:i:s', strtotime('+15 minutes'));
             $stmt = $pdo->prepare("UPDATE orders SET estimated_ready_time = ? WHERE id = ?");
             $stmt->execute([$ready_time, $order_id]);
         }
 
-        // Generate pickup code for "ready" status
         if ($status === 'ready') {
             $pickup_code = strtoupper(substr(md5($order_id . time()), 0, 6));
             $stmt = $pdo->prepare("UPDATE orders SET pickup_code = ? WHERE id = ?");
@@ -151,58 +135,53 @@ function updateOrderStatus($pdo, $order_id, $status, $notes = null) {
 
 function getOrderStatusDisplay($status) {
     $statuses = [
-        'pending' => ['text' => 'Pending', 'class' => 'warning', 'icon' => 'bi-hourglass'],
-        'confirmed' => ['text' => 'Confirmed', 'class' => 'info', 'icon' => 'bi-check-circle'],
-        'preparing' => ['text' => 'Preparing', 'class' => 'primary', 'icon' => 'bi-cup-hot'],
-        'ready' => ['text' => 'Ready', 'class' => 'success', 'icon' => 'bi-bell'],
+        'pending'   => ['text' => 'Pending',   'class' => 'warning',   'icon' => 'bi-hourglass'],
+        'confirmed' => ['text' => 'Confirmed', 'class' => 'info',      'icon' => 'bi-check-circle'],
+        'preparing' => ['text' => 'Preparing', 'class' => 'primary',   'icon' => 'bi-cup-hot'],
+        'ready'     => ['text' => 'Ready',     'class' => 'success',   'icon' => 'bi-bell'],
         'completed' => ['text' => 'Completed', 'class' => 'secondary', 'icon' => 'bi-check2-all'],
-        'cancelled' => ['text' => 'Cancelled', 'class' => 'danger', 'icon' => 'bi-x-circle'],
+        'cancelled' => ['text' => 'Cancelled', 'class' => 'danger',    'icon' => 'bi-x-circle'],
     ];
-
     return $statuses[$status] ?? ['text' => ucfirst($status), 'class' => 'dark', 'icon' => 'bi-question-circle'];
 }
 
 function getOrdersWithFilters($pdo, $status = 'all', $date_from = '', $date_to = '', $search = '') {
     $sql = "
         SELECT o.*,
-               u.username,
-               u.email,
-               u.profile_picture,
-               COUNT(oi.id) as item_count,
-               o.order_status as current_status
+               c.name       AS customer_name,
+               c.email      AS customer_email,
+               c.profilePic AS customer_pic,
+               COUNT(oi.id) AS item_count,
+               o.order_status AS current_status
         FROM orders o
-        LEFT JOIN users u ON o.user_id = u.id
+        LEFT JOIN customers c ON o.customer_id = c.id
         LEFT JOIN order_items oi ON o.id = oi.order_id
         WHERE 1=1
     ";
-
     $params = [];
 
     if ($status !== 'all') {
-        $sql .= " AND o.order_status = ?";
+        $sql     .= " AND o.order_status = ?";
         $params[] = $status;
     }
-
     if ($date_from) {
-        $sql .= " AND DATE(o.created_at) >= ?";
+        $sql     .= " AND DATE(o.created_at) >= ?";
         $params[] = $date_from;
     }
-
     if ($date_to) {
-        $sql .= " AND DATE(o.created_at) <= ?";
+        $sql     .= " AND DATE(o.created_at) <= ?";
         $params[] = $date_to;
     }
-
     if ($search) {
         $sql .= " AND (
             o.id LIKE ? OR
-            u.username LIKE ? OR
-            u.email LIKE ? OR
-            o.payment_id LIKE ? OR
+            c.name LIKE ? OR
+            c.email LIKE ? OR
+            o.stripe_session_id LIKE ? OR
             o.pickup_code LIKE ?
         )";
-        $search_param = "%$search%";
-        $params = array_merge($params, [$search_param, $search_param, $search_param, $search_param, $search_param]);
+        $s      = "%$search%";
+        $params = array_merge($params, [$s, $s, $s, $s, $s]);
     }
 
     $sql .= " GROUP BY o.id ORDER BY o.created_at DESC LIMIT 100";
@@ -215,12 +194,12 @@ function getOrdersWithFilters($pdo, $status = 'all', $date_from = '', $date_to =
 function getOrderForDashboard($pdo, $order_id) {
     $stmt = $pdo->prepare("
         SELECT o.*,
-               u.username,
-               u.email,
-               u.profile_picture,
-               o.order_status as current_status
+               c.name       AS customer_name,
+               c.email      AS customer_email,
+               c.profilePic AS customer_pic,
+               o.order_status AS current_status
         FROM orders o
-        LEFT JOIN users u ON o.user_id = u.id
+        LEFT JOIN customers c ON o.customer_id = c.id
         WHERE o.id = ?
     ");
     $stmt->execute([$order_id]);

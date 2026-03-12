@@ -1,7 +1,7 @@
 <?php
 require_once 'vendor/autoload.php';
 
-\Stripe\Stripe::setApiKey('');
+\Stripe\Stripe::setApiKey('sk_test_51T9o63EecE5DXpc5gphkwMkazVG2hF576atbjd9cNVobQFImXBFmYs68JG0TuUTVHjLyiq5FwUTZlgwH5HtMVQvx00O2iOTXWb');
 
 $session_id = $_GET['session_id'] ?? null;
 

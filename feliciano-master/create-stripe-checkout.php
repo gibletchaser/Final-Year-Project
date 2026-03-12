@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 
 require_once 'vendor/autoload.php';
-\Stripe\Stripe::setApiKey('');
+\Stripe\Stripe::setApiKey('sk_test_51T9o63EecE5DXpc5gphkwMkazVG2hF576atbjd9cNVobQFImXBFmYs68JG0TuUTVHjLyiq5FwUTZlgwH5HtMVQvx00O2iOTXWb');
 
 $conn = new mysqli("localhost", "root", "", "yobyong");
 if ($conn->connect_error) {
@@ -60,14 +60,14 @@ if (empty($line_items)) {
 try {
     $session = \Stripe\Checkout\Session::create([
         'payment_method_types' => ['card', 'fpx'],
-        'line_items'           => $line_items,
-        'mode'                 => 'payment',
-        'success_url'          => 'http://localhost/yyos/Final-Year-Project/feliciano-master/receipt.php?session_id={CHECKOUT_SESSION_ID}',
-        'cancel_url'           => 'http://localhost/yyos/Final-Year-Project/feliciano-master/menu.php',
-        'metadata'             => [
+        'line_items' => $line_items,
+        'mode' => 'payment',
+        'success_url' => 'http://localhost/anak_anjing_kelaparan/portfolio/Final-Year-Project/feliciano-master/receipt.php?session_id={CHECKOUT_SESSION_ID}',
+        'cancel_url' => 'http://localhost/anak_anjing_kelaparan/portfolio/Final-Year-Project/feliciano-master/menu.php',
+        'metadata' => [
             'customer_name' => $customer_name,
-            'phone'         => $phone,
-            'cart'          => $cart_json
+            'phone' => $phone,
+            'cart' => $cart_json
         ]
     ]);
 

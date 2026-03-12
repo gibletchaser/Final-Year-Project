@@ -224,7 +224,7 @@ document.getElementById('placeOrderBtn')?.addEventListener('click', async functi
         console.log("Order saved successfully! ID:", orderData.order_id);
 
         // Step 3: Redirect to Stripe Checkout
-        const stripe = Stripe(''); // ← REPLACE with your REAL pk_test_...
+        const stripe = Stripe("pk_test_51T9o63EecE5DXpc5v3XuXe3rCgJF4XmizSyFMAGNoFhTUUeasblCIv8Jo3vPLlCAvC3L69OploVigNScN9JgX50E00An0UfbxS"); // ← REPLACE with your REAL pk_test_...
         const { error } = await stripe.redirectToCheckout({
             sessionId: sessionData.sessionId
         });
