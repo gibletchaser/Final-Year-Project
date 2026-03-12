@@ -36,11 +36,11 @@ if (!$data || empty($data['items'])) {
     exit;
 }
 
-$customer_name   = $conn->real_escape_string($data['customer_name'] ?? '');
-$phone  = $conn->real_escape_string($data['phone'] ?? '');
-$notes  = $conn->real_escape_string($data['notes'] ?? '');
-$total  = floatval($data['total_amount'] ?? 0);
-$payment_method = $data['payment_method'] ?? 'stripe';
+$customer_name     = $conn->real_escape_string($data['customer_name'] ?? '');
+$phone             = $conn->real_escape_string($data['phone'] ?? '');
+$notes             = $conn->real_escape_string($data['notes'] ?? '');
+$total             = floatval($data['total_amount'] ?? 0);
+$payment_method    = $data['payment_method'] ?? 'stripe';
 $stripe_session_id = $data['stripe_session_id'] ?? null;
 
 if (empty($customer_name) || empty($phone) || $total <= 0) {
@@ -49,56 +49,42 @@ if (empty($customer_name) || empty($phone) || $total <= 0) {
     exit;
 }
 
-// ==========================================================
-// NEW FIX STARTS HERE: Check for existing Stripe session
-// ==========================================================
+// Check for existing Stripe session to prevent duplicate orders
 if (!empty($stripe_session_id)) {
     $check = $conn->prepare("SELECT id FROM orders WHERE stripe_session_id = ?");
-    $check->bind_param("s", $stripe_session_id);
-    $check->execute();
-    $result = $check->get_result();
+    if ($check) {
+        $check->bind_param("s", $stripe_session_id);
+        $check->execute();
+        $result = $check->get_result();
 
-    if ($result->num_rows > 0) {
-        $existing = $result->fetch_assoc();
-        $conn->close();
-        ob_end_clean();
-        // Return success so the user's browser moves to the next page
-        echo json_encode([
-            "success" => true, 
-            "order_id" => $existing['id'], 
-            "message" => "Order already recorded."
-        ]);
-        exit;
+        if ($result->num_rows > 0) {
+            $existing = $result->fetch_assoc();
+            $check->close();
+            $conn->close();
+            ob_end_clean();
+            echo json_encode([
+                "success"  => true,
+                "order_id" => $existing['id'],
+                "message"  => "Order already recorded."
+            ]);
+            exit;
+        }
+        $check->close();
     }
-    $check->close();
 }
-// ==========================================================
-// NEW FIX ENDS HERE
-// ==========================================================
 
-// ────────────────────────────────────────────────
-// Add this → get the customer ID from session
+// Get the customer ID from session (if logged in)
 $customer_id = null;
 if (isset($_SESSION['user']['id']) && is_numeric($_SESSION['user']['id'])) {
     $customer_id = (int)$_SESSION['user']['id'];
 }
-// If you use a different session key, change it (examples below)
-// if (isset($_SESSION['customer_id'])) { $customer_id = (int)$_SESSION['customer_id']; }
-// if (isset($_SESSION['id']))           { $customer_id = (int)$_SESSION['id']; }
 
-// Optional: force login (recommended for real shops)
-// if ($customer_id === null) {
-//     echo json_encode(["success" => false, "message" => "Please log in to place an order"]);
-//     exit;
-// }
-// ────────────────────────────────────────────────
-
-// Updated INSERT – add customer_id column and one more ?
+// Insert order into DB
 $stmt = $conn->prepare("
     INSERT INTO orders (
-        customer_name, phone, total_amount, 
+        customer_name, phone, total_amount,
         payment_method, stripe_session_id, notes, payment_status,
-        customer_id                          ← new
+        customer_id
     ) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)
 ");
 
@@ -108,15 +94,14 @@ if (!$stmt) {
     exit;
 }
 
-// Updated bind_param – add one more 'i' at the end (i = integer)
-$stmt->bind_param("sssdssi", 
-    $customer_name, 
-    $phone, 
-    $total, 
-    $payment_method, 
-    $stripe_session_id, 
+$stmt->bind_param("ssdsssl",
+    $customer_name,
+    $phone,
+    $total,
+    $payment_method,
+    $stripe_session_id,
     $notes,
-    $customer_id               
+    $customer_id
 );
 
 if (!$stmt->execute()) {
@@ -132,6 +117,7 @@ if (!$stmt->execute()) {
 $order_id = $conn->insert_id;
 $stmt->close();
 
+// Insert order items
 if (!empty($data['items'])) {
     $stmt = $conn->prepare("INSERT INTO order_items (order_id, menu_id, name, price, quantity) VALUES (?, ?, ?, ?, ?)");
     if ($stmt) {
@@ -151,9 +137,9 @@ if (!empty($data['items'])) {
 $conn->close();
 ob_end_clean();
 echo json_encode([
-    "success"   => true,
-    "order_id"  => $order_id,
-    "message"   => "Order placed successfully"
+    "success"  => true,
+    "order_id" => $order_id,
+    "message"  => "Order placed successfully"
 ]);
 exit;
 ?>

@@ -350,6 +350,7 @@ function getCategoryItems($conn, $category_id) {
     <div class="container">
         <div class="row mb-5">
 <<<<<<< HEAD
+<<<<<<< HEAD
           <div class="col-md-6 col-lg-3">
             <div class="ftco-footer-widget mb-4">
               <h2 class="ftco-heading-2">Yob Yong</h2>
@@ -360,6 +361,17 @@ function getCategoryItems($conn, $category_id) {
               </ul>
             </div>
           </div>
+=======
+            <div class="col-md-6 col-lg-3">
+                <div class="ftco-footer-widget mb-4">
+                    <h2 class="ftco-heading-2">Yob Yong</h2>
+                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+                    <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-3">
+                        <li class="ftco-animate"><a href="https://www.facebook.com/YobnYongsSemarak/"><span class="icon-facebook"></span></a></li>
+                        <li class="ftco-animate"><a href="https://www.instagram.com/yobyongs_utmkl/"><span class="icon-instagram"></span></a></li>
+                    </ul>
+                </div>
+>>>>>>> c09c0ecd450a2397f1dd57176d2bf7fbb1d25359
           <div class="col-md-6 col-lg-3">
             <div class="ftco-footer-widget mb-4">
               <h2 class="ftco-heading-2">Open Hours</h2>
@@ -401,6 +413,7 @@ function getCategoryItems($conn, $category_id) {
               <form action="#" class="subscribe-form">
                 
               </form>
+<<<<<<< HEAD
 =======
             <div class="col-md-6 col-lg-3">
                 <div class="ftco-footer-widget mb-4">
@@ -412,6 +425,9 @@ function getCategoryItems($conn, $category_id) {
                     </ul>
                 </div>
 >>>>>>> 81d369cebe9c61e48ef92f9c1c07470077754cf7
+=======
+>>>>>>> 1fcafa029e3de07e532da358300b47a2b4c203f7
+>>>>>>> c09c0ecd450a2397f1dd57176d2bf7fbb1d25359
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="ftco-footer-widget mb-4">

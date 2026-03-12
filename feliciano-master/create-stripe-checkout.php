@@ -2,35 +2,35 @@
 header('Content-Type: application/json');
 
 require_once 'vendor/autoload.php';
-\Stripe\Stripe::setApiKey('sk_test_51T4boFHWrfyRRRiKGHEc7DVdYEdqR9dBleew9M40E3veAJtqxREAcwBTQ1Cpxc4jSOdaT1yUa1erqQXSa9qUR23v00ypVrxVQd');
+\Stripe\Stripe::setApiKey('');
 
 $conn = new mysqli("localhost", "root", "", "yobyong");
 if ($conn->connect_error) {
-    echo json_encode(['success'=>false, 'error'=>'DB failed']);
+    echo json_encode(['success' => false, 'error' => 'DB failed']);
     exit;
 }
 
 $data = json_decode(file_get_contents('php://input'), true);
 
 if (!$data || empty($data['amount']) || empty($data['cart'])) {
-    echo json_encode(['success'=>false, 'error'=>'Invalid amount or empty cart']);
+    echo json_encode(['success' => false, 'error' => 'Invalid amount or empty cart']);
     exit;
 }
 
-$amount_myr   = floatval($data['amount']);
+$amount_myr    = floatval($data['amount']);
 $customer_name = trim($data['customer_name'] ?? '');
 $phone         = trim($data['phone'] ?? '');
 $notes         = trim($data['notes'] ?? '');
 $cart_json     = json_encode($data['cart']);
 
-// Build line items from cart (this is the fix)
-$line_items = [];
+// Build line items from cart
+$line_items       = [];
 $calculated_total = 0;
 
 foreach ($data['cart'] as $item) {
-    $name      = trim($item['name'] ?? $item['title'] ?? 'Item');
-    $price     = floatval($item['price'] ?? 0);
-    $quantity  = (int)($item['quantity'] ?? 1);
+    $name     = trim($item['name'] ?? $item['title'] ?? 'Item');
+    $price    = floatval($item['price'] ?? 0);
+    $quantity = (int)($item['quantity'] ?? 1);
 
     if ($price <= 0 || $quantity < 1 || empty($name)) continue;
 
@@ -46,20 +46,20 @@ foreach ($data['cart'] as $item) {
     $calculated_total += $price * $quantity;
 }
 
-// Optional: verify frontend total matches backend calculation (anti-tampering)
+// Verify frontend total matches backend calculation (anti-tampering)
 if (abs($calculated_total - $amount_myr) > 0.01) {
-    echo json_encode(['success'=>false, 'error'=>'Amount mismatch']);
+    echo json_encode(['success' => false, 'error' => 'Amount mismatch']);
     exit;
 }
 
 if (empty($line_items)) {
-    echo json_encode(['success'=>false, 'error'=>'No valid cart items']);
+    echo json_encode(['success' => false, 'error' => 'No valid cart items']);
     exit;
 }
 
 try {
     $session = \Stripe\Checkout\Session::create([
-        'payment_method_types' => ['card','fpx'],
+        'payment_method_types' => ['card', 'fpx'],
         'line_items'           => $line_items,
         'mode'                 => 'payment',
         'success_url'          => 'http://localhost/yyos/Final-Year-Project/feliciano-master/receipt.php?session_id={CHECKOUT_SESSION_ID}',
@@ -71,14 +71,25 @@ try {
         ]
     ]);
 
-    // Insert into DB (your existing code – looks fine)
+    // Insert pending order into DB
     $stmt = $conn->prepare("
-        INSERT INTO orders 
-        (customer_name, phone, notes, total_amount, items, stripe_session_id, payment_status, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW(), NOW())
+        INSERT INTO orders (customer_name, phone, total_amount, payment_method, stripe_session_id, notes, payment_status)
+        VALUES (?, ?, ?, 'stripe', ?, ?, 'pending')
     ");
 
-    $stmt->bind_param("sssdss", $customer_name, $phone, $notes, $amount_myr, $cart_json, $session->id);
+    if (!$stmt) {
+        echo json_encode(['success' => false, 'error' => 'Prepare failed: ' . $conn->error]);
+        exit;
+    }
+
+    $stmt->bind_param("ssdss",
+        $customer_name,
+        $phone,
+        $amount_myr,
+        $session->id,
+        $notes
+    );
+
     $stmt->execute();
     $stmt->close();
 
