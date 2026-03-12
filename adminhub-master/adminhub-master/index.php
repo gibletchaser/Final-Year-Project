@@ -10,8 +10,8 @@ include 'db.php';
 
 // ── STATS ─────────────────────────────────────────────────────
 
-// Total revenue (paid orders only)
-$r = $conn->query("SELECT COALESCE(SUM(total_amount),0) AS total FROM orders WHERE payment_status='paid'");
+// Total revenue (completed orders)
+$r = $conn->query("SELECT COALESCE(SUM(total_amount),0) AS total FROM orders WHERE order_status='completed'");
 $totalRevenue = $r->fetch_assoc()['total'];
 
 // Total orders count
@@ -34,7 +34,7 @@ for ($i = 6; $i >= 0; $i--) {
     $r = $conn->query("
         SELECT COALESCE(SUM(total_amount),0) AS rev
         FROM orders
-        WHERE payment_status='paid'
+        WHERE order_status='completed'
           AND DATE_FORMAT(created_at,'%Y-%m') = '$month'
     ");
     $monthlyData[] = [
@@ -64,14 +64,14 @@ $totalQty = array_sum(array_column($catStats, 'qty')) ?: 1;
 $donutColors = ['#3C91E6','#f87171','#fbbf24','#34d399','#a78bfa'];
 
 // ── ORDERS BY STATUS ──────────────────────────────────────────
-$statusList   = ['Pending','Processing','Ready','Completed','Cancelled'];
+$statusList   = ['pending','processing','ready','completed','cancelled'];
 $statusCounts = [];
 $statusColors = [
-    'Pending'    => '#f59e0b',
-    'Processing' => '#3b82f6',
-    'Ready'      => '#22c55e',
-    'Completed'  => '#10b981',
-    'Cancelled'  => '#ef4444',
+    'pending'    => '#f59e0b',
+    'processing' => '#3b82f6',
+    'ready'      => '#22c55e',
+    'completed'  => '#10b981',
+    'cancelled'  => '#ef4444',
 ];
 foreach ($statusList as $s) {
     $r = $conn->query("SELECT COUNT(*) AS cnt FROM orders WHERE order_status='$s'");
@@ -138,7 +138,7 @@ if ($r) {
         <input type="checkbox" id="switch-mode" hidden>
         <label for="switch-mode" class="switch-mode"></label>
         <a href="#" class="notification"><i class='bx bxs-bell'></i>
-            <span class="num"><?= array_sum(array_intersect_key($statusCounts, array_flip(['Pending','Processing']))) ?></span>
+            <span class="num"><?= array_sum(array_intersect_key($statusCounts, array_flip(['pending','processing']))) ?></span>
         </a>
         <a href="profile.php" class="profile"><img src="img/people.png"></a>
     </nav>
@@ -150,6 +150,53 @@ if ($r) {
                 <ul class="breadcrumb">
                     <li><a href="index.php" class="active">Dashboard</a></li>
                 </ul>
+            </div>
+            <button onclick="openReportModal()" style="display:flex;align-items:center;gap:8px;background:#3C91E6;color:#fff;border:none;border-radius:12px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(60,145,230,0.3);transition:background .2s;">
+                <i class='bx bx-download' style="font-size:18px;"></i> Download Sales Report
+            </button>
+        </div>
+
+        <!-- ── REPORT MODAL ── -->
+        <div id="reportModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;align-items:center;justify-content:center;">
+            <div style="background:#fff;border-radius:20px;padding:32px;width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.2);font-family:'Poppins',sans-serif;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+                    <h3 style="font-size:16px;font-weight:700;color:#1e293b;">Download Sales Report</h3>
+                    <button onclick="closeReportModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#aaa;line-height:1;">×</button>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:14px;">
+                    <div>
+                        <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px;">From Date</label>
+                        <input type="date" id="reportFrom" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;color:#1e293b;outline:none;box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px;">To Date</label>
+                        <input type="date" id="reportTo" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;color:#1e293b;outline:none;box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px;">Order Status</label>
+                        <select id="reportStatus" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;color:#1e293b;outline:none;background:#fff;box-sizing:border-box;">
+                            <option value="all">All Statuses</option>
+                            <option value="completed">Completed</option>
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="ready">Ready</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px;">Format</label>
+                        <select id="reportFormat" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;color:#1e293b;outline:none;background:#fff;box-sizing:border-box;">
+                            <option value="csv">CSV (Excel compatible)</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:22px;">
+                    <button onclick="closeReportModal()" style="flex:1;padding:11px;border:1.5px solid #e2e8f0;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#64748b;cursor:pointer;">Cancel</button>
+                    <button onclick="downloadReport()" style="flex:2;padding:11px;border:none;border-radius:10px;background:#3C91E6;color:#fff;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                        <i class='bx bx-download'></i> Export Report
+                    </button>
+                </div>
+                <p id="reportMsg" style="font-size:12px;color:#ef4444;margin-top:10px;text-align:center;display:none;"></p>
             </div>
         </div>
 
@@ -230,11 +277,11 @@ if ($r) {
                             <tr><td colspan="4" style="padding:20px;text-align:center;color:#aaa;">No orders yet</td></tr>
                         <?php else: foreach ($recentOrders as $o):
                             $badgeColors = [
-                                'Pending'    => '#fff8e1;color:#f59e0b',
-                                'Processing' => '#eff6ff;color:#3b82f6',
-                                'Ready'      => '#f0fdf4;color:#22c55e',
-                                'Completed'  => '#ecfdf5;color:#10b981',
-                                'Cancelled'  => '#fff1f2;color:#ef4444',
+                                'pending'    => '#fff8e1;color:#f59e0b',
+                                'processing' => '#eff6ff;color:#3b82f6',
+                                'ready'      => '#f0fdf4;color:#22c55e',
+                                'completed'  => '#ecfdf5;color:#10b981',
+                                'cancelled'  => '#fff1f2;color:#ef4444',
                             ];
                             $bc = $badgeColors[$o['order_status']] ?? '#eee;color:#888';
                         ?>
@@ -360,7 +407,7 @@ if ($r) {
 
                     <!-- Active orders callout -->
                     <?php
-                        $active = ($statusCounts['Pending'] ?? 0) + ($statusCounts['Processing'] ?? 0);
+                        $active = ($statusCounts['pending'] ?? 0) + ($statusCounts['processing'] ?? 0);
                     ?>
                     <?php if ($active > 0): ?>
                     <div style="margin-top:18px;background:#eff6ff;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;">
@@ -381,5 +428,49 @@ if ($r) {
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="./script.js"></script>
-</body>
+<script>
+function openReportModal() {
+    // Default: current month
+    const now = new Date();
+    const y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0');
+    document.getElementById('reportFrom').value = `${y}-${m}-01`;
+    document.getElementById('reportTo').value   = new Date(y, now.getMonth()+1, 0).toISOString().split('T')[0];
+    document.getElementById('reportMsg').style.display = 'none';
+    document.getElementById('reportModal').style.display = 'flex';
+}
+function closeReportModal() {
+    document.getElementById('reportModal').style.display = 'none';
+}
+function downloadReport() {
+    const from   = document.getElementById('reportFrom').value;
+    const to     = document.getElementById('reportTo').value;
+    const status = document.getElementById('reportStatus').value;
+    const msg    = document.getElementById('reportMsg');
+
+    if (!from || !to) {
+        msg.textContent = 'Please select both From and To dates.';
+        msg.style.display = 'block';
+        return;
+    }
+    if (from > to) {
+        msg.textContent = '"From" date must be before "To" date.';
+        msg.style.display = 'block';
+        return;
+    }
+    msg.style.display = 'none';
+
+    const url = `orders_ajax.php?action=export_report&from=${from}&to=${to}&status=${status}`;
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `sales_report_${from}_to_${to}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    closeReportModal();
+}
+// Close modal on backdrop click
+document.getElementById('reportModal').addEventListener('click', function(e) {
+    if (e.target === this) closeReportModal();
+});
+</script>
 </html>
